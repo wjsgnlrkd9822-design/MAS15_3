@@ -2,7 +2,8 @@
 SET FOREIGN_KEY_CHECKS = 0;
 drop TABLE IF EXISTS `users`;
 CREATE TABLE `users`( 
-    `id` VARCHAR(36) NOT NULL PRIMARY KEY COMMENT '아이디',
+    `no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '회원 번호',
+    `id` VARCHAR(36) NOT NULL UNIQUE COMMENT '아이디',
     `pw` VARCHAR(100) NOT NULL COMMENT '비밀번호',
     `username` VARCHAR(50) NOT NULL COMMENT '이름',
     `birth` VARCHAR(10) NOT NULL COMMENT '생년월일',
@@ -14,8 +15,8 @@ CREATE TABLE `users`(
 
 drop TABLE IF EXISTS `pets`;
 create Table `pets`(
-    `no` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '반려견 번호',
-    `owner_id` VARCHAR (36) NOT NULL COMMENT  '반려견 주인 아이디',
+    `no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '반려견 번호',
+    `owner_no` VARCHAR (36) NOT NULL COMMENT  '반려견 주인 번호',
     `name` VARCHAR(50) NOT NULL COMMENT '반려견 이름',
     `species` VARCHAR(50) NOT NULL COMMENT '반려견 종',
     `size` VARCHAR(20) NOT NULL COMMENT '반려견 크기',
@@ -29,14 +30,14 @@ create Table `pets`(
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '등록일자',
     `update_date` TIMESTAMP DEFAULT NOW() ON UPDATE NOW() COMMENT '수정일자',
 
-    FOREIGN KEY (owner_id) REFERENCES users(id) 
+    FOREIGN KEY (owner_no) REFERENCES users(no) 
     on update CASCADE 
     on delete CASCADE
 );
  DROP Table IF EXISTS `hotelrooms`;
 
 CREATE Table `hotelrooms`(
-    `room_no` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '호텔 객실 번호',
+    `room_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '호텔 객실 번호',
     `room_type` VARCHAR(50) NOT NULL COMMENT '객실 종류',
     `room_price` INT NOT NULL COMMENT '가격',
     `service_no` INT NOT NULL COMMENT '서비스 번호',
@@ -47,15 +48,15 @@ CREATE Table `hotelrooms`(
  drop TABLE IF EXISTS `reservations`;
 
  CREATE TABLE `reservations`(
-    `res_no` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '예약 번호',
-    `user_id` VARCHAR(36) NOT NULL COMMENT '회원 아이디',
+    `res_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '예약 번호',
+    `user_no` VARCHAR(36) NOT NULL COMMENT '회원 번호',
     `pet_no` INT NOT NULL COMMENT '반려견 번호',
     `room_no` INT NOT NULL COMMENT '객실 번호',
     `res_date` DATE NOT NULL COMMENT '예약 날짜',
     `res_time` TIME NOT NULL COMMENT '예약 시간',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
 
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_no) REFERENCES users(no)
     on update CASCADE
     on delete CASCADE,
 
@@ -73,7 +74,7 @@ CREATE Table `hotelrooms`(
 DROP Table IF EXISTS `hotelservices`;
 
 CREATE Table `hotelservices`(
-    `service_no` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '호텔 서비스 번호',
+    `service_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '호텔 서비스 번호',
     `service_name` VARCHAR(100) NOT NULL COMMENT '서비스 이름',
     `description` TEXT NOT NULL COMMENT '서비스 설명',
     `service_price` INT NOT NULL COMMENT '가격'
@@ -81,7 +82,7 @@ CREATE Table `hotelservices`(
 
 DROP TABLE IF EXISTS `reservation_services`;
 CREATE TABLE reservation_services (
-    `rs_no` INT AUTO_INCREMENT PRIMARY KEY COMMENT '예약 서비스 번호',
+    `rs_no` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '예약 서비스 번호',
     `res_no` INT NOT NULL COMMENT '예약 번호',
     `service_no` INT NOT NULL COMMENT '서비스 번호',
     FOREIGN KEY (`res_no`) REFERENCES reservations(res_no) ON DELETE CASCADE,
@@ -91,7 +92,7 @@ CREATE TABLE reservation_services (
 DROP TABLE IF EXISTS `notices`;
 
 CREATE TABLE `notices`(
-    `notice_no` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '공지사항 번호',
+    `notice_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '공지사항 번호',
     `title` VARCHAR(200) NOT NULL COMMENT '공지사항 제목',
     `content` TEXT NOT NULL COMMENT '공지사항 내용',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '등록일자',
@@ -101,17 +102,17 @@ CREATE TABLE `notices`(
 
 DROP TABLE IF EXISTS `user_auth`;
 CREATE TABLE `user_auth` (
-    `auth_no` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '권한 번호',
-    `user_id` VARCHAR(36) NOT NULL COMMENT '회원 아이디',
+    `auth_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '권한 번호',
+    `user_no` VARCHAR(36) NOT NULL COMMENT '회원 번호',
     `role` VARCHAR(20) NOT NULL COMMENT '권한 (ADMIN)',
     
-    FOREIGN KEY (`user_id`) REFERENCES users(id)
+    FOREIGN KEY (`user_no`) REFERENCES users(no)
         ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS `trainers`;
 CREATE Table `trainers`(
-    `trainer_no` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '트레이너 번호',
+    `trainer_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '트레이너 번호',
     `name` VARCHAR(50) NOT NULL COMMENT '트레이너 이름',
     `img` VARCHAR(255) DEFAULT NULL COMMENT '트레이너 이미지',
     `detail` TEXT NOT NULL COMMENT '트레이너 소개',
@@ -121,7 +122,7 @@ CREATE Table `trainers`(
 
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product`(
-    `product_no` INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '상품 번호',
+    `product_no` BIGINT  NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '상품 번호',
     `name` VARCHAR(100) NOT NULL COMMENT '상품 이름',
     `description` TEXT NOT NULL COMMENT '상품 설명',
     `price` INT NOT NULL COMMENT '가격',
@@ -133,16 +134,16 @@ CREATE TABLE `product`(
 
 DROP TABLE IF EXISTS `orders`;
 CREATE TABLE `orders` (
-    `order_no` INT AUTO_INCREMENT PRIMARY KEY COMMENT '주문 번호',
-    `user_id` VARCHAR(36) NOT NULL COMMENT '회원 아이디',
+    `order_no` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '주문 번호',
+    `user_no` VARCHAR(36) NOT NULL COMMENT '회원 번호',
     `total_price` INT NOT NULL COMMENT '총 금액',
     `status` VARCHAR(20) DEFAULT 'READY' COMMENT '주문 상태',
     `order_date` TIMESTAMP DEFAULT NOW() COMMENT '주문일자',
-    FOREIGN KEY (`user_id`) REFERENCES users(id)
+    FOREIGN KEY (`user_no`) REFERENCES users(no)
 );
 DROP TABLE IF EXISTS `order_items`;
 CREATE TABLE `order_items` (
-    `item_no` INT AUTO_INCREMENT PRIMARY KEY COMMENT '주문 상품 번호',
+    `item_no` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '주문 상품 번호',
     `order_no` INT NOT NULL COMMENT '주문 번호',
     `product_no` INT NOT NULL COMMENT '상품 번호',
     `quantity` INT NOT NULL COMMENT '수량',
