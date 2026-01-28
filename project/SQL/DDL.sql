@@ -153,7 +153,7 @@ CREATE TABLE `order_items` (
     `price` INT NOT NULL COMMENT '주문 당시 가격',
     FOREIGN KEY (`order_no`) REFERENCES orders(order_no) ON DELETE CASCADE,
     FOREIGN KEY (`product_no`) REFERENCES product(product_no)
-);
+); 
 
 
 SET FOREIGN_KEY_CHECKS = 1;
