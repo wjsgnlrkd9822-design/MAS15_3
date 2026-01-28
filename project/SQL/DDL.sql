@@ -1,4 +1,4 @@
--- Active: 1767840691076@@127.0.0.1@3306@aloha
+-- Active: 1767920835424@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 drop TABLE IF EXISTS `users`;
 CREATE TABLE `users`( 
@@ -48,6 +48,26 @@ CREATE Table `hotelrooms`(
     `img` VARCHAR(255) NOT NULL COMMENT '객실 이미지'
 
 );
+
+INSERT INTO hotelrooms (room_type, room_price, etc, active, img)
+VALUES
+('101호', 110000, '대형견 이용 가능', '예약가능', 'room_101.jpg'),
+('102호', 110000, '대형견 이용 가능', '예약가능', 'room_102.jpg'),
+('103호', 110000, '대형견 이용 가능', '예약가능', 'room_103.jpg'),
+('104호', 140000, '대형견 이용 가능 / 넓은 공간', '예약가능', 'room_104.jpg'),
+('201호', 80000, '중형견 이용 가능', '예약가능', 'room_201.jpg'),
+('202호', 80000, '중형견 이용 가능', '예약가능', 'room_202.jpg'),
+('203호', 80000, '중형견 이용 가능', '예약가능', 'room_203.jpg'),
+('204호', 100000, '중형견 이용 가능 / 넓은 공간', '예약가능', 'room_204.jpg'),
+('205호', 100000, '중형견 이용 가능 / 넓은 공간', '예약가능', 'room_205.jpg'),
+('301호', 50000, '소형견 이용 가능', '예약가능', 'room_301.jpg'),
+('302호', 50000, '소형견 이용 가능', '예약가능', 'room_302.jpg'),
+('303호', 50000, '소형견 이용 가능', '예약가능', 'room_303.jpg'),
+('304호', 70000, '소형견 이용 가능 / 넓은 공간', '예약가능', 'room_304.jpg'),
+('305호', 70000, '소형견 이용 가능 / 넓은 공간', '예약가능', 'room_305.jpg');
+
+SELECT * FROM hotelrooms
+
  
  drop TABLE IF EXISTS `reservations`;
 
@@ -157,4 +177,3 @@ CREATE TABLE `order_items` (
 
 
 SET FOREIGN_KEY_CHECKS = 1;
-
