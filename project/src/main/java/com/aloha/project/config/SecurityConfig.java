@@ -71,15 +71,15 @@ public class SecurityConfig {
       .logoutSuccessHandler(logoutSuccessHandler)  // 로그아웃 성공 핸들러 설정
     );
 
-    // 🚫 접근 거부 예외 처리
+    // 접근 거부 예외 처리
     http.exceptionHandling(exception -> exception
         .accessDeniedHandler(customAccessDeniedHandler)  // 접근 거부 핸들러 설정
     );
 
-    // 👩‍💼 사용자 정의 인증
+    // 사용자 정의 인증
     http.userDetailsService(userDetailServiceImpl);
 
-    // 🔄 자동 로그인 설정
+    // 자동 로그인 설정
     http.rememberMe(me -> me
                     .key("aloha")
                     .tokenRepository(tokenRepository())             // 자동 로그인 저장소 빈 지정

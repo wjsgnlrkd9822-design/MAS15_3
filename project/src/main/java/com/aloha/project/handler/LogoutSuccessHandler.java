@@ -27,7 +27,7 @@ public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
     log.info("로그아웃 성공...");
 
     // 로그아웃 성공 후 리다이렉트할 경로 설정
-    setDefaultTargetUrl("/login?logout");
+    setDefaultTargetUrl("/");
     super.onLogoutSuccess(request, response, authentication);
   }
 
