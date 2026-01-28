@@ -1,0 +1,38 @@
+<!-- 프래그먼트 : 레이아웃에서 공통적으로 사용할 UI -->
+<!-- th:fragment="프래그먼트 명" -->
+<th:block th:fragment="footer">
+    <footer class="footer">
+        <div class="footer-inner">
+
+            <section class="footer-section">
+                <img th:src="@{/img/logo.png}">
+                <p>사랑하는 반려견을 위한 최고의<br> 호텔 서비스를 제공합니다</p>
+            </section>
+            
+            <section class="footer-section">
+                <p class="footer-title">빠른 링크</p>
+                <p><a th:href="@{/pet/reservation}">예약하기</a></p>
+                <p><a th:href="@{/공지사항}">공지사항</a></p>
+                <p><a th:href="@{/서비스}">서비스 안내</a></p>
+                <p><a th:href="@{/소개}">호텔 소개</a></p>
+            </section>
+            
+            <section class="footer-section">
+                <p class="footer-title">고객센터</p>
+                <p>전화 : 02-1234-5678</p>
+                <p>이메일 : info@doghote.com</p>
+                <p>운영시간 : 09:00 ~ 18:00</p>
+                <p>연중무휴</p>
+            </section>
+            
+            <section class="footer-section">
+                <p class="footer-title">찾아 오시는길</p>
+                <p>서울 특별시 강남구 테헤란로 123 댕댕이 빌딩 5층</p>
+            </section>
+
+            </div>
+            <div class="footer-bottom">
+                © 2026 댕댕이 호텔. All rights reserved.
+            </div>
+    </footer>
+</th:block>
