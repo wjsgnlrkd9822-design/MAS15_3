@@ -11,7 +11,7 @@ public class AdminController {
 
   @GetMapping("")
   public String admin() {
-    return "admin/index";
+    return "admin/ad_main";
   }
   
   
