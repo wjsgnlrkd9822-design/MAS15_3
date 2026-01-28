@@ -3,10 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>메인 화면</title>
+
+    <!-- 공통 CSS -->
+    <th:block th:replace="~{fragments/link::link}"></th:block>
+
+    <!-- Font Awesome 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <h1>관리자 페이지</h1>
-    <a href="/admin/ad_main">관리자 페이지로 이동</a>
+
+    <!-- 헤더 -->
+    <th:block th:replace="~{fragments/header::header}"></th:block>
+
+    <!-- 메인 히어로 섹션 -->
+    <div class="container">
+        <div class="hero">
+            <img th:src="@{/img/mainpage.jpg}" alt="메인 이미지">
+
+            <div class="hero-content">
+                <h1>
+                    사랑하는 반려견을 위한<br>
+                    특별한 휴식 공간
+                </h1>
+
+                <p>
+                    24시간 전문 케어와 최상의 시설로<br>
+                    반려견의 행복한 시간을 약속합니다
+                </p>
+
+                <a th:href="@{/pet/reservation}" class="hero-btn">지금 예약하기</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 왜 PETHOUSE 인가요 섹션 -->
+    <section class="why-section">
+        <div class="why-inner">
+            <h2>왜 PETHOUSE 인가요?</h2>
+            <p class="why-sub">
+                반려견의 안전과 행복을 최우선으로 생각합니다
+            </p>
+
+            <div class="why-cards">
+
+                <div class="why-card">
+                    <i class="fa-solid fa-shield-dog"></i>
+                    <h3>안전한 환경</h3>
+                    <p>
+                        24시간 CCTV 관제와 전문 수의사가 상주하는
+                        안전한 공간
+                    </p>
+                </div>
+
+                <div class="why-card">
+                    <i class="fa-solid fa-heart"></i>
+                    <h3>사랑과 관심</h3>
+                    <p>
+                        매 순간 반려견에게 필요한
+                        관심과 사랑을 제공합니다
+                    </p>
+                </div>
+
+                <div class="why-card">
+                    <i class="fa-solid fa-user-nurse"></i>
+                    <h3>전문 스태프</h3>
+                    <p>
+                        반려동물 전문 교육을 이수한
+                        숙련된 케어 전문가
+                    </p>
+                </div>
+
+                <div class="why-card">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <h3>편리한 예약</h3>
+                    <p>
+                        온라인으로 간편하게 예약하고
+                        실시간으로 확인
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+        <!-- 서비스 섹션 -->
+    <section class="service-section">
+        <div class="service-inner">
+
+            <div class="service-card">
+                <img th:src="@{/img/service-hotel.jpg}" alt="호텔링 서비스">
+
+                <h3>호텔링 서비스</h3>
+                <p class="service-desc">
+                    쾌적한 개별 객실에서 편안한 휴식을 제공합니다
+                </p>
+
+                <ul>
+                    <li>개별 공조 시스템</li>
+                    <li>프리미엄 침구</li>
+                    <li>실시간 CCTV 제공</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <img th:src="@{/img/service-play.jpg}" alt="놀이 프로그램">
+
+                <h3>놀이 프로그램</h3>
+                <p class="service-desc">
+                    전문 트레이너와 함께하는 즐거운 놀이 시간
+                </p>
+
+                <ul>
+                    <li>실내 놀이터</li>
+                    <li>야외 산책</li>
+                    <li>사회성 프로그램</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <img th:src="@{/img/service-grooming.jpg}" alt="그루밍 서비스">
+
+                <h3>그루밍 서비스</h3>
+                <p class="service-desc">
+                    전문 그루머가 제공하는 스파 & 미용 서비스
+                </p>
+
+                <ul>
+                    <li>목욕 및 드라이</li>
+                    <li>스타일 컷</li>
+                    <li>스킨케어</li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+    <section class="reservation">
+        <p class="reservation-text">지금 바로 예약하세요!</p>
+        <p class="reservation-subtext">사랑하는 반려견에게 특별한 경험을 선물하세요</p>
+        <a th:href="@{/pet/reservation}" class="reservation-btn">예약 문의하기</a>
+    </section>
+
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{fragments/footer::footer}"></th:block>
+
 </body>
 </html>
