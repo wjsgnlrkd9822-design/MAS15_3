@@ -30,7 +30,7 @@ create Table `pets`(
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '등록일자',
     `update_date` TIMESTAMP DEFAULT NOW() ON UPDATE NOW() COMMENT '수정일자',
 
-    FOREIGN KEY (owner_no) REFERENCES users(no) 
+    FOREIGN KEY (owner_no) REFERENCES users(no)     
     on update CASCADE 
     on delete CASCADE
 );
@@ -40,7 +40,8 @@ CREATE Table `hotelrooms`(
     `room_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '호텔 객실 번호',
     `room_type` VARCHAR(50) NOT NULL COMMENT '객실 종류',
     `room_price` INT NOT NULL COMMENT '가격',
-    `service_no` INT NOT NULL COMMENT '서비스 번호',
+    `etc` TEXT NULL COMMENT '세부 사항',
+    `active` VARCHAR(10) NOT NULL COMMENT '예약 여부',
     `img` VARCHAR(255) NOT NULL COMMENT '객실 이미지'
 
 );
