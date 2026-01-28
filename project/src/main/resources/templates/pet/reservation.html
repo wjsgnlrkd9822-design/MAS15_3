@@ -16,7 +16,7 @@
     <th:block th:replace="~{fragments/header::header}"></th:block>
 
     <div class="room-list">
-    <!-- rooms : Controller에서 전달한 List<HotelRoom> -->
+
         <div class="reservation-card" th:each="room : ${rooms}">
             <!-- 이미지 -->
             <img th:src="@{'/img/' + ${room.img}}" class="room-image" th:alt="${room.roomType} + ' 이미지'">
@@ -30,6 +30,7 @@
             </div>
         </div>
     </div>
+
 
 
 

@@ -21,17 +21,6 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
-    /**
-     * 메인 화면
-     * 🔗 [GET] - / 
-     * 📄 index.html
-     * @return
-     */
-    @GetMapping("")
-    public String home() {
-        log.info(":::::::::: 메인 화면 ::::::::::");
-        return "index";
-    }
 
     /**
      * 회원 가입 화면
