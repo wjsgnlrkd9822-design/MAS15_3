@@ -1,0 +1,349 @@
+.reservation-text {
+    font-size: 38px;       /* 글씨 크기, 필요하면 조절 */
+    font-weight: 150;     /* 글씨 두께 */
+    text-align: center;    /* 가로 중앙 정렬 */
+    margin: 30px 0 30px 0; /* 위쪽 40px, 아래쪽 20px 여백 */
+    color: #333;           /* 글씨 색상 */
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 전체 래퍼 */
+.reservation-wrapper{
+    max-width:1200px;
+    margin:40px auto;
+}
+
+/* 상단 카드 2개 묶음 */
+.reservation-detail-container{
+    display:flex;
+    gap:20px;
+    margin-bottom:30px;   /* 요약바와 간격 */
+}
+
+/* =========================
+   왼쪽 달력 카드
+========================= */
+.reservation-calendar{
+    flex: 1; 
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    border:1px solid #eaeaea;
+    box-shadow:0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* 달력 */
+.calendar-row{
+    display:flex;
+    gap:20px;
+    margin-top:15px;
+}
+
+.calendar-box p {
+    margin-bottom: 8px;
+}
+
+.calendar-box input{
+    display:none;
+}
+
+.flatpickr-calendar{
+    width:100%!important;
+    border-radius:12px;
+    box-shadow:none;
+    border:1px solid #eee;
+}
+
+/* 박 수 */
+.night-box{
+    margin-top:20px;
+    padding:15px;
+    background:#f8f8f8;;
+    border-radius:10px;
+    text-align:center;
+    font-weight:400;
+}
+
+/* 안내 박스 */
+.info-box{
+    margin-top:20px;
+    background:#f8f8f8;
+    padding:15px;
+    border-radius:10px;
+    font-size:14px;
+    line-height:1.6;
+}
+
+/* 오른쪽 객실 카드 */
+.reservation-detail {
+    flex: 1;             /* 남은 공간 모두 사용 */
+    background: white;
+    border-radius: 18px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 이미지 */
+.room-detail-image{
+    width:100%;
+    height:260px;
+    object-fit:cover;
+    border-radius:0;
+}
+
+/* 객실명(호수) */
+.room-title{
+    margin-top: 5px;
+    padding:18px 22px 8px;
+    font-size:32px;
+    font-weight:300;
+}
+
+/* 옵션 */
+.room-features{
+    padding:22px;
+    font-size:15px;
+    color:#444;
+}
+
+.room-features li{
+    margin-bottom:18px;   /* 줄 사이 간격 */
+}
+
+
+/* 가격 영역 (하단 고정 느낌) */
+.price-box{
+    margin-top:auto;
+    padding:18px 22px;
+    border-top:2px solid #eee;
+    background:#fafbff;
+}
+
+.price-box span{
+    font-size:26px;
+    font-weight:650;
+    color:#222;
+}
+
+.price-box small{
+    font-size:18px;
+    color:#777;
+}
+
+
+/* 가격 */
+.price-box{
+    font-size:28px;
+    font-weight:700;
+    color:#222;
+    margin-bottom:15px;
+}
+
+/* =========================
+   🔵 하단 가로 결제 요약 바
+========================= */
+.payment-summary{
+    background:#CC9966;
+    border-radius:16px;
+    padding:28px 40px;
+    color:white;
+    box-shadow:0 10px 30px rgba(30,96,255,.25);
+    width:100%;
+}
+
+/* 제목 */
+.summary-title{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+/* 줄 */
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:12px;
+    font-size:15px;
+}
+
+/* 구분선 */
+.summary-divider{
+    width:100%;
+    height:1px;
+    background:rgba(255,255,255,0.4);
+    margin:18px 0;
+}
+
+
+/* 총 금액 */
+.summary-row.total{
+    font-size:20px;
+    font-weight:700;
+}
+
+/* 예약 버튼 */
+.summary-btn{
+    display:block;
+    margin-top:20px;
+    padding:16px;
+    background:white;
+    color:#CC9966;
+    text-align:center;
+    border-radius:10px;
+    font-weight:700;
+    text-decoration:none;
+    transition:.25s;
+}
+.summary-btn:hover{
+    font-size: 20px;
+    font-weight: 800;
+}
+
+/* flatpickr 금지(🚫) 커서 완전 제거 */
+.flatpickr-day,
+.flatpickr-day:hover,
+.flatpickr-day.disabled,
+.flatpickr-day.disabled:hover,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay,
+.flatpickr-day.flatpickr-disabled {
+    cursor: default !important;
+}
+
+.calendar-title-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.calendar-title-row i{
+    font-size:20px;
+}
+
+.calendar-title h3{
+    font-size:20px;
+    font-weight:700;
+    margin:0;
+}
+
+.calendar-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:6px;
+}
+
+.calendar-label i{
+    font-size:14px;
+}
+
+.room-features li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.room-features i{
+    font-size:14px;
+    min-width:18px;
+}
+.hotelservicetext{
+    margin-top: 10px;
+}
+
+/* 호텔 추가 서비스 영역 */
+.service-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2개씩 배치 */
+    gap: 15px;
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+.service-card {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    height: 120px; /* 카드 높이 지정, 필요 시 조절 */
+}
+
+.service-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* 위쪽 영역: 아이콘+이름, 가격 */
+.service-card .service-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/* 왼쪽 위: 아이콘 + 이름 */
+.service-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.service-icon i {
+    font-size: 20px;
+    color: #555;
+}
+
+.service-name {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* 오른쪽 위: 가격 */
+.service-price {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* 아래쪽 영역: 설명 + 체크박스 */
+.service-card .service-bottom {
+    display: flex;
+    justify-content: space-between; /* 좌우 배치 */
+    align-items: flex-end;          /* 아래쪽 맞춤 */
+    margin-top: auto;               /* 위쪽 공간을 최대한 밀어서 아래로 붙임 */
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 0 4px;                 /* 좌우 여백 약간 */
+}
+
+.service-desc {
+    margin: 0;                      /* margin 제거 */
+    font-size: 14px;
+    color: #666;
+}
+
+.service-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* 체크박스가 체크되면 카드 테두리 색 변경 */
+.service-card input.service-checkbox:checked + .service-bottom {
+    border-color: #CC9966; /* 이건 아래쪽만 체크되므로 실제 카드 전체에 적용하려면 JS 필요 */
+}
+
+/* 전체 카드 클릭 시 적용하려면 JS 사용 */
+.service-card.selected {
+    border: 3px solid #CC9966;
+}
