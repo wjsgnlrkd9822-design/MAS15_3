@@ -62,6 +62,7 @@ public class SecurityConfig {
       .failureHandler(loginFailureHandler)         // 로그인 실패 핸들러 설정
     );
 
+    
     // 로그아웃 설정
     http.logout(logout -> logout
       .logoutUrl("/logout")                            // 로그아웃 요청 경로
