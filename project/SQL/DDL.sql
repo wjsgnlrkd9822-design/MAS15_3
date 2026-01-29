@@ -1,5 +1,31 @@
--- Active: 1767920835424@@127.0.0.1@3306@aloha
+-- Active: 1767840691076@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
+
+
+
+ drop TABLE IF EXISTS `reservations`;
+
+ CREATE TABLE `reservations`(
+    `res_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '예약 번호',
+    `user_no` BIGINT NOT NULL COMMENT '회원 번호',
+    `pet_no` BIGINT NOT NULL COMMENT '반려견 번호',
+    `room_no` BIGINT NOT NULL COMMENT '객실 번호',
+    `res_date` DATE NOT NULL COMMENT '예약 날짜',
+    `res_time` TIME NOT NULL COMMENT '예약 시간',
+    `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
+
+    FOREIGN KEY (user_no) REFERENCES users(no)
+    on update CASCADE
+    on delete CASCADE,
+
+    FOREIGN KEY (pet_no) REFERENCES pets(no)
+    on update CASCADE
+    on delete CASCADE,
+    
+    FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no)
+    on update CASCADE
+    on delete CASCADE
+ );
 drop TABLE IF EXISTS `users`;
 CREATE TABLE `users`( 
     `no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '회원번호',
@@ -47,7 +73,7 @@ CREATE Table `hotelrooms`(
     `room_type` VARCHAR(50) NOT NULL COMMENT '객실 종류',
     `room_price` INT NOT NULL COMMENT '가격',
     `etc` TEXT NULL COMMENT '세부 사항',
-    `active` VARCHAR(10) NOT NULL COMMENT '예약 여부',
+    `active` VARCHAR(20) NOT NULL DEFAULT '예약가능' COMMENT '예약 여부',
     `img` VARCHAR(255) NOT NULL COMMENT '객실 이미지'
 
 );
@@ -73,29 +99,6 @@ VALUES
 SELECT * FROM hotelrooms
 
  
- drop TABLE IF EXISTS `reservations`;
-
- CREATE TABLE `reservations`(
-    `res_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '예약 번호',
-    `user_no` BIGINT NOT NULL COMMENT '회원 번호',
-    `pet_no` BIGINT NOT NULL COMMENT '반려견 번호',
-    `room_no` BIGINT NOT NULL COMMENT '객실 번호',
-    `res_date` DATE NOT NULL COMMENT '예약 날짜',
-    `res_time` TIME NOT NULL COMMENT '예약 시간',
-    `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
-
-    FOREIGN KEY (user_no) REFERENCES users(no)
-    on update CASCADE
-    on delete CASCADE,
-
-    FOREIGN KEY (pet_no) REFERENCES pets(no)
-    on update CASCADE
-    on delete CASCADE,
-    
-    FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no)
-    on update CASCADE
-    on delete CASCADE
- );
 
        
 

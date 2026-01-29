@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="_csrf" th:content="${_csrf.token}">
+<meta name="_csrf_header" th:content="${_csrf.headerName}">
 <title>객실 수정</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,12 +23,12 @@ body { background-color: #f5f6f7; }
     <!-- 사이드바 -->
     <aside class="sidebar p-4 vh-100">
         <h5 class="mb-4">관리자 페이지</h5>
-        <nav class="nav flex-column gap-1">
-            <a class="nav-link" href="ad_main.html">📊 매출 조회</a>
-            <a class="nav-link" href="ad_usermanage.html">👥 회원 관리</a>
-            <a class="nav-link" href="ad_service.html">⚙️ 서비스 및 시설 관리</a>
-            <a class="nav-link" href="ad_trainer.html">🏇 훈련사 관리</a>
-            <a class="nav-link" href="ad_notice.html">📝 공지사항</a>
+       <nav class="nav flex-column gap-1">
+            <a class="nav-link" th:href="@{/admin}">📊 매출 조회</a>
+            <a class="nav-link" th:href="@{/admin/usermanage}">👥 회원 관리</a>
+            <a class="nav-link" th:href="@{/admin/service}">⚙️ 서비스 및 시설 관리</a>
+            <a class="nav-link" th:href="@{/admin/trainer}">🏇 훈련사 관리</a>
+            <a class="nav-link" th:href="@{/admin/notice}">📝 공지사항</a>
         </nav>
     </aside>
 
@@ -37,46 +39,141 @@ body { background-color: #f5f6f7; }
         <div class="card">
             <div class="card-body">
                 <!-- 수정 폼 -->
-                <form action="/admin/rooms/update" method="post" enctype="multipart/form-data">
-                    <!-- DB에서 불러온 room_no hidden -->
-                    <input type="hidden" name="room_no" value="<!-- 서비스 ID 삽입 -->">
+                    <form id="updateForm" enctype="multipart/form-data">
+                        <input type="hidden" name="roomNo" th:value="${room.roomNo}" id="roomNo">
 
-                    <div class="mb-3">
-                        <label class="form-label">객실명</label>
-                        <input type="text" class="form-control" name="room_type" value="VIP룸" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">가격</label>
-                        <input type="number" class="form-control" name="room_price" value="80000" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">세부 사항</label>
-                        <textarea class="form-control" name="etc" rows="4">예: 침대 2개, 창문 있음</textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">예약 상태</label>
-                        <select class="form-select" name="active">
-                            <option value="사용 가능" selected>사용 가능</option>
-                            <option value="예약됨">예약됨</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">객실 이미지</label>
-                        <input class="form-control" type="file" name="img">
-                        
-                    </div>
+                            <div class="mb-3">
+                                <label class="form-label">객실명</label>
+                                <input type="text" class="form-control"
+                                    name="roomType" id="roomType"
+                                    th:value="${room.roomType}" required>
+                            </div>
 
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="ad_service.html" class="btn btn-secondary">목록으로</a>
-                        <button type="submit" class="btn btn-primary">저장</button>
-                        <button type="button" class="btn btn-danger" onclick="if(confirm('정말 삭제하시겠습니까?')) { location.href='/admin/rooms/delete?room_no=<!-- room_no -->'; }">삭제</button>
-                    </div>
-                </form>
+                            <div class="mb-3">
+                                <label class="form-label">가격</label>
+                                <input type="number" class="form-control"
+                                    name="roomPrice" id="roomPrice"
+                                    th:value="${room.roomPrice}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">세부 사항</label>
+                                <textarea class="form-control"
+                                        name="etc"
+                                        rows="4" id="etc"
+                                        th:text="${room.etc}"></textarea>
+                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label">객실 이미지</label>
+                                    <input type="file" class="form-control" name="imgFile" id="imgFile">
+
+                                    <!-- 기존 이미지 표시 -->
+                                    <div class="mt-2">
+                                        <small class="text-muted">기존 이미지:</small><br>
+                                        <img th:if="${room.img != null}" 
+                                            th:src="@{'/uploads/' + ${room.img}}" 
+                                            alt="기존 이미지" 
+                                            style="width:200px; height:auto; border:1px solid #ddd; padding:2px; border-radius:4px;">
+                                    </div>
+                                </div>
+
+                            <div class="d-flex justify-content-end gap-2">
+                                <a th:href="@{/admin/service}" class="btn btn-secondary">목록</a>
+                                <button type="submit" class="btn btn-primary">저장</button>
+                                <button type="button" class="btn btn-danger" onclick="actionDelete()">삭제</button>
+                            </div>
+                    </form>
+
             </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+document.getElementById("updateForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); // 폼 기본 submit 막기
+
+    const form = e.target;
+    const roomNo = document.getElementById("roomNo").value;
+    const imgInput = document.getElementById("imgFile");
+
+
+    let imgFileName = null;
+
+    // 1️⃣ 이미지 업로드
+    if (imgInput.files.length > 0) {
+        const imgForm = new FormData();
+        imgForm.append("imgFile", imgInput.files[0]);
+
+        const res = await fetch("/admin/upload", {
+            method: "POST",
+            headers: { [csrfHeader]: csrfToken },
+            body: imgForm
+        });
+
+        if (!res.ok) {
+            alert("이미지 업로드 실패");
+            return;
+        }
+
+        imgFileName = await res.text(); // 업로드된 파일명
+    }
+
+    // 2️⃣ JSON 데이터 생성
+    const data = {
+        roomType: document.getElementById("roomType").value,
+        roomPrice: parseInt(document.getElementById("roomPrice").value), // 숫자 변환 필수
+        etc: document.getElementById("etc").value,
+        img: imgFileName // null이면 서버에서 default 처리
+    };
+
+    // 3️⃣ PUT/POST 요청
+    const updateRes = await fetch(`/admin/update/${roomNo}`, {
+        method: "POST", // 기존 컨트롤러 @PostMapping 사용
+        headers: {
+            "Content-Type": "application/json",
+            [csrfHeader]: csrfToken
+        },
+        body: JSON.stringify(data)
+    });
+
+    const result = await updateRes.text();
+
+    if (result === "SUCCESS") {
+        alert("객실 정보가 수정되었습니다.");
+        window.location.href = "/admin/service";
+    } else {
+        alert("수정 실패: " + result);
+    }
+});
+	async function actionDelete() {
+		  if (!confirm("정말로 삭제하시겠습니까?")) return;
+		
+		  const roomNo = document.getElementById("roomNo").value;
+		
+		  try {
+		    const response = await fetch(`/admin/delete/${roomNo}`, {
+		      method: "DELETE",
+          headers: { [csrfHeader]: csrfToken },
+		    });
+		
+		    if (response.ok) {
+          alert("게시글이 삭제되었습니다.");
+          location.href = "/admin/service";
+        } else {
+          alert("게시글 삭제에 실패하였습니다.")
+        }
+		
+		  } catch (err) {
+		    alert(err.message);
+		  }
+		}
+
+</script>
+
 </body>
 </html>

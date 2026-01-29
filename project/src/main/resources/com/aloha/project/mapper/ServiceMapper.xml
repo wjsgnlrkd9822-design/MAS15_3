@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.aloha.project.mapper.ServiceMapper">
+
+    <select id="list" resultType="HotelService">
+        SELECT *
+        FROM hotelservices
+        order by service_no 
+    </select>
+
+    <select id="select" resultType="HotelService" >
+        SELECT *
+        FROM hotelservices
+        WHERE service_no = #{service_no}      
+    </select>
+
+
+    <insert id="insert" >
+        INSERT INTO hotelservices (service_name, service_price, description)
+        VALUES (#{serviceName}, #{servicePrice}, #{description})      
+    </insert>
+
+    <update id="update">
+      UPDATE hotelservices
+      <set>
+        <if test="serviceName != null"> service_name = #{serviceName}, </if>
+        <if test="servicePrice != null"> service_price = #{servicePrice}, </if>
+        <if test="description != null"> description = #{description} </if>
+      </set>
+      WHERE service_no = #{service_no}  
+    </update>
+
+    <delete id="delete">
+      DELETE FROM hotelservices
+      WHERE service_no = #{service_no}
+    </delete>
+
+</mapper>
