@@ -37,6 +37,8 @@ create Table `pets`(
     on update CASCADE 
     on delete CASCADE
 );
+
+SET FOREIGN_KEY_CHECKS = 0;
  DROP Table IF EXISTS `hotelrooms`;
 
 CREATE Table `hotelrooms`(
@@ -51,20 +53,21 @@ CREATE Table `hotelrooms`(
 
 INSERT INTO hotelrooms (room_type, room_price, etc, active, img)
 VALUES
-('101호', 110000, '대형견 이용 가능', '예약가능', 'room_101.jpg'),
-('102호', 110000, '대형견 이용 가능', '예약가능', 'room_102.jpg'),
-('103호', 110000, '대형견 이용 가능', '예약가능', 'room_103.jpg'),
-('104호', 140000, '대형견 이용 가능 / 넓은 공간', '예약가능', 'room_104.jpg'),
-('201호', 80000, '중형견 이용 가능', '예약가능', 'room_201.jpg'),
-('202호', 80000, '중형견 이용 가능', '예약가능', 'room_202.jpg'),
-('203호', 80000, '중형견 이용 가능', '예약가능', 'room_203.jpg'),
-('204호', 100000, '중형견 이용 가능 / 넓은 공간', '예약가능', 'room_204.jpg'),
-('205호', 100000, '중형견 이용 가능 / 넓은 공간', '예약가능', 'room_205.jpg'),
-('301호', 50000, '소형견 이용 가능', '예약가능', 'room_301.jpg'),
-('302호', 50000, '소형견 이용 가능', '예약가능', 'room_302.jpg'),
-('303호', 50000, '소형견 이용 가능', '예약가능', 'room_303.jpg'),
-('304호', 70000, '소형견 이용 가능 / 넓은 공간', '예약가능', 'room_304.jpg'),
-('305호', 70000, '소형견 이용 가능 / 넓은 공간', '예약가능', 'room_305.jpg');
+('Large Dog', 110000, '대형견실', '예약가능', 'room_101.jpg'),
+('Large Dog', 110000, '대형견실', '예약가능', 'room_102.jpg'),
+('Large Dog', 110000, '대형견실', '예약가능', 'room_103.jpg'),
+('Large Dog Deluxe', 140000, '대형견실(넓은공간)', '예약가능', 'room_104.jpg'),
+('Medium Dog', 80000, '중형견실', '예약가능', 'room_201.jpg'),
+('Medium Dog', 80000, '중형견실', '예약가능', 'room_202.jpg'),
+('Medium Dog', 80000, '중형견실', '예약가능', 'room_203.jpg'),
+('Medium Dog Deluxe', 100000, '중형견실(넓은공간)', '예약가능', 'room_204.jpg'),
+('Medium Dog Deluxe', 100000, '중형견실(넓은공간)', '예약가능', 'room_205.jpg'),
+('Small Dog', 50000, '소형견실', '예약가능', 'room_301.jpg'),
+('Small Dog', 50000, '소형견실', '예약가능', 'room_302.jpg'),
+('Small Dog', 50000, '소형견실', '예약가능', 'room_303.jpg'),
+('Small Dog Deluxe', 70000, '소형견실(넓은공간)', '예약가능', 'room_304.jpg'),
+('Small Dog Deluxe', 70000, '소형견실(넓은공간)', '예약가능', 'room_305.jpg');
+
 
 SELECT * FROM hotelrooms
 
@@ -103,6 +106,15 @@ CREATE Table `hotelservices`(
     `description` TEXT NOT NULL COMMENT '서비스 설명',
     `service_price` INT NOT NULL COMMENT '가격'
 );
+INSERT INTO hotelservices (service_name, description, service_price)
+VALUES
+('그루밍 서비스', '전문 미용사의 목욕 및 미용 서비스', 30000),
+('프리미엄 식사', '수제 영양식과 간식 제공', 15000),
+('훈련 프로그램', '전문 트레이너와 1:1 교육', 40000),
+('사진 촬영', '전문 포토그래퍼의 반려견 화보 촬영', 25000);
+
+SELECT * FROM hotelservices
+
 
 DROP TABLE IF EXISTS `reservation_services`;
 CREATE TABLE reservation_services (
