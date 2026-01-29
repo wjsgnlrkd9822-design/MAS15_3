@@ -22,12 +22,12 @@ body { background-color: #f5f6f7; }
     <!-- 사이드바 -->
     <aside class="sidebar p-4 vh-100">
         <h5 class="mb-4">관리자 페이지</h5>
-        <nav class="nav flex-column gap-1">
-            <a class="nav-link" href="ad_main.html">📊 매출 조회</a>
-            <a class="nav-link" href="ad_usermanage.html">👥 회원 관리</a>
-            <a class="nav-link" href="ad_service.html">⚙️ 서비스 및 시설 관리</a>
-            <a class="nav-link" href="ad_trainer.html">🏇 훈련사 관리</a>
-            <a class="nav-link" href="ad_notice.html">📝 공지사항</a>
+         <nav class="nav flex-column gap-1">
+            <a class="nav-link" th:href="@{/admin}">📊 매출 조회</a>
+            <a class="nav-link" th:href="@{/admin/usermanage}">👥 회원 관리</a>
+            <a class="nav-link" th:href="@{/admin/service}">⚙️ 서비스 및 시설 관리</a>
+            <a class="nav-link" th:href="@{/admin/trainer}">🏇 훈련사 관리</a>
+            <a class="nav-link" th:href="@{/admin/notice}">📝 공지사항</a>
         </nav>
     </aside>
 
@@ -39,7 +39,7 @@ body { background-color: #f5f6f7; }
         <div class="mb-5">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5>시설 목록</h5>
-                <a href="ad_roominsert.html" class="btn btn-primary btn-sm">시설 추가</a>
+                <a th:href="@{/admin/roominsert}" class="btn btn-primary btn-sm">시설 추가</a>
             </div>
 
             <div class="card">
@@ -53,24 +53,32 @@ body { background-color: #f5f6f7; }
                                 <th>관리</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>VIP룸</td>
-                                <td>사용 가능</td>
-                                <td>80,000원</td>
+                    <tbody>
+                      <tr th:each="room : ${roomList}">
+                         <td th:text="${room.roomType}">시설명</td>
+
+                        <td>
+                            <span class="badge bg-success">사용 가능</span>
+                        </td>
+
+                                <td th:text="${#numbers.formatInteger(room.roomPrice, 3, 'COMMA')} + '원'">
+                                    가격
+                                </td>
+
                                 <td>
-                                    <a href="ad_roomupdate.html" class="btn btn-outline-primary btn-sm">수정</a>
+                                    <a th:href="@{/admin/roomup(roomNo=${room.roomNo})}"
+                                    class="btn btn-outline-primary btn-sm">
+                                        수정
+                                    </a>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>일반룸</td>
-                                <td>예약됨</td>
-                                <td>50,000원</td>
-                                <td>
-                                    <a href="ad_roomupdate.html" class="btn btn-outline-primary btn-sm">수정</a>
+
+                            <tr th:if="${#lists.isEmpty(roomList)}">
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    등록된 시설이 없습니다.
                                 </td>
                             </tr>
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -80,7 +88,7 @@ body { background-color: #f5f6f7; }
         <div>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5>서비스 목록</h5>
-                <a href="ad_serviceinsert.html" class="btn btn-primary btn-sm">서비스 추가</a>
+                <a th:href="@{/admin/serviceinsert}" class="btn btn-primary btn-sm">서비스 추가</a>
             </div>
 
             <div class="card">

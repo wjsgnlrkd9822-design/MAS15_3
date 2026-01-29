@@ -5,4 +5,13 @@
 INSERT INTO user_auth (id, username, auth)
 SELECT id, username, 'ROLE_ADMIN'
 FROM users
-WHERE username = '아이디';
+WHERE username = '아이디';  
+
+INSERT INTO `user` (id, username, password, name, email)
+VALUES (UUID(), 'admin', '123456', 
+        '관리자', 'admin@naver.com');
+
+INSERT INTO `user_auth` (id, username, auth )
+VALUES 
+  ('admin', 'admin', 'ROLE_USER'),
+  ('admin', 'admin', 'ROLE_ADMIN');
