@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="com.aloha.project.mapper.UserMapper">
+
+    <resultMap id="UserMap" type="User">
+        <id property="no" column="no"/>
+        <result property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="address" column="address"/>
+        <result property="birth" column="birth"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="enabled" column="enabled"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+
+        <collection property="authList" ofType="UserAuth"
+                    select="selectAuth"
+                    column="username"></collection>
+    </resultMap>
+
+    <resultMap id="AuthMap" type="UserAuth">
+        <result property="authNo" column="auth_no" />
+        <result property="username" column="username" />
+        <result property="auth" column="auth" />
+    </resultMap>
+
+    <!-- 회원가입 -->
+    <insert id="join">
+        INSERT INTO users ( id, username, password, name, address, birth, email, phone )
+        VALUES ( #{id}, #{username}, #{password}, #{name}, #{address}, #{birth}, #{email}, #{phone} )
+    </insert>
+
+    <!-- 회원 권한 등록 -->
+    <insert id="insertAuth">
+        INSERT INTO user_auth ( id, username, auth )
+        VALUES ( #{id}, #{username}, #{auth} )
+    </insert>
+
+     <select id="select" resultMap="UserMap">
+        SELECT *
+        FROM users
+        WHERE username = #{username}
+    </select>
+
+    <select id="selectAuth" resultType="UserAuth">
+        SELECT *
+        FROM user_auth
+        WHERE username = #{username}
+    </select>
+
+    <update id="update">
+      UPDATE users
+      <set>
+        <if test="birth != null">
+          birth = #{birth},
+        </if>
+        <if test="email != null">
+          email = #{email},
+        </if>
+        <if test="phone != null">
+          phone = #{phone},
+        </if>
+        <if test="address != null">
+          address = #{address},
+        </if>
+      </set>
+      WHERE username = #{username}
+    </update>
+
+  </mapper>

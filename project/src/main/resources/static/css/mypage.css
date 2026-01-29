@@ -1,0 +1,252 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    background-color: #f5f5f5 !important;
+    height: 100%;
+}
+
+.mypage-header {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+}
+
+.mypage-header-inner {
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 40px;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;  
+    border-radius: 16px;                
+
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        0 10px 20px rgba(0, 0, 0, 0.08);
+
+    text-align: center;
+}
+
+.mypage-header-inner h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #111827;
+}
+
+.mypage-header-inner p {
+    font-size: 15px;
+    color: #6b7280;
+}
+
+.mypage-info {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.mypage-info-inner {
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 40px;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;  
+    border-radius: 16px;                
+
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.mypage-info-inner h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #111827;
+}
+
+
+/* ===================== 반려견 카드 ===================== */
+
+.mypage-pets {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.mypage-pets-inner {
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 40px;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;  
+    border-radius: 16px;                
+
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        0 10px 20px rgba(0, 0, 0, 0.08);
+   
+}
+.mypage-pets-inner h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #111827;
+}
+
+.pet-card, .add-pet-card {
+    justify-content: center;
+    margin: 40px 0;
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 40px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #d1d5db;
+    box-shadow:0 4px 6px rgba(0, 0, 0, 0.05),0 10px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    color: #111827;
+}
+
+.pet-card:hover, .add-pet-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0,0,0,0.1), 0 12px 24px rgba(0,0,0,0.12);
+}
+
+/* 반려견 이미지 */
+.pet-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #d1d5db;
+}
+
+/* 카드 정보 */
+.pet-card .pet-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.pet-card .pet-info span {
+    margin: 2px 0;
+}
+
+/* 반려견 상세 버튼 */
+.pet-card button {
+    margin-left: auto;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.pet-card button:hover {
+    background-color: #2563eb;
+}
+
+/* 반려견 추가 카드 */
+.add-pet-card {
+    justify-content: center;
+    gap: 8px;
+    border: 2px dashed #6b7280;
+    border-color:  #6b7280;
+    opacity: 0.3;
+}
+
+.add-pet-card i {
+    font-size: 28px;
+    color:#6b7280;
+}
+
+.add-pet-card span {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* 반려견 호텔 예약 내역 */
+
+.mypage-reservations {
+    margin: 40px 0;
+}
+
+.mypage-reservations-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #d1d5db;   /* 회색 테두리 */
+    border-radius: 16px;          /* 둥근 모서리 */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 
+                0 10px 20px rgba(0,0,0,0.08);
+}
+
+.mypage-reservations-inner h3 {
+    margin-bottom: 16px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.mypage-reservations-inner table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.mypage-reservations-inner th, 
+.mypage-reservations-inner td {
+    padding: 12px 16px;
+    text-align: left;
+}
+
+.mypage-reservations-inner thead {
+    background: #f3f4f6;
+    color: #374151;
+    font-weight: 600;
+}   
+
+/* tr 마다 카드 느낌 */
+.mypage-reservations-inner tbody tr {
+    background: #ffffff;
+    margin-bottom: 8px;
+    display: table-row;
+    border-radius: 12px; /* td로 둥글게 처리 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* 좌우 모서리 둥글게 */
+.mypage-reservations-inner tbody tr td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.mypage-reservations-inner tbody tr td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* 호버 효과 */
+.mypage-reservations-inner tbody tr:hover {
+    background: #f9fafb;
+    transform: scale(1.01);
+    transition: 0.2s;
+}

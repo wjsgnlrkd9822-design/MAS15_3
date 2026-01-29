@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>반려견 호텔 예약</title>
+    <link rel="stylesheet" href="reservation.css">
+    
+    <!-- 공통 CSS -->
+    <th:block th:replace="~{fragments/linkreservation::link}"></th:block>
+    <th:block th:replace="~{fragments/link::link}"></th:block>
+</head>
+<body>
+
+    <!-- 헤더 -->
+    <th:block th:replace="~{fragments/header::header}"></th:block>
+
+    <div class="room-list">
+    <!-- rooms : Controller에서 전달한 List<HotelRoom> -->
+        <div class="reservation-card" th:each="room : ${rooms}">
+            <!-- 이미지 -->
+            <img th:src="@{'/img/' + ${room.img}}" class="room-image" th:alt="${room.roomType} + ' 이미지'">
+
+            <!-- 이미지 밑 텍스트 -->
+            <div class="room-info">
+                <p>객실 타입: <span th:text="${room.roomType}"></span></p>
+                <p>가격: <span th:text="${room.roomPrice}"></span></p>
+                <p>세부 사항: <span th:text="${room.etc}"></span></p>
+                <p>예약 상태: <span th:text="${room.active}"></span></p>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{fragments/footer::footer}"></th:block>
+
+<script src="script.js"></script>
+</body>
+</html>
+<!--  <img th:src="@{'/img/' + ${room.img}}" class="room-image" alt="객실 이미지"> -->
