@@ -1,0 +1,26 @@
+  body { background:#f5f6f8; }
+
+  .sidebar {
+    width:220px;
+    min-height:100vh;
+    background:#1e2a38;
+  }
+
+  .sidebar a {
+    color:#cfd8dc;
+    padding:12px 20px;
+    display:block;
+    text-decoration:none;
+  }
+
+  .sidebar a.active,
+  .sidebar a:hover {
+    background:#2f80ed;
+    color:#fff;
+  }
+
+  .content-box {
+    background:#fff;
+    padding:20px;
+    border:1px solid #dee2e6;
+  }
