@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aloha.project.mapper.HotelRoomMapper">
+
+    <!-- 객실 추가 -->
+    <insert id="insertHotelRoom" parameterType="com.aloha.project.dto.HotelRoom">
+        INSERT INTO hotelrooms (room_type, room_price, etc, active, img)
+        VALUES (#{roomType}, #{roomPrice}, #{etc}, #{active}, #{img})
+    </insert>
+
+    <!-- 객실 번호로 조회 -->
+    <select id="selectHotelRoomById" parameterType="long" resultType="com.aloha.project.dto.HotelRoom">
+        SELECT * FROM hotelrooms WHERE room_no = #{roomNo}
+    </select>
+
+    <!-- 모든 객실 조회 -->
+    <select id="selectAllHotelRooms" resultType="com.aloha.project.dto.HotelRoom">
+        SELECT * FROM hotelrooms
+    </select>
+
+    <!-- 객실 정보 수정 -->
+    <update id="updateHotelRoom" parameterType="com.aloha.project.dto.HotelRoom">
+        UPDATE hotelrooms
+        SET room_type = #{roomType},
+            room_price = #{roomPrice},
+            etc = #{etc},
+            active = #{active},
+            img = #{img}
+        WHERE room_no = #{roomNo}
+    </update>
+
+    <!-- 객실 삭제 -->
+    <delete id="deleteHotelRoom" parameterType="long">
+        DELETE FROM hotelrooms WHERE room_no = #{roomNo}
+    </delete>
+
+</mapper>

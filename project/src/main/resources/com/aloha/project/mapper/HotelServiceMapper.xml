@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aloha.project.mapper.HotelServiceMapper">
+
+    <!-- 전체 호텔 서비스 조회 -->
+    <select id="selectAllHotelServices" resultType="com.aloha.project.dto.HotelService">
+        SELECT service_no AS serviceNo,
+               service_name AS serviceName,
+               description,
+               service_price AS servicePrice
+        FROM hotelservices
+    </select>
+
+    <!-- 단일 서비스 조회 -->
+    <select id="selectHotelServiceById" parameterType="long" resultType="com.aloha.project.dto.HotelService">
+        SELECT service_no AS serviceNo,
+               service_name AS serviceName,
+               description,
+               service_price AS servicePrice
+        FROM hotelservices
+        WHERE service_no = #{serviceNo}
+    </select>
+
+    <!-- 서비스 추가 -->
+    <insert id="insertHotelService" parameterType="com.aloha.project.dto.HotelService">
+        INSERT INTO hotelservices (service_name, description, service_price)
+        VALUES (#{serviceName}, #{description}, #{servicePrice})
+    </insert>
+
+    <!-- 서비스 수정 -->
+    <update id="updateHotelService" parameterType="com.aloha.project.dto.HotelService">
+        UPDATE hotelservices
+        SET service_name = #{serviceName},
+            description = #{description},
+            service_price = #{servicePrice}
+        WHERE service_no = #{serviceNo}
+    </update>
+
+    <!-- 서비스 삭제 -->
+    <delete id="deleteHotelService" parameterType="long">
+        DELETE FROM hotelservices WHERE service_no = #{serviceNo}
+    </delete>
+
+</mapper>

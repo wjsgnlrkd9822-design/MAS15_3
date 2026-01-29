@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서비스 추가</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body { background-color: #f5f6f7; }
+.sidebar { width: 240px; background-color: #1f2933; color: #fff; }   
+.sidebar h5 { font-weight: 600; }
+.sidebar .nav-link { color: #cbd5e1; padding: 10px 14px; border-radius: 6px; }
+.sidebar .nav-link.active, .sidebar .nav-link:hover { background-color: #374151; color: #fff; }
+.header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 1rem; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="d-flex">
+
+    <!-- 사이드바 -->
+    <aside class="sidebar p-4 vh-100">
+        <h5 class="mb-4">관리자 페이지</h5>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link" href="ad_main.html">📊 매출 조회</a>
+            <a class="nav-link" href="ad_usermanage.html">👥 회원 관리</a>
+            <a class="nav-link" href="ad_service.html">⚙️ 서비스 및 시설 관리</a>
+            <a class="nav-link" href="ad_trainer.html">🏇 훈련사 관리</a>
+            <a class="nav-link" href="ad_notice.html">📝 공지사항</a>
+        </nav>
+    </aside>
+
+    <!-- 메인 영역 -->
+    <div class="flex-fill p-4">
+        <div class="header mb-4">서비스 추가</div>
+
+        <div class="card">
+            <div class="card-body">
+                <form action="/admin/services/add" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">서비스 이름</label>
+                        <input type="text" class="form-control" name="service_name" placeholder="예: 애견 미용" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">가격</label>
+                        <input type="number" class="form-control" name="service_price" placeholder="예: 30000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">서비스 설명</label>
+                        <textarea class="form-control" name="description" rows="4" placeholder="서비스 특징, 주의사항"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="ad_service.html" class="btn btn-secondary">목록으로</a>
+                        <button type="submit" class="btn btn-primary">등록하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
