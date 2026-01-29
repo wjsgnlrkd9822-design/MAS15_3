@@ -1,25 +1,171 @@
+.reservation-text {
+    font-size: 38px;       /* 글씨 크기, 필요하면 조절 */
+    font-weight: 150;     /* 글씨 두께 */
+    text-align: center;    /* 가로 중앙 정렬 */
+    margin: 30px 0 30px 0; /* 위쪽 40px, 아래쪽 20px 여백 */
+    color: #333;           /* 글씨 색상 */
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.room-list {
+    margin: 20px;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 가로 4개씩 */
+    gap: 15px; /* 카드 간격 20px로 넉넉하게 */
+    justify-items: center; /* 카드 중앙 정렬 */
+}
+
+
+.room-list a {
+    font-style: none;
+    color: inherit;
+    text-decoration: none;
+}
+
 .reservation-card {
     border: 1px solid #ddd;
     border-radius: 8px;
-    width: 250px;
-    margin: 10px;
-    padding: 10px;
-    text-align: center;
-    display: inline-block;
-    vertical-align: top;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 320px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: #fff;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.reservation-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .room-image {
     width: 100%;
-    height: 150px;
+    height: 200px;
     object-fit: cover;
     border-radius: 6px;
     margin-bottom: 10px;
+    transition: transform 0.5s;
+}
+
+.room-image:hover {
+    transform: scale(1.02);
 }
 
 .room-info p {
-    margin: 4px 0;
-    font-size: 14px;
+    margin: 10px 0;
     color: #333;
 }
+
+.room-type { 
+    font-size: 15px; 
+    font-weight: 500; 
+}
+
+.room-price { 
+    font-size: 16px; 
+    font-weight: 600; 
+    color: #222; 
+}
+
+.room-etc { 
+    font-size: 12px; 
+    color: #777; 
+}
+
+.room-active { 
+    font-size: 12px; 
+    color: black; 
+    text-decoration: underline;
+    font-weight: 450;
+}
+
+
+.reserve-btn {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 10px;
+    padding: 8px 12px;
+    width: 100%;
+    background-color: white;
+    border-color: #222;
+    color: #222;
+    border: 1.5px solid;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.reserve-btn:hover { 
+    background-color: #222; 
+    color: white;
+}
+
+/* ===== 필터 select 스타일 추가 ===== */
+.filter-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 140px;
+    position: relative;
+}
+
+.filter-select:hover,
+.filter-select:focus {
+    border-color: #222;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    outline: none;
+}
+
+/* select 화살표 커스텀 */
+.reservation-filter {
+    position: relative;
+}
+.filter-select-wrapper::after {
+    content: "▾";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #555;
+    font-size: 12px;
+}
+
+/* ===== 필터 적용 버튼 스타일 ===== */
+.filter-apply-btn {
+    padding: 6px 14px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    border-radius: 6px;
+    border: 0.1px solid;
+    border-color: #999;
+    background-color: white;
+    color: #222;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.filter-apply-btn:hover {
+    background-color: #222;
+    color: white;
+    transform: scale(1.05);
+}
+
+

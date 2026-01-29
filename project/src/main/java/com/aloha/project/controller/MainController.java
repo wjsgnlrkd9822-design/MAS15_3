@@ -1,18 +1,28 @@
 package com.aloha.project.controller;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import com.aloha.project.dto.HotelRoom; // ⚠️ 패키지명 프로젝트에 맞게 조정
+import com.aloha.project.dto.HotelRoom;
+import com.aloha.project.dto.HotelService;
+import com.aloha.project.service.HotelRoomService;
+import com.aloha.project.service.HotelServiceService;
+
+import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping // 루트 기준
+@RequiredArgsConstructor
 public class MainController {
+
+    private final HotelRoomService hotelRoomService;       // 객실 서비스 DI
+    private final HotelServiceService hotelServiceService; // 호텔 서비스 DI
 
     // 메인 페이지
     @GetMapping("/")
@@ -20,31 +30,67 @@ public class MainController {
         return "index";
     }
 
-    // 예약 페이지
+    // 예약 목록 페이지
     @GetMapping("/pet/reservation")
-    public String reservation(Model model) {
+    public String reservation(
+            Model model,
+            @RequestParam(name="sort", required=false, defaultValue="default") String sort,
+            @RequestParam(name="sizeType", required=false, defaultValue="all") String sizeType,
+            @RequestParam(name="status", required=false, defaultValue="all") String status) {
 
-        // ✅ 여러 객실 데이터를 임시 리스트로 생성
-        List<HotelRoom> rooms = new ArrayList<>();
+        // DB에서 전체 객실 가져오기
+        List<HotelRoom> rooms = hotelRoomService.getAllRooms();
 
-        rooms.add(new HotelRoom("101호", 110000, "대형견 이용 가능", "예약가능", "room_101.jpg"));
-        rooms.add(new HotelRoom("102호", 110000, "대형견 이용 가능", "예약가능", "room_102.jpg"));
-        rooms.add(new HotelRoom("103호", 110000, "대형견 이용 가능", "예약가능", "room_103.jpg"));
-        rooms.add(new HotelRoom("104호", 140000, "대형견 이용 가능 / 넓은 공간", "예약가능", "room_104.jpg"));
-        rooms.add(new HotelRoom("201호", 80000, "중형견 이용 가능", "예약가능", "room_201.jpg"));
-        rooms.add(new HotelRoom("202호", 80000, "중형견 이용 가능", "예약가능", "room_202.jpg"));
-        rooms.add(new HotelRoom("203호", 80000, "중형견 이용 가능", "예약가능", "room_203.jpg"));
-        rooms.add(new HotelRoom("204호", 100000, "중형견 이용 가능 / 넓은 공간", "예약가능", "room_204.jpg"));
-        rooms.add(new HotelRoom("205호", 100000, "중형견 이용 가능 / 넓은 공간", "예약가능", "room_205.jpg"));
-        rooms.add(new HotelRoom("301호", 50000, "소형견 이용 가능", "예약가능", "room_301.jpg"));
-        rooms.add(new HotelRoom("302호", 50000, "소형견 이용 가능", "예약가능", "room_302.jpg"));
-        rooms.add(new HotelRoom("303호", 50000, "소형견 이용 가능", "예약가능", "room_303.jpg"));
-        rooms.add(new HotelRoom("304호", 70000, "소형견 이용 가능 / 넓은 공간", "예약가능", "room_304.jpg"));
-        rooms.add(new HotelRoom("305호", 70000, "소형견 이용 가능 / 넓은 공간", "예약가능", "room_305.jpg"));
+        // 강아지 타입 필터링
+        if (!"all".equals(sizeType)) {
+            rooms = rooms.stream()
+                    .filter(r -> r.getEtc().contains(sizeType))
+                    .collect(Collectors.toList());
+        }
 
-        // ✅ Thymeleaf에 리스트 전달
+        // 예약 상태 필터링
+        if (!"all".equals(status)) {
+            rooms = rooms.stream()
+                    .filter(r -> r.getActive().equals(status))
+                    .collect(Collectors.toList());
+        }
+
+        // 가격순 정렬
+        if ("priceAsc".equals(sort)) {
+            rooms = rooms.stream()
+                    .sorted(Comparator.comparingInt(HotelRoom::getRoomPrice))
+                    .collect(Collectors.toList());
+        } else if ("priceDesc".equals(sort)) {
+            rooms = rooms.stream()
+                    .sorted(Comparator.comparingInt(HotelRoom::getRoomPrice).reversed())
+                    .collect(Collectors.toList());
+        }
+
         model.addAttribute("rooms", rooms);
+        model.addAttribute("selectedSort", sort);
+        model.addAttribute("selectedSizeType", sizeType);
+        model.addAttribute("selectedStatus", status);
 
         return "pet/reservation";
+    }
+
+    // 예약 상세 페이지 (roomNo 기준)
+    @GetMapping("/pet/reservation/{roomNo}")
+    public String reservationDetail(@PathVariable Long roomNo, Model model) {
+
+        // DB에서 roomNo 기준 객실 가져오기
+        HotelRoom selectedRoom = hotelRoomService.getRoom(roomNo);
+
+        if (selectedRoom == null) {
+            return "redirect:/pet/reservation"; // 없으면 리스트로
+        }
+
+        model.addAttribute("room", selectedRoom);
+
+        // 호텔 서비스 목록 추가
+        List<HotelService> roomServiceList = hotelServiceService.getAllServices();
+        model.addAttribute("roomServiceList", roomServiceList);
+
+        return "pet/reservation-detail";
     }
 }

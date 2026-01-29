@@ -19,5 +19,6 @@ public interface UserMapper {
 
     // 회원 권한 등록
     public int insertAuth(UserAuth userAuth) throws Exception;
+
     
 }
