@@ -38,52 +38,7 @@ public class HomeController {
         return "login/join";
     }
 
-    /**
-     * 회원 가입 처리
-     * [POST] - /join
-     * ➡   ⭕ /login
-     *      ❌ /join?error
-     * @param user
-     * @return
-     * @throws Exception
-     */
-    @PostMapping("/join")
-    public String joinPro(User user) throws Exception {
-        log.info(":::::::::: 회원 가입 처리 ::::::::::");
-        log.info("user : " + user);
-
-        int result = userService.join(user);
-
-        if( result > 0 ) {
-            return "redirect:/login";
-        }
-				return "redirect:/join?error";
-        
-    }
-
-
-    /**
-     * 아이디 중복 검사
-     * @param username
-     * @return
-     * @throws Exception
-     */
-    @ResponseBody
-    @GetMapping("/check/{username}")
-    public ResponseEntity<Boolean> userCheck(@PathVariable("username") String username) throws Exception {
-        log.info("아이디 중복 확인 : " + username);
-        User user = userService.select(username);
-        // 아이디 중복
-        if( user != null ) {
-            log.info("중복된 아이디 입니다 - " + username);
-            return new ResponseEntity<>(false, HttpStatus.OK);
-        }
-        // 사용 가능한 아이디입니다.
-        log.info("사용 가능한 아이디 입니다." + username);
-        return new ResponseEntity<>(true, HttpStatus.OK);
-    }
-    
-
+   
     /**
      * 로그인 화면
      * [GET] - /login

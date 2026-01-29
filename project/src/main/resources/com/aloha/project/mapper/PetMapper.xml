@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    <mapper namespace="com.aloha.project.mapper.PetMapper">
+    
+        <resultMap id="PetMap" type="Pet"> <!-- com.aloha.project.dto.Pet  -->
+            <id property="no" column="no"/>
+            <result property="ownerNo" column="owner_no"/>
+            <result property="name" column="name"/>
+            <result property="profileImg" column="profile_img" jdbcType="BLOB"/>
+            <result property="species" column="species"/>
+            <result property="size" column="size"/>
+            <result property="age" column="age"/>
+            <result property="weight" column="weight"/>
+            <result property="gender" column="gender"/>
+            <result property="neutered" column="neutered"/> 
+            <result property="vaccination" column="vaccination"/>
+            <result property="certificateFile" column="certificate_file" jdbcType="BLOB"/>
+            <result property="ect" column="ect"/>
+            <result property="createdAt" column="created_at"/>
+            <result property="updatedAt" column="updated_at"/>
+        </resultMap>
+
+        <!-- 반려견 등록 -->
+        <insert id="insert" useGeneratedKeys="true" keyProperty="no">
+            INSERT INTO pets ( owner_no, name, profile_img, species, size, age, weight, gender, neutered, vaccination, certificate_file, ect )
+            VALUES ( #{ownerNo}, #{name}, #{profileImg, jdbcType=BLOB}, #{species}, #{size}, #{age}, #{weight}, #{gender}, #{neutered}, #{vaccination}, #{certificateFile, jdbcType=BLOB}, #{ect} )
+        </insert>
+
+
+        <!-- 반려견 번호로 조회 -->
+        <select id="select" resultMap="PetMap">
+            SELECT * FROM pets WHERE no = #{no}
+        </select>
+
+        <!-- ownerNo 기준 리스트 조회 -->
+        <select id="selectPetsByOwnerNo" resultMap="PetMap">
+            SELECT * FROM pets WHERE owner_no = #{ownerNo}
+        </select>
+
+
+        <!-- 반려견 정보 수정 -->
+        <update id="updatePet">
+          UPDATE pets
+          <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="profileImg != null">profile_img = #{profileImg, jdbcType=BLOB},</if>
+            <if test="species != null">species = #{species},</if>
+            <if test="size != null">size = #{size},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="neutered != null">neutered = #{neutered},</if>
+            <if test="vaccination != null">vaccination = #{vaccination},</if>
+            <if test="certificateFile != null">certificate_file = #{certificateFile, jdbcType=BLOB},</if>
+            <if test="ect != null">ect = #{ect},</if> 
+            updated_at = CURRENT_TIMESTAMP
+          </set>
+            WHERE no = #{no}
+        </update>
+
+        <!-- 반려견 삭제 -->
+        <delete id="delete">
+            DELETE FROM pets WHERE no = #{no}
+        </delete>   
+
+
+  </mapper>

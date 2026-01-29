@@ -57,20 +57,17 @@
     <update id="update">
       UPDATE users
       <set>
-        <if test="password != null">
-          password = #{password},
-        </if>
-        <if test="name != null">
-          address = #{address},
-        </if>
-        <if test="email != null">
+        <if test="birth != null">
           birth = #{birth},
         </if>
         <if test="email != null">
           email = #{email},
         </if>
-        <if test="email != null">
+        <if test="phone != null">
           phone = #{phone},
+        </if>
+        <if test="address != null">
+          address = #{address},
         </if>
       </set>
       WHERE username = #{username}
