@@ -64,4 +64,9 @@ public class CustomUser implements UserDetails {
         return user.getEnabled() == 0 ? false : true;
     }
     
+    // 사용자 번호 반환
+    public Long getNo() {
+        return user.getNo();
+    }
+    
 }

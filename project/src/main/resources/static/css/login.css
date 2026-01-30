@@ -1,0 +1,40 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.login-header {
+    display:flex;
+    justify-content: center;
+    margin: 40px 0;
+}
+
+.login-header-inner {
+    width: 100%;
+    max-width: 500px;
+    padding: 32px 40px;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;  
+    border-radius: 16px;
+
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        0 10px 20px rgba(0, 0, 0, 0.08);
+
+    text-align: center;
+}
+
+.login-header-inner h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #111827;
+}
+
+.no-count {
+    color: #BABABA;
+}
+

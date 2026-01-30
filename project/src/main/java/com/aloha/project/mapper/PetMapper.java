@@ -23,5 +23,7 @@ public interface PetMapper {
 
     // ownerNo 기준 리스트 조회
     public List<Pet> selectPetsByOwnerNo(Long ownerNo) throws Exception;
+
+    Pet selectPetImage(Long petNo) throws Exception;
     
 }

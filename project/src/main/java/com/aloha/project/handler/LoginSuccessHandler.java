@@ -24,8 +24,8 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
     
     /**
      * 로그인 성공 시 호출되는 메소드
-     * 🍪 아이디 저장 쿠키 생성
-     * 🔐 로그인 후 이전 페이지로 리다이렉트
+     * 아이디 저장 쿠키 생성
+     * 로그인 후 이전 페이지로 리다이렉트
      */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request
@@ -34,18 +34,18 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 
 
       log.info("로그인 성공...");
-      // 🍪 아이디 저장
-      String rememberId = request.getParameter("remember-id"); // ✅ 아이디 저장 체크 여부
-      String username = request.getParameter("username");      // 👩‍💼 아이디
+      // 아이디 저장 o
+      String rememberId = request.getParameter("remember-id"); // 아이디 저장 체크 여부
+      String username = request.getParameter("username");      // 아이디
 
-      // 아이디 저장 체크 ✅
+      // 아이디 저장 체크 x
       if( rememberId != null && rememberId.equals("on") ) {
         Cookie cookie = new Cookie("remember-id", username); // 쿠키에 아이디 등록
         cookie.setMaxAge(60 * 60 * 24 * 7);                        // 유효기간 : 7일
         cookie.setPath("/");
         response.addCookie(cookie);
       }
-      // 아이디 저장 체크 ❌
+      // 아이디 저장 체크 
       else {
         Cookie cookie = new Cookie("remember-id", username); // 쿠키에 아이디 등록
         cookie.setMaxAge(0);                        // 유효기간 : 0 (만료➡삭제)
