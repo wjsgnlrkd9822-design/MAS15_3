@@ -153,9 +153,10 @@ CREATE TABLE `user_auth` (
 DROP TABLE IF EXISTS `trainers`;
 CREATE Table `trainers`(
     `trainer_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '트레이너 번호',
-    `name` VARCHAR(50) NOT NULL COMMENT '트레이너 이름',
+    `trainer_name` VARCHAR(50) NOT NULL COMMENT '트레이너 이름',
     `detail` TEXT NOT NULL COMMENT '트레이너 소개',
     `gender` VARCHAR(10) NOT NULL COMMENT '트레이너 성별',
+    `img` VARCHAR(255) DEFAULT NULL COMMENT '트레이너 이미지',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '등록일자'
 );
 

@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="_csrf" th:content="${_csrf.token}">
+<meta name="_csrf_header" th:content="${_csrf.headerName}">
 <title>훈련사 수정</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +23,7 @@ body { background-color: #f5f6f7; }
     <!-- 사이드바 -->
     <aside class="sidebar p-4 vh-100">
         <h5 class="mb-4">관리자 페이지</h5>
-       <nav class="nav flex-column gap-1">
+      <nav class="nav flex-column gap-1">
             <a class="nav-link" th:href="@{/admin}">📊 매출 조회</a>
             <a class="nav-link" th:href="@{/admin/usermanage}">👥 회원 관리</a>
             <a class="nav-link" th:href="@{/admin/service}">⚙️ 서비스 및 시설 관리</a>
@@ -36,30 +38,46 @@ body { background-color: #f5f6f7; }
 
         <div class="card">
             <div class="card-body">
-                <form action="/admin/trainer/update" method="post">
-                    <!-- 기존 데이터 hidden으로 전달 -->
-                    <input type="hidden" name="trainer_no" value="<!-- trainer_no -->">
-
+                <form id="trainerForm" action="/admin/trainerupdate" method="put">
+                    <!-- DB에서 불러온 trainer_no hidden -->    
+                    <input type="hidden" name="trainerNo" th:value="${trainer.trainerNo}" id="trainerNo">   
                     <div class="mb-3">
                         <label class="form-label">훈련사 이름</label>
-                        <input type="text" class="form-control" name="trainer_name" value="홍길동" required>
+                        <input type="text" class="form-control" id="trainerName"  name="trainerName " th:value="${trainer.trainerName}" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">성별</label>
-                        <select class="form-select" name="gender" required>
-                            <option value="남" selected>남</option>
-                            <option value="여">여</option>
+                        <select class="form-select" name="gender" id="gender" required>
+                            <option value="">선택</option>
+                            <option value="남" th:selected="${trainer.gender == '남'}">남</option>
+                            <option value="여" th:selected="${trainer.gender == '여'}">여</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">세부사항</label>
-                        <textarea class="form-control" name="description" rows="4">경력: 5년, 전문: 애견 훈련</textarea>
+                        <textarea class="form-control" name="description" rows="4" id="description" th:text="${trainer.detail}"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">트레이너 이미지</label>
+                        <input type="file"
+                                class="form-control"
+                                name="imgFile"
+                                accept="image/*">
+                                <!-- 기존 이미지 표시 -->
+                                    <div class="mt-2">
+                                        <small class="text-muted">기존 이미지:</small><br>
+                                        <img th:if="${trainer.img != null}" 
+                                            th:src="@{'/uploads/' + ${trainer.img}}" 
+                                            alt="기존 이미지" 
+                                            style="width:200px; height:auto; border:1px solid #ddd; padding:2px; border-radius:4px;">
+                                    </div>
+                                </div>
+
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="ad_trainer.html" class="btn btn-secondary">목록으로</a>
-                        <button type="submit" class="btn btn-primary">저장</button>
-                        <button type="button" class="btn btn-danger" onclick="if(confirm('정말 삭제하시겠습니까?')) { location.href='/admin/trainer/delete?trainer_no=<!-- trainer_no -->'; }">삭제</button>
+                        <button type="button" class= "btn btn-danger" onclick="actiondelete()">삭제하기</button>
+                        <button type="submit" class="btn btn-primary">수정하기</button>
                     </div>
                 </form>
             </div>
@@ -67,6 +85,84 @@ body { background-color: #f5f6f7; }
     </div>
 
 </div>
+<script>
+    const trainerNo = document.getElementById("trainerNo").value;
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+document.getElementById("trainerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const form = e.target;
+
+    let imgFileName = null;
+
+    // 1️⃣ 이미지 업로드
+    const imgInput = form.querySelector('input[name="imgFile"]');
+    if (imgInput.files.length > 0) {
+        const imgForm = new FormData();
+        imgForm.append("imgFile", imgInput.files[0]);
+
+        const res = await fetch("/admin/upload", {
+            method: "POST",
+            headers: { [csrfHeader]: csrfToken },
+            body: imgForm
+        });
+        
+        if (!res.ok) {
+            alert("이미지 업로드 실패");
+            return;
+        }
+
+        imgFileName = await res.text();
+    }
+
+    const data = {
+        trainerName: document.getElementById("trainerName").value,
+        gender : document.getElementById("gender").value,
+        detail : document.getElementById("description").value,
+        img: imgFileName
+    }
+    const response = await fetch(`/admin/trainerupdate/${trainerNo}`,{
+        method:"PUT",
+        headers : {
+            "Content-Type": "application/json",
+            [csrfHeader]: csrfToken
+        },
+        body: JSON.stringify(data)
+    })
+        const result = await response.text();
+
+        if (result === "SUCCESS"){
+            alert("수정되었습니다.")
+            window.location.href = "/admin/trainer";
+        }else{
+                alert("수정 실패 : " + result); 
+            }
+
+        });
+        async function actiondelete() {
+            if( !confirm("정말로 삭제하시겠습니까")) return;
+            try {
+                const response = await fetch(`/admin/trainer/delete/${trainerNo}`,{
+                method: "DELETE",
+                headers: {
+                    [csrfHeader]: csrfToken
+                }
+            });
+            const result = await response.text();
+            if (result === "SUCCESS") {
+                alert("훈련사가 성공적으로 삭제되었습니다.");
+                window.location.href = "/admin/trainer";
+            } else {
+                alert("삭제 실패 : " + result);
+            }
+        } catch (error) {
+            console.error("Error deleting trainer:", error);
+        }
+            
+        }
+
+
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

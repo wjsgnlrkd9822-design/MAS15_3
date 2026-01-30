@@ -13,7 +13,7 @@
     <select id="select" resultType="HotelService" >
         SELECT *
         FROM hotelservices
-        WHERE service_no = #{service_no}      
+        WHERE service_no = #{serviceNo}      
     </select>
 
 
@@ -29,12 +29,12 @@
         <if test="servicePrice != null"> service_price = #{servicePrice}, </if>
         <if test="description != null"> description = #{description} </if>
       </set>
-      WHERE service_no = #{service_no}  
+      WHERE service_no = #{serviceNo}  
     </update>
 
     <delete id="delete">
       DELETE FROM hotelservices
-      WHERE service_no = #{service_no}
+      WHERE service_no = #{serviceNo}
     </delete>
 
 </mapper>

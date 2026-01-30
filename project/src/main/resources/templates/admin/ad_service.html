@@ -102,18 +102,17 @@ body { background-color: #f5f6f7; }
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>애견 미용</td>
-                                <td>30,000원</td>
+                            <tr th:each="service : ${serviceList}">
+                                <td th:text="${service.serviceName}">서비스명</td>
+                                <td th:text="${#numbers.formatInteger(service.servicePrice, 3, 'COMMA')} + '원'">가격</td>
                                 <td>
-                                    <a href="ad_serviceupdate.html" class="btn btn-outline-primary btn-sm">수정</a>
+                                    <a th:href="@{/admin/serviceupdate(serviceNo=${service.serviceNo})}" class="btn btn-outline-primary btn-sm">수정    
+                                    </a>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>산책 서비스</td>
-                                <td>10,000원</td>
-                                <td>
-                                    <a href="ad_serviceupdate.html" class="btn btn-outline-primary btn-sm">수정</a>
+                            <tr th:if="${#lists.isEmpty(serviceList)}">
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    등록된 서비스가 없습니다.
                                 </td>
                             </tr>
                         </tbody>
