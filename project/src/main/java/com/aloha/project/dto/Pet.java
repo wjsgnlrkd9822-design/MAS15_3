@@ -1,6 +1,9 @@
 package com.aloha.project.dto;
 
+import java.util.Base64;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import groovy.transform.builder.Builder;
 import lombok.AllArgsConstructor;
@@ -28,5 +31,20 @@ public class Pet {
     private Date createdAt;        // 생성일시
     private Date updatedAt;        // 수정일시
 
-    
+    // JSON 직렬화용 Base64 필드
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getProfileImgBase64() {
+        if (profileImg != null && profileImg.length > 0) {
+            return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(profileImg);
+        }
+        return null;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getCertificateFileBase64() {
+        if (certificateFile != null && certificateFile.length > 0) {
+            return Base64.getEncoder().encodeToString(certificateFile);
+        }
+        return null;
+    }
 }

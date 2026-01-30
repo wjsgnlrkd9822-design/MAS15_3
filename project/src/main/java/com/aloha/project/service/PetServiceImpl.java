@@ -7,6 +7,7 @@ import com.aloha.project.dto.Pet;
 import com.aloha.project.mapper.PetMapper;
 import com.aloha.project.mapper.UserMapper; // 로그인 UUID → ownerNo 조회용
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -47,5 +48,16 @@ public class PetServiceImpl implements PetService {
         return petMapper.delete(no);
     }
 
+    // ownerNo로 반려견 목록 조회
+    @Override
+    public List<Pet> selectPetsByOwnerNo(Long ownerNo) throws Exception {
+        return petMapper.selectPetsByOwnerNo(ownerNo);
+    }
+
+    @Override
+    public Pet selectPetImage(Long petNo) throws Exception {
+        return petMapper.selectPetImage(petNo);
+
+    }
 
 }

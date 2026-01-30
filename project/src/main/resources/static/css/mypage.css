@@ -162,6 +162,11 @@ html, body {
     background-color: #2563eb;
 }
 
+/* 반려견 왼쪽 여백 */
+.pet-image-container {
+  margin-right: 30px;  
+}
+
 /* 반려견 추가 카드 */
 .add-pet-card {
     justify-content: center;

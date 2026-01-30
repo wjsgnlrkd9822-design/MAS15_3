@@ -58,17 +58,19 @@ public class UserApiController {
      * [GET] - /api/users/check/{username}
      */
     @GetMapping("/check/{username}")
-    public ResponseEntity<Boolean> userCheck(@PathVariable String username) throws Exception {
+    public ResponseEntity<Boolean> userCheck(@PathVariable("username") String username) throws Exception {
         log.info("아이디 중복 확인 : " + username);
         User user = userService.select(username);
-        // 아이디 중복
-        if( user != null ) {
-            log.info("중복된 아이디 입니다 - " + username);
-            return new ResponseEntity<>(false, HttpStatus.OK);
+        
+        // 사용 가능한 아이디 (user가 null이면 사용 가능)
+        if (user == null) {
+            log.info("사용 가능한 아이디 입니다: " + username);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         }
-        // 사용 가능한 아이디입니다.
-        log.info("사용 가능한 아이디 입니다." + username);
-        return new ResponseEntity<>(user == null, HttpStatus.OK);
+        
+        // 중복된 아이디
+        log.info("중복된 아이디 입니다: " + username);
+        return new ResponseEntity<>(false, HttpStatus.OK);
     }
 
 

@@ -1,4 +1,4 @@
--- Active: 1767840691076@@127.0.0.1@3306@aloha
+-- Active: 1767840807398@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 
@@ -47,7 +47,7 @@ create Table `pets`(
     `no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '반려견 번호',
     `owner_no` BIGINT NOT NULL COMMENT  '반려견 주인 번호',
     `name` VARCHAR(50) NOT NULL COMMENT '반려견 이름',
-    `profile_img` LONGBLOB DEFAULT NULL COMMENT '프로필 이미지',
+    `profile_img` VARCHAR() DEFAULT NULL COMMENT '프로필 이미지',
     `species` VARCHAR(50) NOT NULL COMMENT '반려견 종',
     `size` VARCHAR(20) NOT NULL COMMENT '반려견 크기',
     `age` INT NOT NULL COMMENT '반려견 나이',
