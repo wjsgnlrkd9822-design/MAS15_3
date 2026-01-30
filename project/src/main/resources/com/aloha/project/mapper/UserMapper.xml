@@ -72,5 +72,14 @@
       </set>
       WHERE username = #{username}
     </update>
+    <delete id="delete"> 
+      DELETE FROM users
+      WHERE id = #{id}
+    </delete>
 
+    <select id="list" resultMap="UserMap">
+        SELECT *
+        FROM users
+        ORDER BY no ASC
+      </select>
   </mapper>

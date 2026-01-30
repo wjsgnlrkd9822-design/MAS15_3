@@ -36,7 +36,7 @@ body { background-color: #f5f6f7; }
 
         <!-- 추가 버튼 -->
         <div class="mb-3 text-end">
-            <a href="ad_trainerinsert.html" class="btn btn-primary btn-sm">훈련사 추가</a>
+            <a th:href="@{/admin/trainerinsert}" class="btn btn-primary btn-sm">훈련사 추가</a>
         </div>
 
         <!-- 목록 테이블 -->
@@ -51,27 +51,16 @@ body { background-color: #f5f6f7; }
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>홍길동</td>
-                            <td>남</td>
+                        <tr th:each="trainer : ${trainerList}">
+                            <td th:text="${trainer.trainerName}"></td>
+                            <td th:text="${trainer.gender}"></td>
                             <td>
                                 <!-- 수정 버튼 클릭 시 수정 페이지로 이동 -->
-                                <a href="ad_trainerupdate.html" class="btn btn-outline-primary btn-sm">수정</a>
+                                <a th:href="@{/admin/trainerupdate(trainerNo=${trainer.trainerNo})}" class="btn btn-outline-primary btn-sm">수정</a>
                             </td>
                         </tr>
-                        <tr>
-                            <td>김영희</td>
-                            <td>여</td>
-                            <td>
-                                <a href="ad_trainerupdate.html" class="btn btn-outline-primary btn-sm">수정</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>이철수</td>
-                            <td>남</td>
-                            <td>
-                                <a href="ad_trainerupdate.html" class="btn btn-outline-primary btn-sm">수정</a>
-                            </td>
+                         <tr th:if="${#lists.isEmpty(trainerList)}">
+                            <td colspan="3" class="text-center">등록된 훈련사가 없습니다.</td>          
                         </tr>
                     </tbody>
                 </table>

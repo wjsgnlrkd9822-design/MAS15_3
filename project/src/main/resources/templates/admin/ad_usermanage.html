@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>회원 관리</title>
 
     <!-- Bootstrap -->
@@ -73,33 +75,50 @@
             <div class="card-body py-2">
                 
                 <!-- 회원 1 -->
-                <div class="row text-center align-middle py-2 border-bottom">
-                    <div class="col">홍길동</div>
-                    <div class="col">hong@test.com</div>
-                    <div class="col">010-1234-5678</div>
-                    <div class="col">2026-01-15</div>
+                <div class="row text-center align-middle py-2 border-bottom"
+                th:each= "user : ${userList}">
+                    <input type="hidden" th:value="${user.getId()}" id="userId">
+                    <div class="col" th:text="${user.getName()}"></div>
+                    <div class="col" th:text="${user.getEmail()}"></div>
+                    <div class="col" th:text="${user.getPhone()}"></div>
+                    <div class="col" th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></div>
                     <div class="col">
-                        <button class="btn btn-sm btn-danger">삭제</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteaction()">삭제</button>
                     </div>
                 </div>
-
-                <!-- 회원 2 -->
-                <div class="row text-center align-middle py-2">
-                    <div class="col">김철수</div>
-                    <div class="col">kim@test.com</div>
-                    <div class="col">010-9876-5432</div>
-                    <div class="col">2026-01-12</div>
-                    <div class="col">
-                        <button class="btn btn-sm btn-danger">삭제</button>
+                <div th:if="${#lists.isEmpty(userList)}" class="row text-center align-middle py-2 border-bottom">
+                    <div class="col-12">등록된 회원이 없습니다.</div>
                     </div>
                 </div>
-
             </div>
         </div>
 
     </div>
 </div>
 <script>
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+async function deleteaction(){
+    if(!confirm("회원 삭제하시겠습니까?")) return;
+
+    const userId = document.getElementById("userId").value;
+    try {
+    const response = await fetch(`/admin/user/delete/${userId}`,{
+        method: 'DELETE',
+        headers :{[csrfHeader]: csrfToken}
+           });
+            if(response.ok){
+        alert("회원이 삭제되었습니다.");
+        location.reload();
+    } else {
+        alert("회원 삭제에 실패했습니다.");
+    }
+    } 
+    catch (error){
+        console.error('Error:', error);
+        alert("오류가 발생했습니다.");                                                              
+    }
+ }
 
 </script>
 

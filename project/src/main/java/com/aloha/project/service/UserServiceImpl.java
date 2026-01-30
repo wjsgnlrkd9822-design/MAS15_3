@@ -1,5 +1,7 @@
 package com.aloha.project.service;
 
+import java.util.List;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -95,5 +97,18 @@ public class UserServiceImpl implements UserService {
     public int insertAuth(UserAuth userAuth) throws Exception {
         int result = userMapper.insertAuth(userAuth);
         return result;
+    }
+
+    @Override
+    public int delete(String id) throws Exception {
+        int result = userMapper.delete(id);
+        return result;
+    }
+
+    @Override
+    public List<User> list() throws Exception {
+        List<User> users = userMapper.list();
+        return users;
+
     }
 }

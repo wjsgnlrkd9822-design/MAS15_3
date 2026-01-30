@@ -1,5 +1,7 @@
 package com.aloha.project.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.aloha.project.dto.User;
@@ -20,5 +22,7 @@ public interface UserMapper {
     // 회원 권한 등록
     public int insertAuth(UserAuth userAuth) throws Exception;
 
-    
+    public int delete(String id) throws Exception;
+
+    List<User> list() throws Exception;
 }

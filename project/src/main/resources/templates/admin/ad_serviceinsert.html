@@ -41,13 +41,13 @@ body { background-color: #f5f6f7; }
                 <form action="/admin/serviceadd" method="post" id="serviceForm" >
                     <div class="mb-3">
                         <label class="form-label">서비스 이름</label>
-                        <input type="text" class="form-control" name="service_name"
-                        id="service_name" placeholder="예: 애견 미용" required>
+                        <input type="text" class="form-control" name="serviceName"
+                        id="serviceName" placeholder="예: 애견 미용" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">가격</label>
-                        <input type="number" class="form-control" name="service_price" 
-                        id="service_price"   placeholder="예: 30000" required>
+                        <input type="number" class="form-control" name="servicePrice" 
+                        id="servicePrice"   placeholder="예: 30000" required>
 
                     </div>
                     <div class="mb-3">
@@ -75,8 +75,8 @@ body { background-color: #f5f6f7; }
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
     const data = {
-        service_name: document.getElementById('service_name').value,
-        service_price: parseInt(document.getElementById('service_price').value),
+        serviceName: document.getElementById('serviceName').value,
+        servicePrice: parseInt(document.getElementById('servicePrice').value),
         description: document.getElementById('description').value
     };
 

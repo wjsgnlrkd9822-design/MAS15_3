@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.aloha.project.mapper.TrainerMapper">
+
+
+<select id="list" resultType="Trainer">
+    SELECT *
+    FROM trainers
+    ORDER BY trainer_no ASC 
+</select>
+<select id="select" resultType="Trainer">
+    SELECT *
+    FROM trainers
+    WHERE trainer_no = #{trainerNo}
+</select>
+
+<insert id="insert" >
+    INSERT INTO trainers ( trainer_name, detail, gender, img)
+    VALUES ( #{trainerName}, #{detail}, #{gender}, #{img})
+</insert>
+
+
+<update id="update">
+  UPDATE trainers
+  <set>
+    <if test="trainerName != null"> trainer_name = #{trainerName}, </if>
+    <if test="detail != null"> detail = #{detail}, </if>
+    <if test="gender != null"> gender = #{gender}, </if>                                          
+    <if test="img != null"> img = #{img}, </if>  
+     
+    </set>
+    WHERE trainer_no = #{trainerNo}
+</update>
+
+<delete id="delete">
+  DELETE FROM trainers
+  WHERE trainer_no = #{trainerNo}
+</delete>
+</mapper>

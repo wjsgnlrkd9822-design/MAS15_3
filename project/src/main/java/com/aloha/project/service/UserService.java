@@ -1,5 +1,7 @@
 package com.aloha.project.service;
 
+import java.util.List;
+
 import com.aloha.project.dto.User;
 import com.aloha.project.dto.UserAuth;
 
@@ -21,5 +23,9 @@ public interface UserService {
 
     // 회원 권한 등록
     public int insertAuth(UserAuth userAuth) throws Exception;
+
+    public int delete(String id) throws Exception;
+    
+    List<User> list() throws Exception;
     
 }
