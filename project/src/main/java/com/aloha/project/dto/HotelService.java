@@ -14,5 +14,5 @@ public class HotelService {
     private String description;   // 서비스 설명
     private int servicePrice;     // 서비스 가격
 
-    public HotelService() {}
+  
 }

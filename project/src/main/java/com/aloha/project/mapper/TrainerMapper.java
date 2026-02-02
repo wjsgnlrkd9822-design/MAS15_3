@@ -10,9 +10,9 @@ import com.aloha.project.dto.Trainer;
 public interface TrainerMapper {
     
 
-    List<Trainer> list() throws Exception;
-    Trainer select(Long trainerNo) throws Exception;
-    int insert(Trainer trainer) throws Exception;       
-    int update(Trainer trainer) throws Exception;   
-    int delete(Long trainerNo) throws Exception;
+    public List<Trainer> list() throws Exception;
+    public Trainer select(Long trainerNo) throws Exception;
+    public int insert(Trainer trainer) throws Exception;       
+    public int update(Trainer trainer) throws Exception;   
+    public int delete(Long trainerNo) throws Exception;
 }
