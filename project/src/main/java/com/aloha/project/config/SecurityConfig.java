@@ -52,7 +52,7 @@ public class SecurityConfig {
     // 인가 설정
     http.authorizeHttpRequests(auth -> auth
                               .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")  
-                              .requestMatchers("/**").permitAll()   // 전체 허용
+                              .requestMatchers("/**", "/login", "/join", "/findId", "/api/users/findIdCheck").permitAll()   // 전체 허용
                               );
     // 폼 로그인 설정
     http.formLogin(login -> login
