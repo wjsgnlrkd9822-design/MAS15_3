@@ -7,32 +7,32 @@ async function loadPetCards() {
         const response = await fetch('/api/pets/list', {
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         console.log("API 응답 상태:", response.status);
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             console.error('반려견 API 응답 에러:', response.status, errorText);
             throw new Error('반려견 목록 조회 실패: ' + response.status);
         }
-        
+
         const data = await response.json();
         console.log("반려견 데이터:", data);
-        
+
         const container = document.getElementById('petCardsContainer');
         if (!container) {
             console.error("petCardsContainer 엘리먼트를 찾을 수 없습니다!");
             return;
         }
-        
+
         container.innerHTML = '';
-        
+
         if (data.success && data.pets && data.pets.length > 0) {
             console.log("반려견 수:", data.pets.length);
             data.pets.forEach(pet => {
                 const genderIcon = pet.gender === '수컷' ? '♂' : '♀';
                 const neuteredStatus = pet.neutered === '예' ? 'O' : 'X';
-                
+
                 const petCard = document.createElement('div');
                 petCard.className = 'pet-card';
                 petCard.innerHTML = `
@@ -64,13 +64,10 @@ async function loadPetCards() {
 
 
 
-
-
-
 /* 반려견 상세보기 - 모달 열기 및 데이터 로드 */
 async function viewPetDetail(petNo) {
     console.log(`반려견 상세정보 조회 시작... petNo: ${petNo}`);
-    
+
     const modalEl = document.getElementById('addPetModal');
     if (!modalEl) {
         console.error("addPetModal 엘리먼트를 찾을 수 없습니다!");
@@ -81,9 +78,9 @@ async function viewPetDetail(petNo) {
         // API에서 반려견 상세 정보 조회
         console.log(` GET /api/pets/${petNo} 요청 중...`);
         const res = await fetch(`/api/pets/${petNo}`);
-        
+
         console.log(`응답 상태: ${res.status} ${res.statusText}`);
-        
+
         if (!res.ok) {
             const errorText = await res.text();
             console.error(`상세정보 조회 실패:`, {
@@ -166,7 +163,7 @@ function setupAddPetForm() {
         console.error("반려견 추가 폼을 찾을 수 없습니다.");
         return;
     }
-    
+
     // 이전 리스너 제거 (중복 방지)
     form.removeEventListener("submit", handleFormSubmit);
     form.addEventListener("submit", handleFormSubmit);
@@ -180,7 +177,7 @@ async function handleFormSubmit(e) {
     const form = document.getElementById("addPetForm");
     const formData = new FormData(form);
     const petNo = document.getElementById('petNo')?.value;
-    
+
     // FormData 로깅
     console.log("폼 데이터:");
     for (let [key, value] of formData.entries()) {
@@ -196,7 +193,7 @@ async function handleFormSubmit(e) {
 
     try {
         const url = isUpdate ? "/api/pets/update" : "/api/pets/add";
-        
+
         // CSRF 토큰 확인
         if (!csrfToken) {
             console.error("CSRF 토큰이 없습니다!");
@@ -211,7 +208,7 @@ async function handleFormSubmit(e) {
         console.log(`  URL: ${url}`);
         console.log(`  Method: POST`);
         console.log(`  CSRF Header: ${csrfHeader}`);
-        
+
         const res = await fetch(url, {
             method: "POST",
             headers: headers,
@@ -229,26 +226,26 @@ async function handleFormSubmit(e) {
 
         const data = await res.json();
         console.log("응답 데이터:", data);
-        
+
         if (data.success) {
             const message = isUpdate ? "반려견 정보 수정 성공!" : "반려견 등록 성공!";
             alert(message);
             console.log("✓ " + message);
-            
+
             // 폼 초기화
             form.reset();
             const petNoInput = document.getElementById('petNo');
             if (petNoInput) petNoInput.value = '';
             const profilePreview = document.getElementById('profilePreview');
             if (profilePreview) profilePreview.style.display = 'none';
-            
+
             // 모달 닫기
             const modal = bootstrap.Modal.getInstance(document.getElementById('addPetModal'));
             if (modal) {
                 modal.hide();
-                console.log("✓ 모달 닫힘");
+                console.log(" 모달 닫힘");
             }
-            
+
             // 반려견 목록 새로고침
             console.log("목록 새로고침 중...");
             loadPetCards();
@@ -267,23 +264,23 @@ async function handleFormSubmit(e) {
 /* DOMContentLoaded - 페이지 로드 시 초기화 */
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("=== mypagePet.js 초기화 ===");
-    
+
     // 반려견 목록 로드
     loadPetCards();
-    
+
     // 반려견 추가 폼 이벤트 리스너 설정
     setupAddPetForm();
-    
+
     // 파일 입력 변경 이벤트 리스너
     const petProfile = document.getElementById('petProfile');
     if (petProfile) {
-        petProfile.addEventListener('change', function(e) {
+        petProfile.addEventListener('change', function (e) {
             const file = e.target.files[0];
             const profilePreview = document.getElementById('profilePreview');
-            
+
             if (file && profilePreview) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
+                reader.onload = function (event) {
                     profilePreview.src = event.target.result;
                     profilePreview.style.display = 'block';
                     console.log("이미지 미리보기 업데이트됨");
@@ -292,11 +289,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
     }
-    
+
     // 모달이 닫힐 때 폼 초기화
     const addPetModal = document.getElementById('addPetModal');
     if (addPetModal) {
-        addPetModal.addEventListener('hidden.bs.modal', function() {
+        addPetModal.addEventListener('hidden.bs.modal', function () {
             const form = document.getElementById('addPetForm');
             if (form) {
                 form.reset();
@@ -308,3 +305,37 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 });
+
+/* 애완견 no에 를 갖고와 삭제 */
+async function deletePet(petNo) {
+    if (!confirm("정말로 이 반려견을 삭제하시겠습니까?")) {
+        return;
+    }
+    try {
+        console.log(`=== 반려견 삭제 요청 시작... petNo: ${petNo} ===`);
+        const response = await fetch(`/api/pets/delete/${petNo}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken }
+        });
+        console.log("API 응답 상태:", response.status);
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('반려견 삭제 실패:', response.status, errorText);
+            throw new Error('반려견 삭제 실패: ' + response.status);
+        }
+        const data = await response.json();
+        if (data.success) {
+            alert('반려견이 성공적으로 삭제되었습니다.');
+            console.log("✓ 반려견 삭제 성공");
+            loadPetCards(); // 목록 새로고침
+        } else {
+            alert('반려견 삭제에 실패했습니다: ' + data.message);
+            console.error('반려견 삭제 실패:', data.message);
+        }
+    } catch (error) {
+        console.error('=== 반려견 삭제 중 오류 발생 ===:', error);
+        alert('반려견 삭제 중 오류가 발생했습니다: ' + error.message);
+    }
+}
+
+

@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (phoneEl) phoneEl.textContent = data.phone;
         if (birthEl) birthEl.textContent = data.birth;
         if (addressEl) addressEl.textContent = data.address;
-        
+
         console.log("사용자 정보 화면 업데이트 완료");
     } catch (error) {
         console.error('=== 사용자 정보 로드 실패 ===:', error);
@@ -78,7 +78,7 @@ async function updateMyInfo() {
 
         const res = await fetch('/api/users/update', {
             method: 'PUT',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
                 [csrfHeader]: csrfToken
             },
