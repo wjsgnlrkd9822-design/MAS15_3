@@ -70,7 +70,7 @@
 
         <div class="reservation-detail">
             <!-- <img th:src="@{'/img/' + ${room.img}}" class="room-detail-image"> -->
-            <img th:src="@{'/upload/' + ${room.img}}" class="room-detail-image" th:alt="${room.roomNo} + ' 이미지'">
+            <img th:src="@{'/uploads/' + ${room.img}}" class="room-detail-image" th:alt="${room.roomNo} + ' 이미지'">
             <h2 class="room-title" th:text="${room.roomType} + ' Room' "></h2>
 
             <ul class="room-features">

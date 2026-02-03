@@ -43,3 +43,10 @@ html, body {
 .no-count {
     color: #BABABA;
 }
+
+#address {
+    border-radius : 10px;
+}
+#username {
+    border-radius : 10px;
+}

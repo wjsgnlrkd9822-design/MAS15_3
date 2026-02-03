@@ -148,3 +148,27 @@ async function deleteMyAccount() {
         alert('서버 오류가 발생했습니다.');
     }
 }
+
+/* 전화번호 자동 하이푼 */
+const phoneInput = document.getElementById('editPhone');
+
+phoneInput.addEventListener('input', function(e) {
+    let number = e.target.value.replace(/\D/g, ''); // 숫자만 추출
+    if(number.length > 3 && number.length <= 7){
+        number = number.replace(/(\d{3})(\d+)/, '$1-$2');
+    } else if(number.length > 7){
+        number = number.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3');
+    }
+    e.target.value = number;
+});
+
+/* 주소 api 버튼 기능  */
+
+function searchAddress() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 도로명 주소를 input에 넣음
+            document.getElementById('editAddress').value = data.roadAddress;
+        }
+    }).open();
+}
