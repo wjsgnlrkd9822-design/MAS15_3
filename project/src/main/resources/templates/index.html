@@ -149,17 +149,17 @@
     /*<![CDATA[*/
     document.addEventListener('DOMContentLoaded', () => {
     // 1️⃣ 예약 버튼 로그인 체크
-    document.querySelectorAll('a[data-login]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            const isLogin = link.getAttribute('data-login') === 'true'
-            window.location.href = '/pet/reservation'
-            if (!isLogin) {
-                e.preventDefault();
-                alert('로그인 후 이용 가능합니다');
-                window.location.href = '/login';
-            }
-        });
-    });
+    // document.querySelectorAll('a[data-login]').forEach(link => {
+    //     link.addEventListener('click', (e) => {
+    //         const isLogin = link.getAttribute('data-login') === 'true'
+    //         window.location.href = '/pet/reservation'
+    //         if (!isLogin) {
+    //             e.preventDefault();
+    //             alert('로그인 후 이용 가능합니다');
+    //             window.location.href = '/login';
+    //         }
+    //     });
+    // });
 
     // 2️⃣ 로그아웃 버튼
     const logoutLink = document.getElementById('logoutLink');
