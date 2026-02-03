@@ -1,9 +1,43 @@
+html, body, main, #wrap, .container{
+    background: transparent !important;
+}
+
+.reservation-wrapper{
+    background: transparent !important;
+}
+
+/* 전체 페이지 배경 이미지 */
+body::before{
+    content:"";
+    position: fixed;
+    top: -40px;
+    left: -40px;
+    right: -40px;
+    bottom: -40px;
+
+    background: url("/img/mainpage.jpg") center / cover no-repeat;
+    filter: blur(3px) brightness(0.7);
+    z-index: -1;
+}
+
+
+body{
+    min-height: 100vh;
+    background: transparent;
+    padding-top: 72px;
+}
+
+label {
+    color: white;
+    font-weight: 500;
+    display: inline;
+}
 .reservation-text {
-    font-size: 38px;       /* 글씨 크기, 필요하면 조절 */
-    font-weight: 150;     /* 글씨 두께 */
+    font-size: 50px;       /* 글씨 크기, 필요하면 조절 */
+    font-weight: 500;     /* 글씨 두께 */
     text-align: center;    /* 가로 중앙 정렬 */
     margin: 30px 0 30px 0; /* 위쪽 40px, 아래쪽 20px 여백 */
-    color: #333;           /* 글씨 색상 */
+    color: white;           /* 글씨 색상 */
     font-family: 'Noto Sans KR', sans-serif;
 }
 
@@ -92,18 +126,19 @@
     padding: 8px 12px;
     width: 100%;
     background-color: white;
-    border-color: #222;
+    border-color: white;
     color: #222;
     border: 1.5px solid;
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.3s;
+    transition: 0.3s;
 }
 
 .reserve-btn:hover { 
-    background-color: #222; 
+    background-color: #5a2d00;
     color: white;
+    font-size: 15px;
 }
 
 /* ===== 필터 select 스타일 추가 ===== */
@@ -163,7 +198,7 @@
 }
 
 .filter-apply-btn:hover {
-    background-color: #222;
+    background-color: #CC9966;
     color: white;
     transform: scale(1.05);
 }

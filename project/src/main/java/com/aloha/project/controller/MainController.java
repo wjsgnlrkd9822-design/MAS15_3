@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,6 +46,11 @@ public class MainController {
         return "index";
     }
 
+    @GetMapping("/pet/introduce")
+    public String service() {
+        return "pet/introduce";
+    }
+    
 
     /**
      * 예약 페이지
