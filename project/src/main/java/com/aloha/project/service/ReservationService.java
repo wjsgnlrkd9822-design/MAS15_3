@@ -16,4 +16,7 @@ public interface ReservationService {
     
     // ✅ 추가
     void update(Long resNo, LocalDate checkinDate, LocalDate checkoutDate, int total);
+    
+    void delete(Long resNo);
+
 }
