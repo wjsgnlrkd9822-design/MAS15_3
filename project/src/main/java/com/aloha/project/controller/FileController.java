@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class FileController {
 
-    @GetMapping("/uploads/{filename:.+}")
+    @GetMapping("/uploads/{filename: .+}")
     public ResponseEntity<Resource> getFile(@PathVariable("filename") String filename) throws MalformedURLException {
         Path file = Paths.get("C:/upload/").resolve(filename);
         Resource resource = new UrlResource(file.toUri());

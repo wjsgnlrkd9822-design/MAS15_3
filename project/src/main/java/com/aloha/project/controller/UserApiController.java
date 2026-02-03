@@ -1,6 +1,8 @@
 package com.aloha.project.controller;
 
 import java.security.Principal;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.aloha.project.dto.User;
 import com.aloha.project.service.UserService;
@@ -56,6 +66,47 @@ public class UserApiController {
             response.put("success", false);
             response.put("message", "서버 오류 발생");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 회원 탈퇴 (비동기식) - 현재 로그인한 사용자를 탈퇴 처리
+     * [DELETE] - /api/users/delete
+     */
+    @DeleteMapping("/delete")
+    public ResponseEntity<Map<String,Object>> delete(Principal principal, HttpServletRequest request) {
+        Map<String,Object> response = new HashMap<>();
+        try {
+            if (principal == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+
+            String username = principal.getName();
+            User user = userService.select(username);
+            int result = userService.delete(user.getId());
+
+            if (result > 0) {
+                // 세션 무효화 및 보안 컨텍스트 클리어
+                try {
+                    request.getSession().invalidate();
+                } catch (Exception ignore) {}
+                SecurityContextHolder.clearContext();
+
+                response.put("success", true);
+                response.put("message", "회원 탈퇴가 완료되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "회원 탈퇴 실패");
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "서버 오류");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
