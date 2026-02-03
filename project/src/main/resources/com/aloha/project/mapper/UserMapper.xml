@@ -54,6 +54,7 @@
         WHERE username = #{username}
     </select>
 
+    <!-- 회원 수정 -->
     <update id="update">
       UPDATE users
       <set>
@@ -72,6 +73,8 @@
       </set>
       WHERE username = #{username}
     </update>
+    
+    <!-- 회원 탈퇴 -->
     <delete id="delete"> 
       DELETE FROM users
       WHERE id = #{id}

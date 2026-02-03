@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,9 +12,12 @@
 
   <!-- Font Awesome 아이콘 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
   <meta name="_csrf" th:content="${_csrf.token}">
   <meta name="_csrf_header" th:content="${_csrf.headerName}">
 </head>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <body>
 
@@ -48,6 +50,7 @@
       <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editModal">
         정보 수정
       </button>
+      <button class="btn btn-outline-danger" onclick="deleteMyAccount()">회원탈퇴</button>
     </div>
   </section>
 
@@ -303,30 +306,83 @@
 
   <!-- 호텔 예약 내역 -->
   <section class="mypage-reservations">
-    <div class="mypage-reservations-inner">
-      <h3>호텔 예약 내역</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>예약 번호</th>
-            <th>반려견 이름</th>
-            <th>체크인</th>
-            <th>체크아웃</th>
-            <th>상태</th>
-          </tr>
-        </thead>
-            <tbody>
-              <tr th:each="res : ${reservations}">
-                <td><span th:text="${res.resNo}"></span></td>
-                <td th:text="${res.petName}">반려견 이름</td>
-                <td th:text="${res.checkin}">2024-07-01</td>
-                <td th:text="${res.checkout}">2024-07-05</td>
-                <td>예약 완료</td>
-              </tr>
-            </tbody>
-      </table>
+        <div class="mypage-reservations-inner">
+            <h3>호텔 예약 내역</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>예약 번호</th>
+                        <th>반려견 이름</th>
+                        <th>체크인</th>
+                        <th>체크아웃</th>
+                        <th>상태</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr th:each="res : ${reservations}">
+                  <td><span th:text="${res.resNo}"></span></td>
+                  <td th:text="${res.petName}">반려견 이름</td>
+                  <td th:text="${res.checkin}">2024-07-01</td>
+                  <td th:text="${res.checkout}">2024-07-05</td>
+                  <td>예약 완료</td>
+                  <td>
+  <!-- ✅ 안전하게 모달 열기 -->
+  <button class="btn-edit" type="button"
+          th:onclick="'openEditModal(' + ${res.resNo} + ')'">
+    수정
+  </button>
+</td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ✅ 예약 수정 모달 -->
+    <div class="modal fade" id="editReservationModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title">예약 수정</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <input type="hidden" id="editResNo">
+            
+            <div class="mb-3">
+              <label>반려견 이름</label>
+              <input id="editPetName" class="form-control" readonly>
+            </div>
+            
+            <div class="mb-3">
+              <label>체크인 날짜</label>
+              <input type="text" id="editCheckin" class="form-control">
+            </div>
+            
+            <div class="mb-3">
+              <label>체크아웃 날짜</label>
+              <input type="text" id="editCheckout" class="form-control">
+            </div>
+            
+            <div class="mb-3">
+              <label>박 수</label>
+              <input id="editNights" class="form-control" readonly>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+            <button class="btn btn-primary" onclick="updateReservation()">수정 완료</button>
+            <button class="btn btn-danger" onclick="deleteReservation()">삭제</button>
+          </div>
+
+        </div>
+      </div>
     </div>
-  </section>
 
   <!-- 푸터 -->
   <th:block th:replace="~{fragments/footer::footer}"></th:block>
@@ -339,6 +395,134 @@
   <!-- <script src="/js/mypagePet.js"></script> -->
   <script src="/js/mypagePetApi.js"></script>
   <script src="/js/mypagePetUi.js"></script>
+  <!-- ✅ 예약 수정 JavaScript -->
+<script>
+let checkinPicker, checkoutPicker;
+
+// 모달 열기
+function openEditModal(resNo) {
+    fetch(`/api/reservation/${resNo}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('editResNo').value = data.resNo;
+            document.getElementById('editPetName').value = data.petName;
+            
+            // Flatpickr 초기화
+            if (checkinPicker) checkinPicker.destroy();
+            if (checkoutPicker) checkoutPicker.destroy();
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            checkinPicker = flatpickr("#editCheckin", {
+                dateFormat: "Y-m-d",
+                defaultDate: data.checkin,
+                minDate: today,
+                onChange: function(selectedDates) {
+                    if (selectedDates.length > 0) {
+                        const minCheckout = new Date(selectedDates[0].getTime());
+                        minCheckout.setDate(minCheckout.getDate() + 1);
+                        checkoutPicker.set('minDate', minCheckout);
+                    }
+                    calculateNights();
+                }
+            });
+            
+            checkoutPicker = flatpickr("#editCheckout", {
+                dateFormat: "Y-m-d",
+                defaultDate: data.checkout,
+                minDate: new Date(data.checkin),
+                onChange: calculateNights
+            });
+            
+            calculateNights();
+            
+            // 모달 열기
+            const modal = new bootstrap.Modal(document.getElementById('editReservationModal'));
+            modal.show();
+        });
+}
+
+// 박 수 계산
+function calculateNights() {
+    const checkin = checkinPicker.selectedDates[0];
+    const checkout = checkoutPicker.selectedDates[0];
+    
+    if (checkin && checkout && checkout > checkin) {
+        const nights = Math.ceil((checkout - checkin) / (1000*60*60*24));
+        document.getElementById('editNights').value = nights + '박';
+    } else {
+        document.getElementById('editNights').value = '0박';
+    }
+}
+
+// 예약 수정
+function updateReservation() {
+    const resNo = document.getElementById('editResNo').value;
+    const checkin = document.getElementById('editCheckin').value;
+    const checkout = document.getElementById('editCheckout').value;
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    const formData = new FormData();
+    formData.append('checkin', checkin);
+    formData.append('checkout', checkout);
+    formData.append('total', 100000); // 임시
+
+    fetch(`/api/reservation/update/${resNo}`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            [csrfHeader]: csrfToken // ✅ CSRF 헤더 추가
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload(); // 페이지 새로고침
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => {
+        alert('수정 중 오류가 발생했습니다.');
+        console.error(err);
+    });
+}
+
+function deleteReservation() {
+    const resNo = document.getElementById('editResNo').value;
+
+    if (!confirm("정말 이 예약을 삭제하시겠습니까?")) return;
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    fetch(`/api/reservation/delete/${resNo}`, {
+        method: 'DELETE',
+        headers: {
+            [csrfHeader]: csrfToken
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => {
+        alert('삭제 중 오류가 발생했습니다.');
+        console.error(err);
+    });
+}
+
+
+</script>
 </body>
 
 </html>

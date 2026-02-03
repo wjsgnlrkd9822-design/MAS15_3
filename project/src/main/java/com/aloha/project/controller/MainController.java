@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -190,6 +191,26 @@ public class MainController {
         }
         return result;
     }
+
+    // 예약 삭제 (AJAX용)
+        @DeleteMapping("/api/reservation/delete/{resNo}")
+        @ResponseBody
+        public Map<String, Object> deleteReservation(@PathVariable("resNo") Long resNo) {
+            Map<String, Object> result = new HashMap<>();
+            try {
+                reservationService.delete(resNo);
+                result.put("success", true);
+                result.put("message", "예약이 삭제되었습니다.");
+            } catch (Exception e) {
+                e.printStackTrace(); // ✅ 로그 찍기
+                result.put("success", false);
+                result.put("message", "삭제 실패: " + e.getMessage());
+            }
+            return result;
+        }
+
+
+
 }
 
 // 컨트롤러 reservationservice.java, ReservationServiceImple.java, ReservationMapper.java ReservationMapper.xml, myPage.html
