@@ -315,22 +315,15 @@
             <th>상태</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>R12345</td>
-            <td>뽀삐</td>
-            <td>2024-07-01</td>
-            <td>2024-07-05</td>
-            <td>완료</td>
-          </tr>
-          <tr>
-            <td>R67890</td>
-            <td>코코</td>
-            <td>2024-08-10</td>
-            <td>2024-08-15</td>
-            <td>예약 완료</td>
-          </tr>
-        </tbody>
+            <tbody>
+              <tr th:each="res : ${reservations}">
+                <td><span th:text="${res.resNo}"></span></td>
+                <td th:text="${res.petName}">반려견 이름</td>
+                <td th:text="${res.checkin}">2024-07-01</td>
+                <td th:text="${res.checkout}">2024-07-05</td>
+                <td>예약 완료</td>
+              </tr>
+            </tbody>
       </table>
     </div>
   </section>

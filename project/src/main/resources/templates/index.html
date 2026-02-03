@@ -15,7 +15,7 @@
 
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header::header}"></th:block>
-
+    
     <!-- 메인 히어로 섹션 -->
     <div class="container">
         <div class="hero">
@@ -32,7 +32,9 @@
                     반려견의 행복한 시간을 약속합니다
                 </p>
 
-                <a th:href="@{/pet/reservation}" class="hero-btn">지금 예약하기</a>
+                <!-- 로그인 체크 속성 추가 -->
+                <a th:href="@{/pet/reservation}" class="hero-btn"
+                   th:attr="data-login=${isLogin}">지금 예약하기</a>
             </div>
         </div>
     </div>
@@ -46,7 +48,6 @@
             </p>
 
             <div class="why-cards">
-
                 <div class="why-card">
                     <i class="fa-solid fa-shield-dog"></i>
                     <h3>안전한 환경</h3>
@@ -82,22 +83,19 @@
                         실시간으로 확인
                     </p>
                 </div>
-
             </div>
         </div>
     </section>
-        <!-- 서비스 섹션 -->
+
+    <!-- 서비스 섹션 -->
     <section class="service-section">
         <div class="service-inner">
-
             <div class="service-card">
                 <img th:src="@{/img/service-hotel.jpg}" alt="호텔링 서비스">
-
                 <h3>호텔링 서비스</h3>
                 <p class="service-desc">
                     쾌적한 개별 객실에서 편안한 휴식을 제공합니다
                 </p>
-
                 <ul>
                     <li>개별 공조 시스템</li>
                     <li>프리미엄 침구</li>
@@ -107,12 +105,10 @@
 
             <div class="service-card">
                 <img th:src="@{/img/service-play.jpg}" alt="놀이 프로그램">
-
                 <h3>놀이 프로그램</h3>
                 <p class="service-desc">
                     전문 트레이너와 함께하는 즐거운 놀이 시간
                 </p>
-
                 <ul>
                     <li>실내 놀이터</li>
                     <li>야외 산책</li>
@@ -122,30 +118,62 @@
 
             <div class="service-card">
                 <img th:src="@{/img/service-grooming.jpg}" alt="그루밍 서비스">
-
                 <h3>그루밍 서비스</h3>
                 <p class="service-desc">
                     전문 그루머가 제공하는 스파 & 미용 서비스
                 </p>
-
                 <ul>
                     <li>목욕 및 드라이</li>
                     <li>스타일 컷</li>
                     <li>스킨케어</li>
                 </ul>
             </div>
-
         </div>
     </section>
+
+    <!-- 예약 섹션 -->
     <section class="reservation">
         <p class="reservation-text">지금 바로 예약하세요!</p>
         <p class="reservation-subtext">사랑하는 반려견에게 특별한 경험을 선물하세요</p>
-        <a th:href="@{/pet/reservation}" class="reservation-btn">예약 문의하기</a>
-    </section>
 
+        <!-- 로그인 체크 속성 추가 -->
+        <a th:href="@{/pet/reservation}" class="reservation-btn"
+           th:attr="data-login=${isLogin}">예약 문의하기</a>
+    </section>
 
     <!-- 푸터 -->
     <th:block th:replace="~{fragments/footer::footer}"></th:block>
+
+    <!-- 로그인 체크 JS -->
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', () => {
+    // 1️⃣ 예약 버튼 로그인 체크
+    // document.querySelectorAll('a[data-login]').forEach(link => {
+    //     link.addEventListener('click', (e) => {
+    //         const isLogin = link.getAttribute('data-login') === 'true'
+    //         window.location.href = '/pet/reservation'
+    //         if (!isLogin) {
+    //             e.preventDefault();
+    //             alert('로그인 후 이용 가능합니다');
+    //             window.location.href = '/login';
+    //         }
+    //     });
+    // });
+
+    // 2️⃣ 로그아웃 버튼
+    const logoutLink = document.getElementById('logoutLink');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('logoutForm').submit();
+        });
+    }
+});
+
+
+    /*]]>*/
+    </script>
 
 </body>
 </html>

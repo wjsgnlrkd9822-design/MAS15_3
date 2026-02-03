@@ -70,7 +70,7 @@ public class NoticeController {
     @ResponseBody
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> noticeup(
-        @PathVariable Long no,
+        @PathVariable("no") Long no,
          @RequestBody Notice notice) {
         try{
                   notice.setNo(no);
