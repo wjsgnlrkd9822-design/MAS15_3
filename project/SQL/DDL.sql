@@ -1,4 +1,4 @@
--- Active: 1767840807398@@127.0.0.1@3306@aloha
+-- Active: 1767920835424@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 
@@ -10,7 +10,8 @@ SET FOREIGN_KEY_CHECKS = 0;
     `user_no` BIGINT NOT NULL COMMENT '회원 번호',
     `pet_no` BIGINT NOT NULL COMMENT '반려견 번호',
     `room_no` BIGINT NOT NULL COMMENT '객실 번호',
-    `res_date` DATE NOT NULL COMMENT '예약 날짜',
+    `res_date` DATE NOT NULL COMMENT '체크인 날짜',
+    `checkout_date` DATE NOT NULL COMMENT '체크아웃 날짜',
     `res_time` TIME NOT NULL COMMENT '예약 시간',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
 
@@ -25,7 +26,11 @@ SET FOREIGN_KEY_CHECKS = 0;
     FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no)
     on update CASCADE
     on delete CASCADE
- );
+);
+
+ SELECT * FROM reservations;
+
+
 drop TABLE IF EXISTS `users`;
 CREATE TABLE `users`( 
     `no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '회원번호',

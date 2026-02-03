@@ -11,26 +11,21 @@
 <link rel="stylesheet" th:href="@{/css/reservation-detail.css}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<!-- 선택된 서비스 카드 스타일 -->
 <style>
 .service-card.selected {
-    border: 3px solid #CC9966; /* 선택 시 테두리 강조 */
+    border: 3px solid #CC9966;
 }
 </style>
 </head>
 <body>
 
-<!-- 헤더 불러오기 -->
 <th:block th:replace="~{fragments/header::header}"></th:block>
-    
-<!-- 페이지 제목 -->
+
 <p class="reservation-text">Reservation</p>
 
 <div class="reservation-wrapper">
 
-    <!-- 달력 + 객실 카드 영역 -->
     <div class="reservation-detail-container">
-        <!-- 왼쪽 달력 영역 -->
         <div class="reservation-calendar">
             <div class="calendar-title">
                 <div class="calendar-title-row">
@@ -40,7 +35,6 @@
                 <p>체크인과 체크아웃 날짜를 선택해주세요</p>
             </div>
 
-            <!-- 체크인/체크아웃 입력 -->
             <div class="calendar-row">
                 <div class="calendar-box">
                     <div class="calendar-label">
@@ -59,12 +53,10 @@
                 </div>
             </div>
 
-            <!-- 숙박일 표시 -->
             <div class="night-box">
                 총 <span id="night-count">0</span>박 숙박
             </div>
 
-            <!-- 안내 정보 -->
             <div class="info-box">
                 <p>체크인: 오전 10시</p>
                 <p>체크아웃: 오후 6시</p>
@@ -73,12 +65,10 @@
             </div>
         </div>
 
-        <!-- 오른쪽 객실 카드 영역 -->
         <div class="reservation-detail">
             <img th:src="@{'/img/' + ${room.img}}" class="room-detail-image">
             <h2 class="room-title" th:text="${room.roomType} + ' Room' "></h2>
 
-            <!-- 객실 특징 -->
             <ul class="room-features">
                 <li><i class="fa-solid fa-temperature-high"></i>개별 온도 조절 시스템</li>
                 <li><i class="fa-solid fa-bed"></i>프리미엄 침구 & 매트리스</li>
@@ -87,7 +77,6 @@
                 <li><i class="fa-solid fa-broom"></i>매일 2회 위생 관리</li>
             </ul>
 
-            <!-- 객실 요금 -->
             <div class="price-box">
                 <span id="room-price" th:text="${room.roomPrice}"></span>원
                 <small>/ 1박</small>
@@ -95,13 +84,11 @@
         </div>
     </div>
 
-    <!-- 호텔 추가 서비스 영역 -->
     <div class="room-service">
         <h3 class="hotelservicetext">호텔 추가 서비스</h3>
         <ul class="service-list">
             <li th:each="service : ${roomServiceList}">
                 <div class="service-card">
-                    <!-- 상단: 아이콘, 이름, 가격 -->
                     <div class="service-top">
                         <div class="service-info">
                             <span class="service-icon" th:switch="${service.serviceName}">
@@ -116,7 +103,6 @@
                         <small class="service-price" th:text="'+' + ${service.servicePrice} + '원'"></small>
                     </div>
 
-                    <!-- 하단: 설명, 체크박스 -->
                     <div class="service-bottom">
                         <p class="service-desc" th:text="${service.description}"></p>
                         <input type="checkbox" class="service-checkbox" 
@@ -128,7 +114,6 @@
         </ul>
     </div>
 
-    <!-- 결제 요약 영역 -->
     <div class="payment-summary">
         <div class="summary-title">예약 요약</div>
 
@@ -154,26 +139,24 @@
             <span id="summary-total">0원</span>
         </div>
 
-        <!-- 예약 버튼 -->
-        <a id="reserveBtn"
-        th:href="@{/pet/reservation/confirm/{roomNo}(roomNo=${room.roomNo})}"
-        class="summary-btn">
-            예약하기
-        </a>
+        <form id="reservationForm" th:action="@{'/pet/reservation/confirm/' + ${room.roomNo}}" method="post">
+            <input type="hidden" name="checkin" id="form-checkin">
+            <input type="hidden" name="checkout" id="form-checkout">
+            <input type="hidden" name="nights" id="form-nights">
+            <input type="hidden" name="total" id="form-total">
+            <button type="submit" id="reserveBtn" class="summary-btn">예약하기</button>
+        </form>
     </div>
 
 </div>
 
-<!-- 푸터 불러오기 -->
 <th:block th:replace="~{fragments/footer::footer}"></th:block>
 
-<!-- Flatpickr 날짜 선택 라이브러리 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-    // 객실 1박 요금 불러오기 및 포맷
     let rawRoomPrice = parseInt(document.getElementById('room-price').textContent);
     document.getElementById('room-price').textContent = rawRoomPrice.toLocaleString();
 
@@ -181,40 +164,65 @@ document.addEventListener("DOMContentLoaded", function(){
     const serviceCheckboxes = document.querySelectorAll(".service-checkbox");
     const serviceCards = document.querySelectorAll(".service-card");
 
-    // 오늘 날짜 기준
     const today = new Date();
     today.setHours(0,0,0,0);
 
-    // 과거 날짜 비활성화
     function isPastDate(date){
         const d = new Date(date);
         d.setHours(0,0,0,0);
         return d < today;
     }
 
-    // 체크인/체크아웃 달력
-    const checkinInput = flatpickr("#checkin-date", { inline:true, disable:[isPastDate], onChange:updateSummary });
-    const checkoutInput = flatpickr("#checkout-date", { inline:true, disable:[isPastDate], onChange:updateSummary });
+    const checkoutInput = flatpickr("#checkout-date", { 
+        inline:true, 
+        disable:[isPastDate], 
+        onChange:function(selectedDates){
+            console.log("체크아웃 변경:", selectedDates[0]);
+            updateSummary();
+        }
+    });
 
-    // 날짜 포맷
+    const checkinInput = flatpickr("#checkin-date", { 
+        inline:true, 
+        disable:[isPastDate], 
+        onChange:function(selectedDates){
+            console.log("체크인 변경:", selectedDates[0]);
+            if(selectedDates.length > 0){
+                const checkinDate = selectedDates[0];
+                const minCheckout = new Date(checkinDate.getTime());
+                minCheckout.setDate(minCheckout.getDate() + 1);
+                checkoutInput.set('minDate', minCheckout);
+            }
+            updateSummary();
+        }
+    });
+
     function formatDate(d){
         return d.getFullYear() + "." + String(d.getMonth()+1).padStart(2,"0") + "." + String(d.getDate()).padStart(2,"0");
     }
 
-    // 결제 요약 갱신
+    function formatLocalDate(date){
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
     function updateSummary(){
         const checkin = checkinInput.selectedDates[0];
         const checkout = checkoutInput.selectedDates[0];
 
-        // 숙박일 계산
+        console.log("=== updateSummary 호출 ===");
+        console.log("체크인:", checkin);
+        console.log("체크아웃:", checkout);
+
         let nights = 0;
         if(checkin && checkout && checkout > checkin){
-            nights = (checkout - checkin) / (1000*60*60*24);
+            nights = Math.ceil((checkout - checkin)/(1000*60*60*24));
         }
 
         let roomTotal = nights * rawRoomPrice;
 
-        // 서비스 요금은 항상 계산
         let serviceTotal = 0;
         serviceCheckboxes.forEach(cb => { if(cb.checked) serviceTotal += parseInt(cb.value); });
 
@@ -223,9 +231,16 @@ document.addEventListener("DOMContentLoaded", function(){
         document.getElementById("summary-room").textContent = roomTotal.toLocaleString() + "원";
         document.getElementById("summary-service").textContent = serviceTotal.toLocaleString() + "원";
         document.getElementById("summary-total").textContent = (roomTotal + serviceTotal).toLocaleString() + "원";
+
+        if(checkin) document.getElementById("form-checkin").value = formatLocalDate(checkin);
+        if(checkout) document.getElementById("form-checkout").value = formatLocalDate(checkout);
+        document.getElementById("form-nights").value = nights;
+        document.getElementById("form-total").value = roomTotal + serviceTotal;
+
+        console.log("폼 체크인 값:", document.getElementById("form-checkin").value);
+        console.log("폼 체크아웃 값:", document.getElementById("form-checkout").value);
     }
 
-    // 서비스 체크박스 클릭 시 카드 선택 표시 및 갱신
     serviceCheckboxes.forEach(cb => {
         cb.addEventListener("change", function(){
             const card = this.closest('.service-card');
@@ -234,7 +249,6 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     });
 
-    // 카드 클릭 시 체크박스 토글 + 갱신
     serviceCards.forEach(card => {
         const checkbox = card.querySelector('.service-checkbox');
         card.addEventListener('click', (e) => {
@@ -246,32 +260,40 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     });
 
-    // 예약 버튼 클릭 시 URL 생성 및 검증
-    document.getElementById("reserveBtn").addEventListener("click", function(e){
+    document.getElementById("reservationForm").addEventListener("submit", function(e){
         const checkin = checkinInput.selectedDates[0];
         const checkout = checkoutInput.selectedDates[0];
 
-        if(!checkin || !checkout || checkout <= checkin){
-            alert("올바른 입실/퇴실 날짜를 선택해주세요.");
+        console.log("=== 폼 제출 시점 ===");
+        console.log("체크인 선택:", checkin);
+        console.log("체크아웃 선택:", checkout);
+
+        if(!checkin || !checkout){
             e.preventDefault();
+            alert("체크인/체크아웃 날짜를 선택해주세요.");
             return;
         }
 
-        const nights = (checkout - checkin) / (1000*60*60*24);
-        let total = nights * rawRoomPrice;
-        serviceCheckboxes.forEach(cb => { if(cb.checked) total += parseInt(cb.value); });
+        if(checkout <= checkin){
+            e.preventDefault();
+            alert("체크인/체크아웃 날짜가 올바르지 않습니다.");
+            return;
+        }
 
-        const format = d => d.toISOString().split("T")[0];
-        const url = this.getAttribute("href")
-            + "?checkin=" + format(checkin)
-            + "&checkout=" + format(checkout)
-            + "&nights=" + nights
-            + "&total=" + total;
-
-        this.setAttribute("href", url);
+        // ✅ submit 직전 한 번 더 확실하게 설정
+        document.getElementById("form-checkin").value = formatLocalDate(checkin);
+        document.getElementById("form-checkout").value = formatLocalDate(checkout);
+        document.getElementById("form-nights").value = Math.ceil((checkout - checkin)/(1000*60*60*24));
+        
+        console.log("=== 최종 폼 값 ===");
+        console.log("최종 체크인:", document.getElementById("form-checkin").value);
+        console.log("최종 체크아웃:", document.getElementById("form-checkout").value);
+        console.log("최종 박수:", document.getElementById("form-nights").value);
     });
 });
 </script>
+
+
 
 </body>
 </html>

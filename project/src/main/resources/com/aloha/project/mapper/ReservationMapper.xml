@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aloha.project.mapper.ReservationMapper">
+
+    <!-- 예약 추가 -->
+    <insert id="insert">
+    INSERT INTO reservations
+    (user_no, pet_no, room_no, res_date, res_time, checkout_date)
+    VALUES
+    (#{userNo}, #{petNo}, #{roomNo}, #{checkinDate}, #{resTime}, #{checkoutDate})
+   </insert>
+
+    <!-- 회원별 예약 조회 -->
+    <select id="findByUserNo" resultType="com.aloha.project.dto.ReservationDto">
+        SELECT 
+              r.res_no AS resNo,
+              r.res_date AS checkin,
+              r.checkout_date AS checkout,
+              p.name AS petName,
+              h.room_type AS roomType,
+              h.room_no AS roomNo
+        FROM reservations r
+        JOIN pets p ON r.pet_no = p.no
+        JOIN hotelrooms h ON r.room_no = h.room_no
+        WHERE r.user_no = #{userNo}
+        ORDER BY r.res_no DESC
+    </select>
+
+    <!-- ✅ 예약 1건 조회 -->
+    <select id="findByResNo" resultType="com.aloha.project.dto.ReservationDto">
+        SELECT 
+              r.res_no AS resNo,
+              r.res_date AS checkin,
+              r.checkout_date AS checkout,
+              p.name AS petName,
+              h.room_type AS roomType,
+              h.room_no AS roomNo
+        FROM reservations r
+        JOIN pets p ON r.pet_no = p.no
+        JOIN hotelrooms h ON r.room_no = h.room_no
+        WHERE r.res_no = #{resNo}
+    </select>
+
+    <!-- ✅ 예약 수정 -->
+    <update id="update">
+        UPDATE reservations
+        SET res_date = #{checkinDate},
+            checkout_date = #{checkoutDate}
+        WHERE res_no = #{resNo}
+    </update>
+
+</mapper>
