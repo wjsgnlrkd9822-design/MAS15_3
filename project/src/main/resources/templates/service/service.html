@@ -101,7 +101,7 @@
             <div class="col-md-4"
              th:each="trainer : ${trainer}">
                 <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4">
-                    <img th:src="@{'/uploads/' + ${trainer.img}}" 
+                    <img th:src="@{'/upload/' + ${trainer.img}}" 
                          class="rounded-circle mx-auto mb-3"
                          style="width:100px;height:100px;object-fit:cover;">
                     <h5 class="fw-bold" th:text="${trainer.trainerName}"></h5>
