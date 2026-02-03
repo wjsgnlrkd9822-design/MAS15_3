@@ -82,4 +82,10 @@
         FROM users
         ORDER BY no ASC
       </select>
+
+    <select id="findId" parameterType="map" resultType="string">
+    SELECT username FROM users
+    WHERE name = #{name}
+      AND email = #{email}
+    </select>
   </mapper>

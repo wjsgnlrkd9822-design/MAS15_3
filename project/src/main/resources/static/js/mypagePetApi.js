@@ -13,7 +13,7 @@ async function apiFetchPetList() {
     return await res.json();
 }
 
-/* 반려견 단건 조회 */
+/* 반려견 상세보기 조회 */
 async function apiFetchPetDetail(petNo) {
     const res = await fetch(`/api/pets/${petNo}`);
 
@@ -69,4 +69,14 @@ async function apiDeletePet(petNo) {
     }
 
     return await res.json();
+}
+
+/* 이미지 미리보기 모달 열기 */
+function openImagePreview(src) {
+    const modalImg = document.getElementById('imagePreviewModalImg');
+    modalImg.src = src;
+
+    new bootstrap.Modal(
+        document.getElementById('imagePreviewModal')
+    ).show();
 }

@@ -111,4 +111,13 @@ public class UserServiceImpl implements UserService {
         return users;
 
     }
+
+    @Override
+    public String findId(String name, String email) throws Exception {
+        String username = userMapper.findId(name, email);
+        return username;
+    }
+
+    
+
 }

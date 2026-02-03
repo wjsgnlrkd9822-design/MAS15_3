@@ -10,6 +10,8 @@ import com.aloha.project.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Slf4j
 @Controller
@@ -57,5 +59,10 @@ public class HomeController {
 
       return "login/login";
     }
-    
+
+    @GetMapping("/find")
+    public String find() {
+      log.info(":::::::::: 아이디/비밀번호 찾기 화면 ::::::::::");
+        return "login/find";
+    }
 }

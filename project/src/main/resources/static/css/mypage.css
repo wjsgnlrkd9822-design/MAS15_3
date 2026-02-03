@@ -255,3 +255,15 @@ html, body {
     transform: scale(1.01);
     transition: 0.2s;
 }
+
+#profilePreview:hover {
+    transform: scale(1.05);
+    transition: 0.2s;
+}
+#imagePreviewModal {
+    z-index: 1060;
+}
+
+#imagePreviewModal .modal-backdrop {
+    z-index: 1055;
+}
