@@ -10,10 +10,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Font Awesome 아이콘 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- ✅ Flatpickr CSS 추가 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    
+    <style>
+        .btn-edit {
+            padding: 5px 15px;
+            background-color: #CC9966;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-edit:hover {
+            background-color: #b58752;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 
@@ -217,24 +235,9 @@
                         <th>체크인</th>
                         <th>체크아웃</th>
                         <th>상태</th>
+                        <th>관리</th>
                     </tr>
                 </thead>
-                <!-- <tbody>
-                    <tr>
-                        <td>R12345</td>
-                        <td>뽀삐</td>
-                        <td>2024-07-01</td>
-                        <td>2024-07-05</td>
-                        <td>완료</td>
-                    </tr>
-                    <tr>
-                        <td>R67890</td>
-                        <td>코코</td>
-                        <td>2024-08-10</td>
-                        <td>2024-08-15</td>
-                        <td>예약 완료</td>
-                    </tr>
-                </tbody> -->
                 <tbody>
                 <tr th:each="res : ${reservations}">
                   <td><span th:text="${res.resNo}"></span></td>
@@ -242,20 +245,168 @@
                   <td th:text="${res.checkin}">2024-07-01</td>
                   <td th:text="${res.checkout}">2024-07-05</td>
                   <td>예약 완료</td>
+                  <td>
+                    <!-- ✅ 수정된 버튼 -->
+                    <button class="btn-edit" th:onclick="|openEditModal(${res.resNo})|">수정</button>
+                  </td>
                 </tr>
-              </tbody>
+                </tbody>
             </table>
         </div>
     </section>
 
+    <!-- ✅ 예약 수정 모달 -->
+    <div class="modal fade" id="editReservationModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title">예약 수정</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <input type="hidden" id="editResNo">
+            
+            <div class="mb-3">
+              <label>반려견 이름</label>
+              <input id="editPetName" class="form-control" readonly>
+            </div>
+            
+            <div class="mb-3">
+              <label>체크인 날짜</label>
+              <input type="text" id="editCheckin" class="form-control">
+            </div>
+            
+            <div class="mb-3">
+              <label>체크아웃 날짜</label>
+              <input type="text" id="editCheckout" class="form-control">
+            </div>
+            
+            <div class="mb-3">
+              <label>박 수</label>
+              <input id="editNights" class="form-control" readonly>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+            <button class="btn btn-primary" onclick="updateReservation()">수정 완료</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
         <!-- 푸터 -->
     <th:block th:replace="~{fragments/footer::footer}"></th:block>
+    
     <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ Flatpickr JS 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <!-- 마이페이지 JS -->
 <script src="/js/mypage.js"></script>
 <!-- 마이페이지 반려견 JS -->
 <script src="/js/mypagePet.js"></script>
+
+<!-- ✅ 예약 수정 JavaScript -->
+<script>
+let checkinPicker, checkoutPicker;
+
+// 모달 열기
+function openEditModal(resNo) {
+    fetch(`/api/reservation/${resNo}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('editResNo').value = data.resNo;
+            document.getElementById('editPetName').value = data.petName;
+            
+            // Flatpickr 초기화
+            if (checkinPicker) checkinPicker.destroy();
+            if (checkoutPicker) checkoutPicker.destroy();
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            checkinPicker = flatpickr("#editCheckin", {
+                dateFormat: "Y-m-d",
+                defaultDate: data.checkin,
+                minDate: today,
+                onChange: function(selectedDates) {
+                    if (selectedDates.length > 0) {
+                        const minCheckout = new Date(selectedDates[0].getTime());
+                        minCheckout.setDate(minCheckout.getDate() + 1);
+                        checkoutPicker.set('minDate', minCheckout);
+                    }
+                    calculateNights();
+                }
+            });
+            
+            checkoutPicker = flatpickr("#editCheckout", {
+                dateFormat: "Y-m-d",
+                defaultDate: data.checkout,
+                minDate: new Date(data.checkin),
+                onChange: calculateNights
+            });
+            
+            calculateNights();
+            
+            // 모달 열기
+            const modal = new bootstrap.Modal(document.getElementById('editReservationModal'));
+            modal.show();
+        });
+}
+
+// 박 수 계산
+function calculateNights() {
+    const checkin = checkinPicker.selectedDates[0];
+    const checkout = checkoutPicker.selectedDates[0];
+    
+    if (checkin && checkout && checkout > checkin) {
+        const nights = Math.ceil((checkout - checkin) / (1000*60*60*24));
+        document.getElementById('editNights').value = nights + '박';
+    } else {
+        document.getElementById('editNights').value = '0박';
+    }
+}
+
+// 예약 수정
+function updateReservation() {
+    const resNo = document.getElementById('editResNo').value;
+    const checkin = document.getElementById('editCheckin').value;
+    const checkout = document.getElementById('editCheckout').value;
+    
+    if (!checkin || !checkout) {
+        alert('날짜를 모두 선택해주세요.');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('checkin', checkin);
+    formData.append('checkout', checkout);
+    formData.append('total', 100000); // 임시
+    
+    fetch(`/api/reservation/update/${resNo}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload(); // 페이지 새로고침
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => {
+        alert('수정 중 오류가 발생했습니다.');
+        console.error(err);
+    });
+}
+</script>
 </body>
 </html>

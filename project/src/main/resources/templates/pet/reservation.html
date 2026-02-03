@@ -58,7 +58,9 @@
         <a th:href="@{'/pet/reservation/' + ${room.roomNo}}" class="reservation-card-link" th:each="room : ${rooms}">
             <div class="reservation-card">
                 <!-- 객실 이미지 -->
-                <img th:src="@{'/uploads/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'">
+                <img th:src="@{'/img/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'">
+                <!-- <img th:src="@{'/uploads/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'"> -->
+                <!-- <img th:src="@{'/img/' + ${room.img}}" class="room-detail-image"> -->
 
                 <!-- 객실 정보 -->
                 <div class="room-info">
