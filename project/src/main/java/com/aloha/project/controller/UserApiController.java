@@ -6,13 +6,17 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import com.aloha.project.dto.User;
 import com.aloha.project.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 
 @Slf4j
 @RestController  // JSON 반환용
@@ -27,11 +31,13 @@ public class UserApiController {
      * [POST] - /api/users/join
      */
     @PostMapping("/join")
-    public ResponseEntity<Map<String,Object>> join(@RequestBody User user) {
+    public ResponseEntity<Map<String,Object>> join(@Valid @RequestBody User user) {
+
         log.info(":::::::::: 회원 가입 처리 (비동기식) ::::::::::");
         log.info("user : " + user);
 
         Map<String,Object> response = new HashMap<>();
+
         try {
             int result = userService.join(user);
 
@@ -53,12 +59,24 @@ public class UserApiController {
         }
     }
 
+    // @RequestBody로 전달된 JSON의 유효성 검사 실패를 처리
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String,Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+        Map<String,Object> response = new HashMap<>();
+        response.put("success", false);
+        response.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+
     /**
      * 아이디 중복 검사 (비동기식)
      * [GET] - /api/users/check/{username}
      */
     @GetMapping("/check/{username}")
     public ResponseEntity<Boolean> userCheck(@PathVariable("username") String username) throws Exception {
+
+       
         log.info("아이디 중복 확인 : " + username);
         User user = userService.select(username);
         
@@ -120,4 +138,32 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+
+    /* 아이디 찾기 */
+    @PostMapping("/findIdCheck")
+    public ResponseEntity<Map<String,Object>> findIdCheck(@RequestBody Map<String,String> payload) {
+        Map<String,Object> response = new HashMap<>();
+        try {
+            String name = payload.get("name");
+            String email = payload.get("email");
+
+            String username = userService.findId(name, email);
+
+            if(username != null){
+                response.put("success", true);
+                response.put("username", username);
+            } else {
+                response.put("success", false);
+                response.put("message", "조회된 아이디가 없습니다.");
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "서버 오류 발생");
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    
 }

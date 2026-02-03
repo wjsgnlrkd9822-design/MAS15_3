@@ -18,15 +18,15 @@
             <result property="neutered" column="neutered"/> 
             <result property="vaccination" column="vaccination"/>
             <result property="certificateFile" column="certificate_file" jdbcType="BLOB"/>
-            <result property="ect" column="ect"/>
+            <result property="etc" column="etc"/>
             <result property="createdAt" column="created_at"/>
             <result property="updatedAt" column="updated_at"/>
         </resultMap>
 
         <!-- 반려견 등록 -->
         <insert id="insert" useGeneratedKeys="true" keyProperty="no">
-            INSERT INTO pets ( owner_no, name, profile_img, species, size, age, weight, gender, neutered, vaccination, certificate_file, ect )
-            VALUES ( #{ownerNo}, #{name}, #{profileImg, jdbcType=BLOB}, #{species}, #{size}, #{age}, #{weight}, #{gender}, #{neutered}, #{vaccination}, #{certificateFile, jdbcType=BLOB}, #{ect} )
+            INSERT INTO pets ( owner_no, name, profile_img, species, size, age, weight, gender, neutered, vaccination, certificate_file, etc )
+            VALUES ( #{ownerNo}, #{name}, #{profileImg, jdbcType=BLOB}, #{species}, #{size}, #{age}, #{weight}, #{gender}, #{neutered}, #{vaccination}, #{certificateFile, jdbcType=BLOB}, #{etc} )
         </insert>
 
 
@@ -60,7 +60,7 @@
             <if test="neutered != null">neutered = #{neutered},</if>
             <if test="vaccination != null">vaccination = #{vaccination},</if>
             <if test="certificateFile != null">certificate_file = #{certificateFile, jdbcType=BLOB},</if>
-            <if test="ect != null">ect = #{ect},</if> 
+            <if test="etc != null">etc = #{etc},</if> 
             updated_at = CURRENT_TIMESTAMP
           </set>
             WHERE no = #{no}

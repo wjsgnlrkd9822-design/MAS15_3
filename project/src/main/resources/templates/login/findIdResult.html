@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .inquiry { color: red; }
+</style>
+</head>
+<body>
+<h2>아이디 찾기 결과</h2>
+
+<div class="result-box">
+    <c:choose>
+        <c:when test="${not empty findId}">
+            <p>아이디는 <strong>${findId}</strong> 입니다.</p>
+        </c:when>
+        <c:otherwise>
+            <p class="inquiry">${message}</p>
+        </c:otherwise>
+    </c:choose>
+</div>
+
+<a href="/users/findId">다시 찾기</a>
+</body>
+</html>

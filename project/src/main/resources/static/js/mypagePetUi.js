@@ -53,6 +53,27 @@ async function loadPetCards() {
 }
 
 /* =========================
+   추가 모달 열기
+========================= */
+async function openAddPetModal() {
+    const modal = new bootstrap.Modal(
+        document.getElementById('addPetModal')
+    );
+
+    const form = document.getElementById('addPetForm');
+    form.reset();
+
+    const fileInput = document.getElementById('addPetProfile');
+    fileInput.value = '';
+
+    const preview = document.getElementById('addProfilePreview');
+    preview.src = '';
+    preview.style.display = 'none';
+
+    modal.show();
+}
+
+/* =========================
    수정 모달 열기
 ========================= */
 async function openEditPetModal(petNo) {
@@ -70,7 +91,7 @@ async function openEditPetModal(petNo) {
         document.getElementById('petGender').value = pet.gender;
         document.getElementById('petNeutered').value = pet.neutered;
         document.getElementById('petVaccination').value = pet.vaccination;
-        document.getElementById('petEtc').value = pet.ect || '';
+        document.getElementById('petEtc').value = pet.etc || '';
 
         // 이미지 미리보기
         const preview = document.getElementById('profilePreview');
@@ -82,7 +103,7 @@ async function openEditPetModal(petNo) {
         }
 
         new bootstrap.Modal(
-            document.getElementById('addPetModal')
+            document.getElementById('editPetModal')
         ).show();
 
     } catch (err) {
@@ -92,27 +113,40 @@ async function openEditPetModal(petNo) {
 }
 
 /* =========================
-   폼 제출 (추가 / 수정)
+   폼 제출 (추가)
 ========================= */
 async function handlePetFormSubmit(e) {
     e.preventDefault();
 
     const form = document.getElementById('addPetForm');
     const formData = new FormData(form);
+
+    try {
+        await apiAddPet(formData);
+        alert("반려견이 등록되었습니다.");
+        closePetModal();
+        loadPetCards();
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+}
+
+/* =========================
+   폼 제출 (수정)
+========================= */
+async function handlePetEditSubmit(e) {
+    e.preventDefault();
+
+    const form = document.getElementById('editPetForm');
+    const formData = new FormData(form);
     const petNo = document.getElementById('petNo').value;
 
     try {
-        if (petNo) {
-            await apiUpdatePet(formData);
-            alert("반려견 정보가 수정되었습니다.");
-        } else {
-            await apiAddPet(formData);
-            alert("반려견이 등록되었습니다.");
-        }
-
+        await apiUpdatePet(formData);
+        alert("반려견 정보가 수정되었습니다.");
         closePetModal();
         loadPetCards();
-
     } catch (err) {
         console.error(err);
         alert(err.message);
@@ -145,39 +179,89 @@ async function deletePetUI() {
    모달 닫기 + 초기화
 ========================= */
 function closePetModal() {
-    const modalEl = document.getElementById('addPetModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
+    const addModalEl = document.getElementById('addPetModal');
+    const addModal = bootstrap.Modal.getInstance(addModalEl);
 
-    if (modal) modal.hide();
+    const editModalEl = document.getElementById('editPetModal');
+    const editModal = bootstrap.Modal.getInstance(editModalEl);
 
-    const form = document.getElementById('addPetForm');
-    if (form) form.reset();
+    if (addModal) addModal.hide();
+    if (editModal) editModal.hide();
+
+    const addForm = document.getElementById('addPetForm');
+    if (addForm) addForm.reset();
+
+    const editForm = document.getElementById('editPetForm');
+    if (editForm) editForm.reset();
+
+    const addPreview = document.getElementById('addProfilePreview');
+    if (addPreview) {
+        addPreview.src = '';
+        addPreview.style.display = 'none';
+    }
+
+    const editPreview = document.getElementById('profilePreview');
+    if (editPreview) {
+        editPreview.src = '';
+        editPreview.style.display = 'none';
+    }
 
     document.getElementById('petNo').value = '';
-    document.getElementById('profilePreview').style.display = 'none';
+    document.getElementById('addPetProfile').value = '';
+    document.getElementById('petProfile').value = '';
 }
+
+document.getElementById('addPetModal')
+  .addEventListener('hidden.bs.modal', () => {
+    const form = document.getElementById('addPetForm');
+    form.reset();
+
+    const img = document.getElementById('addProfilePreview');
+    img.src = '';
+    img.style.display = 'none';
+
+    document.getElementById('addPetProfile').value = '';
+});
 
 /* =========================
    이미지 미리보기
 ========================= */
-function setupImagePreview() {
-    const input = document.getElementById('petProfile');
-    const preview = document.getElementById('profilePreview');
+async function setupImagePreview() {
+    const inputEdit = document.getElementById('petProfile');
+    const previewEdit = document.getElementById('profilePreview');
 
-    if (!input || !preview) return;
+    const inputAdd = document.getElementById('addPetProfile');
+    const previewAdd = document.getElementById('addProfilePreview');
 
-    input.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
+    if (inputEdit && previewEdit) {
+        inputEdit.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = ev => {
-            preview.src = ev.target.result;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    });
+            const reader = new FileReader();
+            reader.onload = ev => {
+                previewEdit.src = ev.target.result;
+                previewEdit.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    if (inputAdd && previewAdd) {
+        inputAdd.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = ev => {
+                previewAdd.src = ev.target.result;
+                previewAdd.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 }
+
 
 /* =========================
    초기화
@@ -188,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPetCards();
     setupImagePreview();
 
-    document
-        .getElementById('addPetForm')
-        .addEventListener('submit', handlePetFormSubmit);
+    document.getElementById('addPetForm').addEventListener('submit', handlePetFormSubmit);
+    document.getElementById('editPetForm').addEventListener('submit', handlePetEditSubmit);
 });
