@@ -15,10 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 public class MyPageController {
 
     // 1️⃣ 마이페이지 뷰 반환 (동기식)
-    @GetMapping("/mypage")
-    public String mypage() {
-        return "mypage/mypage";
-    }
+    // @GetMapping("/mypage")
+    // public String mypage() {
+    //     return "mypage/mypage";
+    // }       
+    //maincontroller랑 충돌나서 잠시 주석 해놨습니다
 
     // 로그인한 사용자 정보 반환 (비동기식 JSON)
     @GetMapping("/api/users/me")

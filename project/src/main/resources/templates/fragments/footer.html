@@ -11,7 +11,7 @@
             
             <section class="footer-section">
                 <p class="footer-title">빠른 링크</p>
-                <p><a th:href="@{/pet/reservation}">예약하기</a></p>
+                <p><a th:href="@{/pet/reservation}" th:attr="data-login=${isLogin}">예약</a></p>
                 <p><a th:href="@{/공지사항}">공지사항</a></p>
                 <p><a th:href="@{/서비스}">서비스 안내</a></p>
                 <p><a th:href="@{/소개}">호텔 소개</a></p>
