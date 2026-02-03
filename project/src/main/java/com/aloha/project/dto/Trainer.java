@@ -13,5 +13,5 @@ public class Trainer {
     private String detail;
     private String gender;
     private String img;
-
+    public Trainer() {}
 }

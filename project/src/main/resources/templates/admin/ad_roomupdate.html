@@ -71,7 +71,7 @@ body { background-color: #f5f6f7; }
                                     <div class="mt-2">
                                         <small class="text-muted">기존 이미지:</small><br>
                                         <img th:if="${room.img != null}" 
-                                            th:src="@{'/uploads/' + ${room.img}}" 
+                                             th:src="@{/uploads/{img}(img=${room.img})}"
                                             alt="기존 이미지" 
                                             style="width:200px; height:auto; border:1px solid #ddd; padding:2px; border-radius:4px;">
                                     </div>
