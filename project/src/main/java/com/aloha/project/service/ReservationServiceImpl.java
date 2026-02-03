@@ -63,4 +63,12 @@ public class ReservationServiceImpl implements ReservationService {
             throw new RuntimeException("예약 수정 실패: resNo=" + resNo);
         }
     }
+
+    @Override
+    public void delete(Long resNo) {
+    reservationMapper.deleteReservation(resNo); // Mapper 메서드 호출
+}
+
+
+
 }

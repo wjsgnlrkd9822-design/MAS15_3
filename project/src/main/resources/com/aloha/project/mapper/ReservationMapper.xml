@@ -52,4 +52,11 @@
         WHERE res_no = #{resNo}
     </update>
 
+    <!-- 삭제 -->
+    <!-- 예약 삭제 -->
+    <delete id="deleteReservation" parameterType="long">
+        DELETE FROM reservations WHERE res_no = #{resNo}
+    </delete>
+
+
 </mapper>

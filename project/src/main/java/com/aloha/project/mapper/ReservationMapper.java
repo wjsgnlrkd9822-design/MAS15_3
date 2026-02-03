@@ -33,4 +33,7 @@ public interface ReservationMapper {
         @Param("checkoutDate") LocalDate checkoutDate,
         @Param("total") int total
     );
+
+   void deleteReservation(Long resNo); 
+    
 }
