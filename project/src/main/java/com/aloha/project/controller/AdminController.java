@@ -20,10 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.HotelService;
+import com.aloha.project.dto.Notice;
 import com.aloha.project.dto.Trainer;
 import com.aloha.project.dto.User;
 import com.aloha.project.service.AddtionalService;
 import com.aloha.project.service.FileService;
+import com.aloha.project.service.NoticeService;
 import com.aloha.project.service.RoomService;
 import com.aloha.project.service.TrainerService;
 import com.aloha.project.service.UserService;
@@ -39,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 public class AdminController {
+  private final NoticeService noticeService;
   private final TrainerService trainerService;
   private final AddtionalService addtionalService;
   private final RoomService roomService;
@@ -235,8 +238,25 @@ public ResponseEntity<?> deleteService(@PathVariable("serviceNo") Long serviceNo
 
   @GetMapping("/notice")
   public String notice() {
-      return "admin/ad_notice";
+      return "admin/ad_notice"; 
+
   }
+  @PostMapping("/noticeadd")
+  @ResponseBody
+  @PreAuthorize("hasRole('ADMIN')") 
+  public ResponseEntity<String> noticeadd(@RequestBody Notice notice) {
+      try {
+          boolean result = noticeService.insert(notice);
+          if (!result) {
+              return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+          } 
+          return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+      } catch (Exception e) {
+          e.printStackTrace();
+          return new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+  }
+  
 
       
 
@@ -267,7 +287,7 @@ public ResponseEntity<?> deleteService(@PathVariable("serviceNo") Long serviceNo
               return new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
           }                                     
     }
-    @GetMapping("trainerupdate")
+    @GetMapping("/trainerupdate")
     public String trainerupdate(@RequestParam("trainerNo") Long trainerNo, Model model) {
         try {
             Trainer trainer = trainerService.select(trainerNo);
@@ -278,7 +298,7 @@ public ResponseEntity<?> deleteService(@PathVariable("serviceNo") Long serviceNo
         return "admin/ad_trainerupdate";
     }
 
-    @PutMapping("trainerupdate/{trainerNo}")
+    @PutMapping("/trainerupdate/{trainerNo}")
     public ResponseEntity<?> updateTrainer(
             @PathVariable Long trainerNo,
             @RequestBody Trainer trainer) {
