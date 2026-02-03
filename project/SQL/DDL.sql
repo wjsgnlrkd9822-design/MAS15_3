@@ -47,7 +47,7 @@ create Table `pets`(
     `no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '반려견 번호',
     `owner_no` BIGINT NOT NULL COMMENT  '반려견 주인 번호',
     `name` VARCHAR(50) NOT NULL COMMENT '반려견 이름',
-    `profile_img` VARCHAR() DEFAULT NULL COMMENT '프로필 이미지',
+    `profile_img` LONGBLOB DEFAULT NULL COMMENT '프로필 이미지',
     `species` VARCHAR(50) NOT NULL COMMENT '반려견 종',
     `size` VARCHAR(20) NOT NULL COMMENT '반려견 크기',
     `age` INT NOT NULL COMMENT '반려견 나이',
@@ -56,7 +56,7 @@ create Table `pets`(
     `neutered` ENUM('예','아니오') NOT NULL COMMENT '중성화 여부',
     `vaccination` VARCHAR(255) NOT NULL COMMENT '예방접종 여부',
     `certificate_file` MEDIUMBLOB COMMENT '건강 증명서 이미지 파일',
-    `ect` TEXT NULL COMMENT '기타 사항',
+    `etc` TEXT NULL COMMENT '기타 사항',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
 
