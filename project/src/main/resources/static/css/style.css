@@ -4,21 +4,29 @@
     box-sizing: border-box;
 }
 
+body{
+    padding-top: 72px;
+}
+
+
 header {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     padding: 16px 40px;
-    height: 72px;         
+    height: 72px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    overflow: hidden;     
-    position: sticky;
+
+    position: fixed;
     top: 0;
-    z-index: 1000;
+    left: 0;
+    width: 100%;     
+    z-index: 9999;
 }
+
 
 header img {
     margin-top: 12px;

@@ -12,6 +12,8 @@
     </head>
     <body>
 
+    <div class="page-bg"></div>   
+
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header::header}"></th:block>
 
@@ -22,7 +24,7 @@
     <div class="reservation-filter" style="margin: 20px; display:flex; gap:10px; align-items:center;">
         <form th:action="@{/pet/reservation}" method="get" style="display:flex; gap:10px; align-items:center;">
             <!-- 정렬 선택 -->
-            <label>정렬: 
+            <label>
                 <select class="filter-select" name="sort">
                     <option th:value="default" th:selected="${selectedSort=='default'}">가격 순</option>
                     <option th:value="priceAsc" th:selected="${selectedSort=='priceAsc'}">저렴한 순</option>
@@ -31,7 +33,7 @@
             </label>
 
             <!-- 견종 선택 -->
-            <label>견종: 
+            <label>
                 <select class="filter-select" name="sizeType">
                     <option th:value="all" th:selected="${selectedSizeType=='all'}">견종</option>
                     <option th:value="소형견" th:selected="${selectedSizeType=='소형견'}">소형견</option>
@@ -41,7 +43,7 @@
             </label>
 
             <!-- 예약 상태 선택 -->
-            <label>예약 상태: 
+            <label>
                 <select class="filter-select" name="status">
                     <option th:value="all" th:selected="${selectedStatus=='all'}">예약상태</option>
                     <option th:value="예약가능" th:selected="${selectedStatus=='예약가능'}">예약가능</option>
@@ -58,7 +60,8 @@
         <a th:href="@{'/pet/reservation/' + ${room.roomNo}}" class="reservation-card-link" th:each="room : ${rooms}">
             <div class="reservation-card">
                 <!-- 객실 이미지 -->
-                <img th:src="@{'/img/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'">
+                <!-- <img th:src="@{'/img/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'"> -->
+                <img th:src="@{'/upload/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'">
                 <!-- <img th:src="@{'/uploads/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'"> -->
                 <!-- <img th:src="@{'/img/' + ${room.img}}" class="room-detail-image"> -->
 

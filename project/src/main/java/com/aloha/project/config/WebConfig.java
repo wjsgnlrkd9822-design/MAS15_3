@@ -14,12 +14,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        // 업로드 이미지
-            registry.addResourceHandler("/uploads/**")
+        // 🔹 업로드 이미지
+        registry.addResourceHandler("/upload/**")
                 .addResourceLocations("file:///" + uploadPath);
 
-        // static 리소스 (img, css, js)
-        registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/");
+        // 🔹 static/img는 Spring Boot 기본 매핑 사용 → /img/** 로 접근 가능
     }
 }

@@ -46,6 +46,11 @@ public class MainController {
         return "index";
     }
 
+    @GetMapping("/pet/introduce")
+    public String service() {
+        return "pet/introduce";
+    }
+    
 
     /**
      * 예약 페이지

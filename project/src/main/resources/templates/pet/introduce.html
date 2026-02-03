@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서비스 페이지</title>
+    
+    <!-- 공통 CSS -->
+    <th:block th:replace="~{fragments/link::link}"></th:block>
+    <th:block th:replace="~{fragments/linkintroduce::link}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/introduce.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Font Awesome 아이콘 -->
+</head>
+
+<body>
+    <!-- 헤더 -->
+    <th:block th:replace="~{fragments/header::header}"></th:block>
+    <div class="container">
+        <div class="hero">
+            <img th:src="@{/img/introduce.jpg}" alt="소개 이미지">
+            
+            <div class="hero-content">
+                <h1>
+                    여기는 그냥 호텔이 아니라,<br>
+                    반려동물의 두 번째 집입니다
+                </h1>
+                <p>
+                    댕댕이 호텔은 반려동물을 가족처럼 대하는 프리미엄 펫 호텔입니다.
+                    <br>
+                    <br>
+                    안전한 환경, 전문적인 케어, 그리고 진심 어린 사랑으로
+                    여러분의 소중한 가족을 돌보겠습니다.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+    <th:block th:replace="~{fragments/footer::footer}"></th:block>
+</body>
+</html>
