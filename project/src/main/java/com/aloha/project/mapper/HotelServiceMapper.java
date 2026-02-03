@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface HotelServiceMapper {
-    int insertHotelService(HotelService service);
-    HotelService selectHotelServiceById(Long serviceNo);
-    List<HotelService> selectAllHotelServices();
-    int updateHotelService(HotelService service);
-    int deleteHotelService(Long serviceNo);
+   public int insertHotelService(HotelService service);
+   public HotelService selectHotelServiceById(Long serviceNo);
+   public List<HotelService> selectAllHotelServices();
+   public int updateHotelService(HotelService service);
+   public int deleteHotelService(Long serviceNo);
 }

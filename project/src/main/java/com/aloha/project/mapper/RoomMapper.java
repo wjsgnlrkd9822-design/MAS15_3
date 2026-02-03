@@ -9,13 +9,13 @@ import com.aloha.project.dto.HotelRoom;
 @Mapper
 public interface RoomMapper {
     
-  List<HotelRoom> list() throws Exception;
+  public List<HotelRoom> list() throws Exception;
+ 
+  public int insert(HotelRoom hotelRoom) throws Exception;
 
-  int insert(HotelRoom hotelRoom) throws Exception;
-
-  int update(HotelRoom hotelRoom) throws Exception;
+  public int update(HotelRoom hotelRoom) throws Exception;
   
-  HotelRoom select(Long roomNo) throws Exception;
+  public HotelRoom select(Long roomNo) throws Exception;
 
-  int delete(Long roomNo) throws Exception;
+  public int delete(Long roomNo) throws Exception;
 }

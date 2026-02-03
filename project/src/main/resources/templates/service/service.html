@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서비스 화면</title>
+    <th:block th:replace="~{fragments/link::link}"></th:block>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .main-bg {
+    background-image: url('/img/servicemain.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+    </style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/header::header}"></th:block>
+<div class="main-bg">
+    <section class="py-5">
+    <div class="container">
+        <!-- 제목 -->
+        <section class="py-5"> 
+        <div class="container">
+
+        <div class="mb-5">
+            <h2 class="fw-bold">호텔 서비스</h2>
+            <p class="text-muted">우리 호텔에서 제공하는 프리미엄 서비스</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4">
+                    <div class="fs-1 mb-3">🐶</div>
+                    <h5 class="fw-bold">프리미엄 객실</h5>
+                    <p class="text-muted">
+                        쾌적하고 안전한 개별 객실 제공
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4">
+                    <div class="fs-1 mb-3">❤️</div>
+                    <h5 class="fw-bold">건강 케어</h5>
+                    <p class="text-muted">정기 건강 체크 및 관리</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4">
+                    <div class="fs-1 mb-3">✂️</div>
+                    <h5 class="fw-bold">미용 서비스</h5>
+                    <p class="text-muted">전문 그루밍 서비스</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4">
+                    <div class="fs-1 mb-3">🍽️</div>
+                    <h5 class="fw-bold">맞춤 식사</h5>
+                    <p class="text-muted">반려견 맞춤형 식단 제공</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4">
+                    <div class="fs-1 mb-3">📷</div>
+                    <h5 class="fw-bold">실시간 모니터링</h5>
+                    <p class="text-muted">언제든지 확인 가능</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4">
+                    <div class="fs-1 mb-3">⚽</div>
+                    <h5 class="fw-bold">운동 & 놀이</h5>
+                    <p class="text-muted">충분한 활동 프로그램</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+</section>
+
+<section class="py-5 ">
+    <div class="container">
+
+        <!-- 제목 -->
+        <div class="mb-5">
+            <h2 class="fw-bold">전문 훈련사</h2>
+            <p class="text-muted">풍부한 경험과 전문성을 갖춘 훈련사들</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4"
+             th:each="trainer : ${trainer}">
+                <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4">
+                    <img th:src="@{'/uploads/' + ${trainer.img}}" 
+                         class="rounded-circle mx-auto mb-3"
+                         style="width:100px;height:100px;object-fit:cover;">
+                    <h5 class="fw-bold" th:text="${trainer.trainerName}"></h5>
+                    <p class="text-muted" th:text="${trainer.detail}"></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+</div>
+<th:block th:replace="~{fragments/footer::footer}"></th:block>
+
+
+</body>
+</html>

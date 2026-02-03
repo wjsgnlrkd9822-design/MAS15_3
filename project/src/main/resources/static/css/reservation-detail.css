@@ -192,7 +192,9 @@
     background:white;
     color:#CC9966;
     text-align:center;
+    border: 1px solid;
     border-radius:10px;
+    border-color: white;
     font-weight:700;
     text-decoration:none;
     transition:.25s;

@@ -45,6 +45,7 @@ public class SecurityConfig {
    * @return
    * @throws Exception
    */
+  
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     log.info("스프링 시큐리티 설정");
@@ -52,7 +53,8 @@ public class SecurityConfig {
     // 인가 설정
     http.authorizeHttpRequests(auth -> auth
                               .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")  
-                              .requestMatchers("/**", "/login", "/join", "/findId", "/api/users/findIdCheck").permitAll()   // 전체 허용
+                              .requestMatchers("/pet/reservation/**").authenticated() // 한줄 추가했어요
+                              .requestMatchers("/**").permitAll()   // 전체 허용
                               );
     // 폼 로그인 설정
     http.formLogin(login -> login

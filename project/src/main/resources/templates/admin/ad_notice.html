@@ -5,11 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공지사항 작성</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- 기존 스타일 -->
 
     <style>
         body {
@@ -60,32 +59,71 @@
 
         <h4 class="mb-4">공지사항 작성</h4>
 
-        <!-- 작성 폼 -->
-        <div class="card">
+    <form id="noticeForm" action="/admin/noticeadd" method="post">
+       <div class="card" >
             <div class="card-body">
 
                 <!-- 제목 -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">제목</label>
-                    <input type="text" class="form-control" placeholder="공지사항 제목을 입력하세요">
+                    <input type="text" class="form-control" id="title" placeholder="공지사항 제목을 입력하세요">
                 </div>
 
                 <!-- 내용 -->
                 <div class="mb-4">
                     <label class="form-label fw-semibold">내용</label>
-                    <textarea class="form-control" rows="8" placeholder="공지사항 내용을 입력하세요"></textarea>
+                    <textarea class="form-control" rows="8" id="content" placeholder="공지사항 내용을 입력하세요"></textarea>
                 </div>
 
                 <!-- 버튼 영역 -->
                 <div class="d-flex justify-content-end gap-2">
-                    <button class="btn btn-secondary">목록으로</button>
-                    <button class="btn btn-primary">등록하기</button>
+                    <a href="/noticelist" class="btn btn-secondary">목록으로</a>
+                    <button type="submit" class="btn btn-primary">등록하기</button>
                 </div>
 
-            </div>
-        </div>
-
+               </div>
+           </div>
+        </form>
     </div>
 </div>
 </body>
+<script>
+document.getElementById("noticeForm").addEventListener("submit", function (e) {
+    e.preventDefault(); // ⭐ submit 기본 동작 막기
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    const data = {
+        title: document.getElementById("title").value,
+        content: document.getElementById("content").value
+    };
+
+    fetch("/admin/noticeadd", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            [csrfHeader]: csrfToken
+        },
+        body: JSON.stringify(data)
+    })
+    .then(function (response) {
+        return response.text();   // 🔹 여기서 Promise 반환
+    })
+    .then(function (result) {
+        if (result === "SUCCESS") {
+            alert("공지사항이 등록되었습니다");
+            window.location.href = "/admin/notice";
+        } else {
+            alert("등록 실패 : " + result);
+        }
+    })
+    .catch(function (error) {
+        console.error(error);
+        alert("서버 통신 오류");
+    });
+});
+</script>
+
+
 </html>
