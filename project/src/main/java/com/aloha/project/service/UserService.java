@@ -24,8 +24,11 @@ public interface UserService {
     // 회원 권한 등록
     public int insertAuth(UserAuth userAuth) throws Exception;
 
+    // 회원 삭제
     public int delete(String id) throws Exception;
     
     List<User> list() throws Exception;
+
+    public String findId(String name, String email) throws Exception;
     
 }

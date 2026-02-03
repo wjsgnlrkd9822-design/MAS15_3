@@ -3,6 +3,7 @@ package com.aloha.project.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.aloha.project.dto.User;
 import com.aloha.project.dto.UserAuth;
@@ -25,4 +26,6 @@ public interface UserMapper {
     public int delete(String id) throws Exception;
 
     List<User> list() throws Exception;
+
+    public String findId(@Param("name") String name, @Param("email") String email);
 }

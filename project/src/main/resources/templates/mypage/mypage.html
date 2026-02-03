@@ -25,6 +25,7 @@
   <!-- 마이 페이지 헤더 -->
   <section class="mypage-header">
     <div class="mypage-header-inner">
+      <br>
       <h2>마이 페이지</h2>
       <p>나의 예약 내역과 정보를 확인하고 관리하세요</p>
     </div>
@@ -62,17 +63,17 @@
         </div>
 
         <div class="modal-body">
-          <lable>아이디(변경불가)</lable>
+          <label>아이디(변경불가)</label>
           <input id="editUsername" class="form-control mb-2" placeholder="아이디" readonly>
-          <lable>이름(변경불가)</lable>
+          <label>이름(변경불가)</label>
           <input id="editName" class="form-control mb-2" placeholder="이름" readonly>
-          <lable>이메일</lable>
+          <label>이메일</label>
           <input id="editEmail" class="form-control mb-2" placeholder="이메일">
-          <lable>전화번호</lable>
+          <label>전화번호</label>
           <input id="editPhone" class="form-control mb-2" placeholder="전화번호">
           <label>생년월일</label>
           <input type="date" id="editBirth" class="form-control mb-2" />
-          <lable>주소</lable>
+          <label>주소</label>
           <input id="editAddress" class="form-control mb-2" placeholder="주소">
         </div>
 
@@ -88,7 +89,7 @@
 
   <!-- =============================================================================================================== -->
 
-
+<!-- 펫 정보 추가 -->
   <section class="mypage-pets">
     <div class="mypage-pets-inner">
       <h3>나의 반려견</h3>
@@ -104,15 +105,111 @@
         <span>반려견 추가</span>
       </button>
 
-      <!-- 모달 -->
+      <!-- 반려견 추가 모달 -->
       <div class="modal fade" id="addPetModal" tabindex="-1" aria-labelledby="addPetModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="addPetModalLabel">반려견 정보</h5>
+              <h5 class="modal-title" id="addPetModalLabel">반려견 추가</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="addPetForm">
+              <!-- 모달 내용 -->
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="petName" class="form-label">이름</label>
+                  <input type="text" class="form-control" id="addPetName" name="name" required>
+                </div>
+                <div class="mb-3">
+                  <label for="petSpecies" class="form-label">종</label>
+                  <input type="text" class="form-control" id="addPetSpecies" name="species" required>
+                </div>
+                <div class="mb-3">
+                  <label for="petSize" class="form-label">크기</label>
+                  <select class="form-select" id="addPetSize" name="size" required>
+                    <option value="소형">소형</option>
+                    <option value="중형">중형</option>
+                    <option value="대형">대형</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="petAge" class="form-label">나이</label>
+                  <input type="number" class="form-control" id="addPetAge" name="age" required>
+                </div>
+                <div class="mb-3">
+                  <label for="petWeight" class="form-label">몸무게</label>
+                  <input type="number" class="form-control" id="addPetWeight" name="weight" step="0.1" required>
+                </div>
+                <div class="mb-3">
+                  <label for="petGender" class="form-label">성별</label>
+                  <select class="form-select" id="addPetGender" name="gender" required>
+                    <option value="수컷">수컷</option>
+                    <option value="암컷">암컷</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="petNeutered" class="form-label">중성화 여부</label>
+                  <select class="form-select" id="addPetNeutered" name="neutered" required>
+                    <option value="예">예</option>
+                    <option value="아니오">아니오</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="petVaccination" class="form-label">예방접종 여부</label>
+                  <select class="form-select" id="addPetVaccination" name="vaccination" required>
+                    <option value="예">예</option>
+                    <option value="아니오">아니오</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="petProfile" class="form-label">프로필 이미지</label>
+                  <input type="file" class="form-control" id="addPetProfile" name="profileImg">
+                  <img id="addProfilePreview" class="img-thumbnail mt-2" style="max-width:150px; display:none;"  onclick="openImagePreview(this.src)">
+                </div>
+                <div class="mb-3">
+                  <label for="petCertificate" class="form-label">건강 증명서</label>
+                  <input type="file" class="form-control" id="addPetCertificate" name="certificateFile">
+                </div>
+                <div class="mb-3">
+                  <label for="petEtc" class="form-label">기타 사항</label>
+                  <textarea class="form-control" id="addPetEtc" name="etc" rows="2"></textarea>
+                </div>
+              </div>
+              <!-- 모달 푸터 -->
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="submit" class="btn btn-primary">추가</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 이미지 확대 모달 -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body text-center">
+        <img id="imagePreviewModalImg"
+             class="img-fluid rounded"
+             style="max-height: 80vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    <!-- 반려견 수정하기 모달 -->
+    <div class="modal fade" id="editPetModal" tabindex="-1" aria-labelledby="editPetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editPetModalLabel">반려견 정보 수정</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editPetForm">
               <!-- 모달 내용 -->
               <div class="modal-body">
                 <input type="hidden" id="petNo" name="petNo">
@@ -165,7 +262,7 @@
                 <div class="mb-3">
                   <label for="petProfile" class="form-label">프로필 이미지</label>
                   <input type="file" class="form-control" id="petProfile" name="profileImg">
-                  <img id="profilePreview" class="img-thumbnail mt-2" style="max-width:150px; display:none;">
+                  <img id="profilePreview" class="img-thumbnail mt-2" style="max-width:150px; display:none;"  onclick="openImagePreview(this.src)">
                 </div>
                 <div class="mb-3">
                   <label for="petCertificate" class="form-label">건강 증명서</label>
@@ -173,25 +270,23 @@
                 </div>
                 <div class="mb-3">
                   <label for="petEtc" class="form-label">기타 사항</label>
-                  <textarea class="form-control" id="petEtc" name="ect" rows="2"></textarea>
+                  <textarea class="form-control" id="petEtc" name="etc" rows="2"></textarea>
                 </div>
               </div>
               <!-- 모달 푸터 -->
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="submit" class="btn btn-primary">추가</button>
-                <button type="button" class="btn btn-danger"
-                  onclick="deletePet(document.getElementById('petNo').value)">삭제</button>
+                <button type="submit" class="btn btn-primary">수정</button>
+                <button type="button" class="btn btn-danger" onclick="deletePetUI()">삭제</button>
               </div>
             </form>
           </div>
         </div>
       </div>
-    </div>
-
   </section>
 
 
+ 
 
 
 

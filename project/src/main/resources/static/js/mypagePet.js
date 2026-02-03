@@ -152,9 +152,6 @@ async function viewPetDetail(petNo) {
 
 
 
-
-
-
 /* 반려견 폼 제출 처리 - 추가 및 수정 */
 function setupAddPetForm() {
     console.log("=== setupAddPetForm 실행 ===");

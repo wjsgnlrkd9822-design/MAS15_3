@@ -27,7 +27,7 @@ public class Pet {
     private String neutered;            // 중성화 여부 ('예' / '아니오')
     private String vaccination;         // 예방접종 여부
     private byte[] certificateFile;     // 건강 증명서 이미지 (MEDIUMBLOB)
-    private String ect;                 // 기타 사항
+    private String etc;                 // 기타 사항
     private Date createdAt;        // 생성일시
     private Date updatedAt;        // 수정일시
 

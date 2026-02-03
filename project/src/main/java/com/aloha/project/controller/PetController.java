@@ -46,7 +46,7 @@ public class PetController {
             @RequestParam("vaccination") String vaccination,
             @RequestParam(value = "profileImg", required = false) MultipartFile profileImg,
             @RequestParam(value = "certificateFile", required = false) MultipartFile certificateFile,
-            @RequestParam(value = "ect", required = false) String ect,
+            @RequestParam(value = "etc", required = false) String etc,
             @AuthenticationPrincipal CustomUser customUser) {
         Map<String, Object> response = new HashMap<>();
         try {
@@ -59,7 +59,7 @@ public class PetController {
             pet.setGender(gender);
             pet.setNeutered(neutered);
             pet.setVaccination(vaccination);
-            pet.setEct(ect);
+            pet.setEtc(etc);
 
             if (profileImg != null && !profileImg.isEmpty()) {
                 pet.setProfileImg(profileImg.getBytes());
@@ -147,7 +147,7 @@ public class PetController {
             @RequestParam("vaccination") String vaccination,
             @RequestParam(value = "profileImg", required = false) MultipartFile profileImg,
             @RequestParam(value = "certificateFile", required = false) MultipartFile certificateFile,
-            @RequestParam(value = "ect", required = false) String ect,
+            @RequestParam(value = "etc", required = false) String etc,
             @AuthenticationPrincipal CustomUser customUser) {
         Map<String, Object> response = new HashMap<>();
         try {
@@ -161,7 +161,7 @@ public class PetController {
             pet.setGender(gender);
             pet.setNeutered(neutered);
             pet.setVaccination(vaccination);
-            pet.setEct(ect);
+            pet.setEtc(etc);
 
             if (profileImg != null && !profileImg.isEmpty()) {
                 pet.setProfileImg(profileImg.getBytes());
