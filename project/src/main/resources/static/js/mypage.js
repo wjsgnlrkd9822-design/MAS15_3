@@ -116,3 +116,35 @@ async function updateMyInfo() {
         alert('수정 중 오류가 발생했습니다.');
     }
 }
+
+/* 회원 탈퇴 처리 */
+async function deleteMyAccount() {
+    if (!confirm('정말로 회원 탈퇴 하시겠습니까? 모든 데이터가 삭제됩니다.')) return;
+
+    try {
+        const res = await fetch('/api/users/delete', {
+            method: 'DELETE',
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        });
+
+        if (!res.ok) {
+            const text = await res.text();
+            console.error('회원 탈퇴 실패:', res.status, text);
+            alert('회원 탈퇴 실패: ' + res.status);
+            return;
+        }
+
+        const data = await res.json();
+        if (data.success) {
+            alert(data.message || '회원 탈퇴가 완료되었습니다.');
+            window.location.href = '/';
+        } else {
+            alert('회원 탈퇴 실패: ' + (data.message || '알 수 없음'));
+        }
+    } catch (err) {
+        console.error('회원 탈퇴 중 오류:', err);
+        alert('서버 오류가 발생했습니다.');
+    }
+}
