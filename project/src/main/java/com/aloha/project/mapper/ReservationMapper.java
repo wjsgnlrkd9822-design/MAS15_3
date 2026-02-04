@@ -24,10 +24,8 @@ public interface ReservationMapper {
 
     List<ReservationDto> findByUserNo(@Param("userNo") Long userNo);
     
-    // ✅ 추가
     ReservationDto findByResNo(@Param("resNo") Long resNo);
     
-    // ✅ 추가
     int update(
         @Param("resNo") Long resNo,
         @Param("checkinDate") LocalDate checkinDate,
@@ -36,6 +34,6 @@ public interface ReservationMapper {
         @Param("totalPrice") int totalPrice
     );
 
-   void deleteReservation(Long resNo); 
+    int deleteReservation(@Param("resNo") Long resNo); // ✅ void → int, @Param 추가
     
 }
