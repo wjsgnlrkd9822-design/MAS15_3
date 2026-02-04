@@ -20,10 +20,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.aloha.project.dto.CustomUser;
 import com.aloha.project.dto.HotelRoom;
+import com.aloha.project.dto.Pet;
 import com.aloha.project.dto.ReservationDto;
 import com.aloha.project.service.HotelRoomService;
 import com.aloha.project.service.HotelServiceService;
+import com.aloha.project.service.PetService;
 import com.aloha.project.service.ReservationService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MainController {
 
+    private final PetService petService;
     private final HotelRoomService hotelRoomService;       
     private final HotelServiceService hotelServiceService; 
     private final ReservationService reservationService;  
@@ -99,8 +103,10 @@ public class MainController {
     @GetMapping("/pet/reservation/{roomNo}")
     public String reservationDetail(
             @PathVariable("roomNo") Long roomNo,
-            Model model
-    ) {
+            Model model,
+            @AuthenticationPrincipal CustomUser customUser
+    ) throws Exception {
+
         HotelRoom room = hotelRoomService.getRoom(roomNo);
         if (room == null) return "redirect:/pet/reservation";
 
@@ -110,6 +116,12 @@ public class MainController {
         LocalDate today = LocalDate.now();
         model.addAttribute("checkin", today.toString()); 
         model.addAttribute("checkout", today.plusDays(1).toString());
+
+        if ( customUser != null ) {
+            Long ownerNo = customUser.getNo();
+            List<Pet> pets = petService.selectPetsByOwnerNo(ownerNo);
+            model.addAttribute("pets", pets);
+        }
 
         return "pet/reservation-detail";
     }
@@ -125,15 +137,23 @@ public class MainController {
             @RequestParam("nights") int nights,
             @RequestParam("total") int total,
             @RequestParam("totalPrice") int totalPrice,
+            @RequestParam("petNo") Long petNo,
+            @AuthenticationPrincipal CustomUser customUser,
             RedirectAttributes redirectAttributes
     ) {
+        if ( customUser == null ) {
+            return "redirect:/login";
+        }
+
+        Long userNo = customUser.getNo();
+
         System.out.println("=== 서버에서 받은 값 ===");
         System.out.println("체크인: " + checkin);
         System.out.println("체크아웃: " + checkout);
         System.out.println("박수: " + nights);
         
-        Long userNo = 1L;
-        Long petNo = 1L;
+        /* Long userNo = 1L;
+        Long petNo = 1L; */
 
         LocalDate checkinDate = LocalDate.parse(checkin);
         LocalDate checkoutDate = LocalDate.parse(checkout);
@@ -152,14 +172,21 @@ public class MainController {
     /**
      * 마이페이지
      */
-    @GetMapping("/mypage")
-    public String mypage(Model model) {
-        Long userNo = 1L;
+   @GetMapping("/mypage")
+public String mypage(Model model, @AuthenticationPrincipal CustomUser customUser) throws Exception {
+    if(customUser != null){
+        Long ownerNo = customUser.getNo();
 
-        List<ReservationDto> reservations = reservationService.getReservationsByUser(userNo);
+        // 반려견 목록
+        List<Pet> pets = petService.selectPetsByOwnerNo(ownerNo);
+        model.addAttribute("pets", pets);
+
+        // 예약 목록
+        List<ReservationDto> reservations = reservationService.getReservationsByUser(ownerNo);
         model.addAttribute("reservations", reservations);
-        return "mypage/mypage";
     }
+    return "mypage/mypage";
+}
 
     // ✅ 예약 1건 조회 (AJAX용)
     @GetMapping("/api/reservation/{resNo}")
