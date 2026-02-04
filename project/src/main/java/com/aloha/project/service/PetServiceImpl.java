@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.aloha.project.dto.Pet;
 import com.aloha.project.mapper.PetMapper;
+import com.aloha.project.service.PetService;
 import com.aloha.project.mapper.UserMapper; // 로그인 UUID → ownerNo 조회용
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;

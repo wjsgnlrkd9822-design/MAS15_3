@@ -85,6 +85,14 @@
                 <span id="room-price" th:text="${room.roomPrice}"></span>원
                 <small>/ 1박</small>
             </div>
+
+            <!-- <div class="pet-select-box">
+                <label for="petSelect">예약할 반려견 선택</label>
+                <select id="petSelect" name="petNo" required>
+                    <option value="" disabled selected>반려견을 선택해주세요</option>
+                    <option th:each="pet : ${pets}" th:value="${pet.no}" th:text="${pet.name}"></option>
+                </select>
+            </div> -->
         </div>
     </div>
 
@@ -149,6 +157,10 @@
             <input type="hidden" name="nights" id="form-nights">
             <input type="hidden" name="total" id="form-total">
             <input type="hidden" name="totalPrice" id="form-total-price">
+            <select id="petSelect" name="petNo" required>
+        <option value="" disabled selected>반려견 선택</option>
+        <option th:each="pet : ${pets}" th:value="${pet.no}" th:text="${pet.name}"></option>
+    </select>
             <button type="submit" id="reserveBtn" class="summary-btn">예약하기</button>
         </form>
     </div>
@@ -269,6 +281,7 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("reservationForm").addEventListener("submit", function(e){
         const checkin = checkinInput.selectedDates[0];
         const checkout = checkoutInput.selectedDates[0];
+        const petSelect = document.getElementById("petSelect");
 
         console.log("=== 폼 제출 시점 ===");
         console.log("체크인 선택:", checkin);
@@ -283,6 +296,12 @@ document.addEventListener("DOMContentLoaded", function(){
         if(checkout <= checkin){
             e.preventDefault();
             alert("체크인/체크아웃 날짜가 올바르지 않습니다.");
+            return;
+        }
+
+        if(!petSelect.value) {
+            e.preventDefault();
+            alert("반려견을 선택해주세요");
             return;
         }
 
