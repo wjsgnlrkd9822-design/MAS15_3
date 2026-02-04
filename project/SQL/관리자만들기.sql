@@ -10,8 +10,8 @@ WHERE username = '아이디';
 INSERT INTO `user` (id, username, password, name, email)
 VALUES (UUID(), 'admin', '123456', 
         '관리자', 'admin@naver.com');
-
+ 
 INSERT INTO `user_auth` (id, username, auth )
 VALUES 
-  ('admin', 'admin', 'ROLE_USER'),
-  ('admin', 'admin', 'ROLE_ADMIN');
+  ('admin123', 'admin123', 'ROLE_USER'),
+  ('admin123', 'admin123', 'ROLE_ADMIN');
