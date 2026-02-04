@@ -7,19 +7,20 @@
 
     <!-- 예약 추가 -->
     <insert id="insert">
-    INSERT INTO reservations
-    (user_no, pet_no, room_no, res_date, res_time, checkout_date,total_price)
-    VALUES
-    (#{userNo}, #{petNo}, #{roomNo}, #{checkinDate}, #{resTime}, #{checkoutDate},#{totalPrice})
-   </insert>
+        INSERT INTO reservations
+        (user_no, pet_no, room_no, res_date, res_time, checkout_date, total_price)
+        VALUES
+        (#{userNo}, #{petNo}, #{roomNo}, #{checkinDate}, #{resTime}, #{checkoutDate}, #{totalPrice})
+    </insert>
 
     <!-- 회원별 예약 조회 -->
     <select id="findByUserNo" resultType="com.aloha.project.dto.ReservationDto">
         SELECT 
               r.res_no AS resNo,
-              r.res_no AS userNo,
+              r.user_no AS userNo,
               r.res_date AS checkin,
               r.checkout_date AS checkout,
+              r.total_price AS totalPrice,
               p.name AS petName,
               h.room_type AS roomType,
               h.room_no AS roomNo
@@ -30,13 +31,14 @@
         ORDER BY r.res_no DESC
     </select>
 
-    <!-- ✅ 예약 1건 조회 -->
+    <!-- 예약 1건 조회 -->
     <select id="findByResNo" resultType="com.aloha.project.dto.ReservationDto">
         SELECT 
               r.res_no AS resNo,
-              r.res_no AS userNo,
+              r.user_no AS userNo,
               r.res_date AS checkin,
               r.checkout_date AS checkout,
+              r.total_price AS totalPrice,
               p.name AS petName,
               h.room_type AS roomType,
               h.room_no AS roomNo
@@ -46,19 +48,18 @@
         WHERE r.res_no = #{resNo}
     </select>
 
-    <!-- ✅ 예약 수정 -->
+    <!-- 예약 수정 -->
     <update id="update">
         UPDATE reservations
         SET res_date = #{checkinDate},
-            checkout_date = #{checkoutDate}
+            checkout_date = #{checkoutDate},
+            total_price = #{totalPrice}
         WHERE res_no = #{resNo}
     </update>
 
-    <!-- 삭제 -->
     <!-- 예약 삭제 -->
-    <delete id="deleteReservation" parameterType="long">
+    <delete id="deleteReservation">
         DELETE FROM reservations WHERE res_no = #{resNo}
     </delete>
-
 
 </mapper>

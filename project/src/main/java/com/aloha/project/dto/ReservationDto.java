@@ -9,9 +9,9 @@ public class ReservationDto {
     private Long resNo;
     private Long userNo;
     private Long petNo;
-    private Long rommNo;
+    private Long roomNo;  // ✅ 추가
     private LocalDate checkin;
-    private LocalDate checkout; // calculateCheckout에서 계산
+    private LocalDate checkout;
     private int nights;        
     private int total;   
     private int totalPrice;       
@@ -24,4 +24,3 @@ public class ReservationDto {
         }
     }
 }
-
