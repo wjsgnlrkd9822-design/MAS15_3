@@ -8,9 +8,9 @@
     <!-- 예약 추가 -->
     <insert id="insert">
     INSERT INTO reservations
-    (user_no, pet_no, room_no, res_date, res_time, checkout_date)
+    (user_no, pet_no, room_no, res_date, res_time, checkout_date,total_price)
     VALUES
-    (#{userNo}, #{petNo}, #{roomNo}, #{checkinDate}, #{resTime}, #{checkoutDate})
+    (#{userNo}, #{petNo}, #{roomNo}, #{checkinDate}, #{resTime}, #{checkoutDate},#{totalPrice})
    </insert>
 
     <!-- 회원별 예약 조회 -->

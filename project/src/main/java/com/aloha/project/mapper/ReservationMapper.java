@@ -18,7 +18,8 @@ public interface ReservationMapper {
         @Param("roomNo") Long roomNo,
         @Param("checkinDate") LocalDate checkinDate,
         @Param("checkoutDate") LocalDate checkoutDate,
-        @Param("resTime") LocalTime resTime
+        @Param("resTime") LocalTime resTime,
+        @Param("totalPrice") int totalPrice  
     );
 
     List<ReservationDto> findByUserNo(@Param("userNo") Long userNo);
@@ -31,7 +32,8 @@ public interface ReservationMapper {
         @Param("resNo") Long resNo,
         @Param("checkinDate") LocalDate checkinDate,
         @Param("checkoutDate") LocalDate checkoutDate,
-        @Param("total") int total
+        @Param("total") int total,
+        @Param("totalPrice") int totalPrice
     );
 
    void deleteReservation(Long resNo); 

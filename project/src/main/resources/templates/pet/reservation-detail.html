@@ -148,6 +148,7 @@
             <input type="hidden" name="checkout" id="form-checkout">
             <input type="hidden" name="nights" id="form-nights">
             <input type="hidden" name="total" id="form-total">
+            <input type="hidden" name="totalPrice" id="form-total-price">
             <button type="submit" id="reserveBtn" class="summary-btn">예약하기</button>
         </form>
     </div>
@@ -241,6 +242,7 @@ document.addEventListener("DOMContentLoaded", function(){
         document.getElementById("form-nights").value = nights;
         document.getElementById("form-total").value = roomTotal + serviceTotal;
 
+        document.getElementById("form-total-price").value = roomTotal + serviceTotal;
         console.log("폼 체크인 값:", document.getElementById("form-checkin").value);
         console.log("폼 체크아웃 값:", document.getElementById("form-checkout").value);
     }
