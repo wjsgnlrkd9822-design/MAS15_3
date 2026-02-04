@@ -24,6 +24,9 @@
   <!-- 헤더 -->
   <th:block th:replace="~{fragments/header::header}"></th:block>
 
+  <!-- daum지도api -->
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
   <!-- 마이 페이지 헤더 -->
   <section class="mypage-header">
     <div class="mypage-header-inner">
@@ -46,6 +49,7 @@
         <li class="list-group-item"><i class="fas fa-envelope"></i> 이메일: <span id="email"></span></li>
         <li class="list-group-item"><i class="fas fa-phone"></i> 전화번호: <span id="phone"></span></li>
         <li class="list-group-item"><i class="fas fa-map-marker-alt"></i> 주소: <span id="address"></span></li>
+        <li class="list-group-item"><i class="fas fa-home"></i> 상세주소: <span id="detailAddress"></span></li>
       </ul>
       <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editModal">
         정보 수정
@@ -76,8 +80,18 @@
           <input id="editPhone" class="form-control mb-2" placeholder="전화번호">
           <label>생년월일</label>
           <input type="date" id="editBirth" class="form-control mb-2" />
-          <label>주소</label>
-          <input id="editAddress" class="form-control mb-2" placeholder="주소">
+          <div class="input-group my-2">
+            <div>
+              <label>주소</label>
+              <input id="editAddress" class="form-control mb-2" placeholder="주소" readonly>
+            </div>
+            <div class="input-group-append ms-2">
+              <br>
+              <button type="button" class="btn btn-outline-secondary" onclick="searchAddress()">주소 검색</button>
+            </div>
+          </div>
+          <label>상세주소</label>
+          <input type="text" id="editDetailAddress" class="form-control mb-2" />
         </div>
 
         <div class="modal-footer">
@@ -110,7 +124,7 @@
 
       <!-- 반려견 추가 모달 -->
       <div class="modal fade" id="addPetModal" tabindex="-1" aria-labelledby="addPetModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="addPetModalLabel">반려견 추가</h5>
@@ -127,43 +141,50 @@
                   <label for="petSpecies" class="form-label">종</label>
                   <input type="text" class="form-control" id="addPetSpecies" name="species" required>
                 </div>
-                <div class="mb-3">
-                  <label for="petSize" class="form-label">크기</label>
-                  <select class="form-select" id="addPetSize" name="size" required>
-                    <option value="소형">소형</option>
-                    <option value="중형">중형</option>
-                    <option value="대형">대형</option>
-                  </select>
+
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label for="petAge" class="form-label">나이</label>
+                    <input type="number" class="form-control" id="addPetAge" name="age" required>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="petSize" class="form-label">크기</label>
+                    <select class="form-select" id="addPetSize" name="size" required>
+                      <option value="소형">소형</option>
+                      <option value="중형">중형</option>
+                      <option value="대형">대형</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="petWeight" class="form-label">몸무게</label>
+                    <input type="number" class="form-control" id="addPetWeight" name="weight" step="0.1" required>
+                  </div>
                 </div>
-                <div class="mb-3">
-                  <label for="petAge" class="form-label">나이</label>
-                  <input type="number" class="form-control" id="addPetAge" name="age" required>
+
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                      <label for="petGender" class="form-label">성별</label>
+                      <select class="form-select" id="addPetGender" name="gender" required>
+                        <option value="수컷">수컷</option>
+                        <option value="암컷">암컷</option>
+                      </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="petNeutered" class="form-label">중성화 여부</label>
+                    <select class="form-select" id="addPetNeutered" name="neutered" required>
+                      <option value="예">예</option>
+                      <option value="아니오">아니오</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="petVaccination" class="form-label">예방접종 여부</label>
+                    <select class="form-select" id="addPetVaccination" name="vaccination" required>
+                      <option value="예">예</option>
+                      <option value="아니오">아니오</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="mb-3">
-                  <label for="petWeight" class="form-label">몸무게</label>
-                  <input type="number" class="form-control" id="addPetWeight" name="weight" step="0.1" required>
-                </div>
-                <div class="mb-3">
-                  <label for="petGender" class="form-label">성별</label>
-                  <select class="form-select" id="addPetGender" name="gender" required>
-                    <option value="수컷">수컷</option>
-                    <option value="암컷">암컷</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label for="petNeutered" class="form-label">중성화 여부</label>
-                  <select class="form-select" id="addPetNeutered" name="neutered" required>
-                    <option value="예">예</option>
-                    <option value="아니오">아니오</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label for="petVaccination" class="form-label">예방접종 여부</label>
-                  <select class="form-select" id="addPetVaccination" name="vaccination" required>
-                    <option value="예">예</option>
-                    <option value="아니오">아니오</option>
-                  </select>
-                </div>
+
                 <div class="mb-3">
                   <label for="petProfile" class="form-label">프로필 이미지</label>
                   <input type="file" class="form-control" id="addPetProfile" name="profileImg">
@@ -206,7 +227,7 @@
 
     <!-- 반려견 수정하기 모달 -->
     <div class="modal fade" id="editPetModal" tabindex="-1" aria-labelledby="editPetModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="editPetModalLabel">반려견 정보 수정</h5>
@@ -225,43 +246,48 @@
                   <label for="petSpecies" class="form-label">종</label>
                   <input type="text" class="form-control" id="petSpecies" name="species" required>
                 </div>
-                <div class="mb-3">
-                  <label for="petSize" class="form-label">크기</label>
-                  <select class="form-select" id="petSize" name="size" required>
-                    <option value="소형">소형</option>
-                    <option value="중형">중형</option>
-                    <option value="대형">대형</option>
-                  </select>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label for="petAge" class="form-label">나이</label>
+                    <input type="number" class="form-control" id="petAge" name="age" required>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="petSize" class="form-label">크기</label>
+                    <select class="form-select" id="petSize" name="size" required>
+                      <option value="소형">소형</option>
+                      <option value="중형">중형</option>
+                      <option value="대형">대형</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="petWeight" class="form-label">몸무게</label>
+                    <input type="number" class="form-control" id="petWeight" name="weight" step="0.1" required>
+                  </div>
                 </div>
-                <div class="mb-3">
-                  <label for="petAge" class="form-label">나이</label>
-                  <input type="number" class="form-control" id="petAge" name="age" required>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label for="petGender" class="form-label">성별</label>
+                    <select class="form-select" id="petGender" name="gender" required>
+                      <option value="수컷">수컷</option>
+                      <option value="암컷">암컷</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="petNeutered" class="form-label">중성화 여부</label>
+                    <select class="form-select" id="petNeutered" name="neutered" required>
+                      <option value="예">예</option>
+                      <option value="아니오">아니오</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="petVaccination" class="form-label">예방접종 여부</label>
+                    <select class="form-select" id="petVaccination" name="vaccination" required>
+                      <option value="예">예</option>
+                      <option value="아니오">아니오</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="mb-3">
-                  <label for="petWeight" class="form-label">몸무게</label>
-                  <input type="number" class="form-control" id="petWeight" name="weight" step="0.1" required>
-                </div>
-                <div class="mb-3">
-                  <label for="petGender" class="form-label">성별</label>
-                  <select class="form-select" id="petGender" name="gender" required>
-                    <option value="수컷">수컷</option>
-                    <option value="암컷">암컷</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label for="petNeutered" class="form-label">중성화 여부</label>
-                  <select class="form-select" id="petNeutered" name="neutered" required>
-                    <option value="예">예</option>
-                    <option value="아니오">아니오</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label for="petVaccination" class="form-label">예방접종 여부</label>
-                  <select class="form-select" id="petVaccination" name="vaccination" required>
-                    <option value="예">예</option>
-                    <option value="아니오">아니오</option>
-                  </select>
-                </div>
+                  
                 <div class="mb-3">
                   <label for="petProfile" class="form-label">프로필 이미지</label>
                   <input type="file" class="form-control" id="petProfile" name="profileImg">
@@ -288,8 +314,17 @@
       </div>
   </section>
 
+   <!-- ========================================================================================================================= -->
 
- 
+<!--     <section class="mypage-reservations">
+    <div class="mypage-reservations-inner">
+      <h3>호텔 예약 내역</h3>
+
+      <div id="reservationCardsContainer" class="reservation-card-list"></div>
+
+    </div>
+  </section> -->
+
 
 
 
@@ -395,6 +430,7 @@
   <!-- <script src="/js/mypagePet.js"></script> -->
   <script src="/js/mypagePetApi.js"></script>
   <script src="/js/mypagePetUi.js"></script>
+  <!-- <script src="/js/mypageReservation.js"></script> -->
   <!-- ✅ 예약 수정 JavaScript -->
 <script>
 let checkinPicker, checkoutPicker;

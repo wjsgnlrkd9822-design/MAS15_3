@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class ReservationDto {
     private Long resNo;
+    private Long userNo;
+    private Long petNo;
+    private Long rommNo;
     private LocalDate checkin;
     private LocalDate checkout; // calculateCheckout에서 계산
     private int nights;        
