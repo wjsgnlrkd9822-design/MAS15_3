@@ -1,4 +1,4 @@
--- Active: 1767840691076@@127.0.0.1@3306@aloha
+-- Active: 1767920835424@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 
@@ -29,7 +29,7 @@ SET FOREIGN_KEY_CHECKS = 0;
     on delete CASCADE
 );
 
- SELECT * FROM reservations;
+ SELECT * FROM hotelrooms;
 
 
 drop TABLE IF EXISTS `users`;
