@@ -145,6 +145,23 @@ html, body {
     margin: 2px 0;
 }
 
+/* 반려견 이름 */
+.pet-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+/* 가운데 줄 */
+.pet-size {
+    font-size: 14px;
+
+}
+/* 마지막 줄 */
+.pet-age {
+    font-size: 14px;
+    font-weight: 400;
+    color: #6b7280;
+}
+
 /* 반려견 상세 버튼 */
 .pet-card button {
     margin-left: auto;
@@ -184,6 +201,7 @@ html, body {
 .add-pet-card span {
     font-weight: 600;
     font-size: 16px;
+    
 }
 
 /* 반려견 호텔 예약 내역 */

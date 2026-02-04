@@ -34,9 +34,9 @@ async function loadPetCards() {
                     <img src="/api/pets/image/${pet.no}" class="pet-image">
                 </div>
                 <div class="pet-info">
-                    <span>이름: ${pet.name}</span>
-                    <span>견종: ${pet.species} · 크기: ${pet.size} · ${pet.age}살</span>
-                    <span>성별: ${genderIcon} · 중성화: ${neuteredStatus}</span>
+                <span class="pet-name">${pet.name}</span>
+                    <span class="pet-size">${pet.species} ${pet.size}견 ${genderIcon}</span>
+                    <span class="pet-age">${pet.age}살  ${pet.weight}kg<span>
                 </div>
                 <button class="btn btn-primary"
                     onclick="openEditPetModal(${pet.no})">

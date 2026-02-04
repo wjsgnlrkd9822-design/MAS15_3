@@ -12,6 +12,7 @@
         <result property="password" column="password"/>
         <result property="name" column="name"/>
         <result property="address" column="address"/>
+        <result property="detailAddress" column="detail_address"/>
         <result property="birth" column="birth"/>
         <result property="email" column="email"/>
         <result property="phone" column="phone"/>
@@ -32,8 +33,8 @@
 
     <!-- 회원가입 -->
     <insert id="join">
-        INSERT INTO users ( id, username, password, name, address, birth, email, phone )
-        VALUES ( #{id}, #{username}, #{password}, #{name}, #{address}, #{birth}, #{email}, #{phone} )
+        INSERT INTO users ( id, username, password, name, address, detail_address,  birth, email, phone )
+        VALUES ( #{id}, #{username}, #{password}, #{name}, #{address}, #{detailAddress}, #{birth}, #{email}, #{phone} )
     </insert>
 
     <!-- 회원 권한 등록 -->
@@ -69,6 +70,9 @@
         </if>
         <if test="address != null">
           address = #{address},
+        </if>
+        <if test="detailAddress != null">
+          detail_address = #{detailAddress},
         </if>
       </set>
       WHERE username = #{username}

@@ -14,6 +14,9 @@
     <!-- 헤더 -->
     <th:block th:replace="~{fragments/header::header}"></th:block>
 
+    <!-- daum지도api -->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
     <section class="join-header">
         <div class="join-header-inner">
         
@@ -28,7 +31,7 @@
             
                         <!-- 아이디 입력 + 중복확인 -->
                         <div class="input-group my-2">
-                            <div class="form-floating" id="box-id">
+                            <div class="form-floating " id="box-id">
                                 <input type="text" class="form-control mr-2" id="username" name="username" placeholder="아이디" autofocus>
                                 <label for="username">아이디</label>
                             </div>
@@ -50,9 +53,18 @@
                             <input type="text" class="form-control" id="name" name="name" placeholder="이름">
                             <label for="name">이름</label>
                         </div>
-                        <div class="form-floating my-2">
-                            <input type="text" class="form-control" id="address" name="address" placeholder="주소">
-                            <label for="address">주소</label>
+                        <div class="input-group my-2">
+                            <div class="form-floating">
+                                <input type="text" class="form-control mr-2" id="address" name="address" placeholder="주소" readonly>
+                                <label for="address">주소</label>
+                            </div>
+                            <div class="input-group-append ms-2">
+                                <button type="button" class="btn btn-lg btn-outline-secondary h-100" onclick="searchAddress()">주소 검색</button>
+                            </div>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text" class="form-control mr-2" id="detailAddress" name="detailAddress" placeholder="상세 주소">
+                            <label for="detailAddress">상세주소</label>
                         </div>
                         <div class="form-floating my-2">
                             <input type="date" id="birth" class="form-control mb-2"/>
@@ -129,9 +141,10 @@
             const email = document.getElementById("email").value.trim();
             const phone = document.getElementById("phone").value.trim();
             const address = document.getElementById("address").value.trim();
+            const detailAddress = document.getElementById("detailAddress").value.trim();
             const birth = document.getElementById("birth").value.trim();
             
-            if (!username || !password || !passwordCheck || !name || !email || !phone || !address || !birth) {
+            if (!username || !password || !passwordCheck || !name || !email || !detailAddress || !phone || !address || !birth) {
                 alert("모든 필드를 채워주세요.");
                 return;
             }
@@ -150,6 +163,7 @@
                 password,
                 name,
                 address,
+                detailAddress,
                 birth,
                 email,
                 phone
@@ -189,6 +203,32 @@
             }
         }
     </script>
+
+    <script>
+function searchAddress() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 도로명 주소를 input에 넣음
+            document.getElementById('address').value = data.roadAddress;
+        }
+    }).open();
+}
+</script>
+
+<!-- 전화번호 자동 하이푼 -->
+<script>
+const phoneInput = document.getElementById('phone');
+
+phoneInput.addEventListener('input', function(e) {
+    let number = e.target.value.replace(/\D/g, ''); // 숫자만 추출
+    if(number.length > 3 && number.length <= 7){
+        number = number.replace(/(\d{3})(\d+)/, '$1-$2');
+    } else if(number.length > 7){
+        number = number.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3');
+    }
+    e.target.value = number;
+});
+</script>
 
 
 </body>

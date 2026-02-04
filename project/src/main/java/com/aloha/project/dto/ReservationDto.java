@@ -13,7 +13,8 @@ public class ReservationDto {
     private LocalDate checkin;
     private LocalDate checkout; // calculateCheckout에서 계산
     private int nights;        
-    private int total;          
+    private int total;   
+    private int totalPrice;       
     private String petName;
     private String roomType;
 

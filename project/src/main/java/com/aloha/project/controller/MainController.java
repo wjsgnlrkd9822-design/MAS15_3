@@ -129,6 +129,7 @@ public class MainController {
             @RequestParam("total") int total,
             @RequestParam(value="petNo", required=false) Long petNo,
             @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("totalPrice") int totalPrice,
             RedirectAttributes redirectAttributes
     ) throws Exception {
         System.out.println("=== 서버에서 받은 값 ===");
@@ -149,7 +150,7 @@ public class MainController {
         LocalDate checkoutDate = LocalDate.parse(checkout);
         LocalTime resTime = LocalTime.now();
 
-        reservationService.insert(userNo, petNo, roomNo, checkinDate, checkoutDate, resTime);
+        reservationService.insert(userNo, petNo, roomNo, checkinDate, checkoutDate, resTime, totalPrice);
 
         redirectAttributes.addFlashAttribute("checkin", checkin);
         redirectAttributes.addFlashAttribute("checkout", checkout);
@@ -203,7 +204,8 @@ public class MainController {
         @RequestParam("checkin") String checkin,
         @RequestParam("checkout") String checkout,
         @RequestParam("total") int total,
-        @AuthenticationPrincipal UserDetails userDetails
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestParam("totalPrice") int totalPrice
     ) {
         Map<String, Object> result = new HashMap<>();
         try {
@@ -221,7 +223,7 @@ public class MainController {
             LocalDate checkinDate = LocalDate.parse(checkin);
             LocalDate checkoutDate = LocalDate.parse(checkout);
             
-            reservationService.update(resNo, checkinDate, checkoutDate, total);
+            reservationService.update(resNo, checkinDate, checkoutDate, total, totalPrice);
             
             result.put("success", true);
             result.put("message", "예약이 수정되었습니다.");

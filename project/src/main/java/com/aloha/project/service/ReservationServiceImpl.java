@@ -21,8 +21,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
-    public void insert(Long userNo, Long petNo, Long roomNo, LocalDate checkinDate, LocalDate checkoutDate, LocalTime resTime) {
-        int cnt = reservationMapper.insert(userNo, petNo, roomNo, checkinDate, checkoutDate, resTime);
+    public void insert(Long userNo, Long petNo, Long roomNo, LocalDate checkinDate, LocalDate checkoutDate, LocalTime resTime, int totalPrice) {
+        int cnt = reservationMapper.insert(userNo, petNo, roomNo, checkinDate, checkoutDate, resTime, totalPrice);
         if (cnt != 1) {
             throw new RuntimeException("예약 추가 실패: userNo=" + userNo + ", petNo=" + petNo + ", roomNo=" + roomNo);
         }
@@ -57,8 +57,8 @@ public class ReservationServiceImpl implements ReservationService {
     // ✅ 추가
     @Override
     @Transactional
-    public void update(Long resNo, LocalDate checkinDate, LocalDate checkoutDate, int total) {
-        int cnt = reservationMapper.update(resNo, checkinDate, checkoutDate, total);
+    public void update(Long resNo, LocalDate checkinDate, LocalDate checkoutDate, int total, int totalPrice) {
+        int cnt = reservationMapper.update(resNo, checkinDate, checkoutDate, total, totalPrice);
         if (cnt != 1) {
             throw new RuntimeException("예약 수정 실패: resNo=" + resNo);
         }

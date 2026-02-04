@@ -1,4 +1,4 @@
--- Active: 1767840807398@@127.0.0.1@3306@aloha
+-- Active: 1767840691076@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 
@@ -12,6 +12,7 @@ SET FOREIGN_KEY_CHECKS = 0;
     `room_no` BIGINT NOT NULL COMMENT '객실 번호',
     `res_date` DATE NOT NULL COMMENT '체크인 날짜',
     `checkout_date` DATE NOT NULL COMMENT '체크아웃 날짜',
+    `total_price` int NOT NULL COMMENT '총 가격',
     `res_time` TIME NOT NULL COMMENT '예약 시간',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
 
@@ -42,6 +43,7 @@ CREATE TABLE `users`(
     `email` VARCHAR(100) NOT NULL COMMENT '이메일',
     `phone` VARCHAR(15) NOT NULL COMMENT '전화번호',
     `address` VARCHAR(255) NOT NULL COMMENT '주소',
+    `detail_address` VARCHAR(255) NOT NULL COMMENT '상세주소',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
     `enabled` INT DEFAULT 1 COMMENT '활성화여부'
@@ -122,7 +124,7 @@ VALUES
 ('훈련 프로그램', '전문 트레이너와 1:1 교육', 40000),
 ('사진 촬영', '전문 포토그래퍼의 반려견 화보 촬영', 25000);
 
-SELECT * FROM hotelservices
+
 
 
 DROP TABLE IF EXISTS `reservation_services`;
@@ -199,3 +201,5 @@ CREATE TABLE `order_items` (
 
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+

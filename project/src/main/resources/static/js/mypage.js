@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const phoneEl = document.getElementById('phone');
         const birthEl = document.getElementById('birth');
         const addressEl = document.getElementById('address');
+        const detailAddressEl = document.getElementById('detailAddress');
 
         if (usernameEl) usernameEl.textContent = data.username;
         if (nameEl) nameEl.textContent = data.name;
@@ -40,6 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (phoneEl) phoneEl.textContent = data.phone;
         if (birthEl) birthEl.textContent = data.birth;
         if (addressEl) addressEl.textContent = data.address;
+        if (detailAddressEl) detailAddressEl.textContent = data.detailAddress;
 
         console.log("사용자 정보 화면 업데이트 완료");
     } catch (error) {
@@ -58,6 +60,7 @@ document.addEventListener('show.bs.modal', function (e) {
             document.getElementById('editPhone').value = myInfo.phone;
             document.getElementById('editBirth').value = myInfo.birth;
             document.getElementById('editAddress').value = myInfo.address;
+            document.getElementById('editDetailAddress').value = myInfo.detailAddress;
         }
     }
 }, true);
@@ -65,10 +68,12 @@ document.addEventListener('show.bs.modal', function (e) {
 /* 수정 버튼 클릭 → 비동기 업데이트 */
 async function updateMyInfo() {
     const body = {
+        username: myInfo.username,
         email: document.getElementById('editEmail').value,
         phone: document.getElementById('editPhone').value,
         birth: document.getElementById('editBirth').value,
-        address: document.getElementById('editAddress').value
+        address: document.getElementById('editAddress').value,
+        detailAddress: document.getElementById('editDetailAddress').value
     };
 
     try {
@@ -96,13 +101,16 @@ async function updateMyInfo() {
             email: body.email,
             phone: body.phone,
             birth: body.birth,
-            address: body.address
+            address: body.address,
+            detailAddress: body.detailAddress
         };
 
         document.getElementById('email').textContent = body.email;
         document.getElementById('phone').textContent = body.phone;
         document.getElementById('birth').textContent = body.birth;
         document.getElementById('address').textContent = body.address;
+        document.getElementById('detailAddress').textContent = body.detailAddress;
+        
 
         // 모달 닫기
         const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
@@ -147,4 +155,28 @@ async function deleteMyAccount() {
         console.error('회원 탈퇴 중 오류:', err);
         alert('서버 오류가 발생했습니다.');
     }
+}
+
+/* 전화번호 자동 하이푼 */
+const phoneInput = document.getElementById('editPhone');
+
+phoneInput.addEventListener('input', function(e) {
+    let number = e.target.value.replace(/\D/g, ''); // 숫자만 추출
+    if(number.length > 3 && number.length <= 7){
+        number = number.replace(/(\d{3})(\d+)/, '$1-$2');
+    } else if(number.length > 7){
+        number = number.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3');
+    }
+    e.target.value = number;
+});
+
+/* 주소 api 버튼 기능  */
+
+function searchAddress() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 도로명 주소를 input에 넣음
+            document.getElementById('editAddress').value = data.roadAddress;
+        }
+    }).open();
 }
