@@ -173,7 +173,7 @@ public class UserApiController {
         try {
         // 로그인한 사용자 아이디
         String username = principal.getName();
-        user.setUsername(username); // ⭐ 핵심
+        user.setUsername(username); 
 
         int result = userService.update(user);
 

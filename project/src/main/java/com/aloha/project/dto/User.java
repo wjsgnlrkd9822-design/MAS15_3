@@ -40,6 +40,8 @@ public class User {
 
     @NotBlank(message = "주소를 입력해주세요.")
     private String address;
+    @NotBlank(message = "상세 주소를 입력해주세요.")
+    private String detailAddress;
     @NotBlank(message = "생년월일을 입력해주세요.")
     private String birth;
     @NotBlank(message = "전화번호를 입력해주세요.")

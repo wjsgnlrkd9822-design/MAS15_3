@@ -62,6 +62,10 @@
                                 <button type="button" class="btn btn-lg btn-outline-secondary h-100" onclick="searchAddress()">주소 검색</button>
                             </div>
                         </div>
+                        <div class="form-floating">
+                            <input type="text" class="form-control mr-2" id="detailAddress" name="detailAddress" placeholder="상세 주소">
+                            <label for="detailAddress">상세주소</label>
+                        </div>
                         <div class="form-floating my-2">
                             <input type="date" id="birth" class="form-control mb-2"/>
                             <label for="birth">생년월일</label>
@@ -137,9 +141,10 @@
             const email = document.getElementById("email").value.trim();
             const phone = document.getElementById("phone").value.trim();
             const address = document.getElementById("address").value.trim();
+            const detailAddress = document.getElementById("detailAddress").value.trim();
             const birth = document.getElementById("birth").value.trim();
             
-            if (!username || !password || !passwordCheck || !name || !email || !phone || !address || !birth) {
+            if (!username || !password || !passwordCheck || !name || !email || !detailAddress || !phone || !address || !birth) {
                 alert("모든 필드를 채워주세요.");
                 return;
             }
@@ -158,6 +163,7 @@
                 password,
                 name,
                 address,
+                detailAddress,
                 birth,
                 email,
                 phone
