@@ -24,6 +24,9 @@
   <!-- 헤더 -->
   <th:block th:replace="~{fragments/header::header}"></th:block>
 
+  <!-- daum지도api -->
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
   <!-- 마이 페이지 헤더 -->
   <section class="mypage-header">
     <div class="mypage-header-inner">
@@ -76,8 +79,16 @@
           <input id="editPhone" class="form-control mb-2" placeholder="전화번호">
           <label>생년월일</label>
           <input type="date" id="editBirth" class="form-control mb-2" />
-          <label>주소</label>
-          <input id="editAddress" class="form-control mb-2" placeholder="주소">
+          <div class="input-group my-2">
+            <div>
+              <label>주소</label>
+              <input id="editAddress" class="form-control mb-2" placeholder="주소" readonly>
+            </div>
+            <div class="input-group-append ms-2">
+              <br>
+              <button type="button" class="btn btn-outline-secondary" onclick="searchAddress()">주소 검색</button>
+            </div>
+          </div>
         </div>
 
         <div class="modal-footer">
