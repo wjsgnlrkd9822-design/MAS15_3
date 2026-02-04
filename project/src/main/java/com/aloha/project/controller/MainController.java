@@ -22,9 +22,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.ReservationDto;
+import com.aloha.project.dto.User;
 import com.aloha.project.service.HotelRoomService;
 import com.aloha.project.service.HotelServiceService;
 import com.aloha.project.service.ReservationService;
+import com.aloha.project.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +36,8 @@ public class MainController {
 
     private final HotelRoomService hotelRoomService;       
     private final HotelServiceService hotelServiceService; 
-    private final ReservationService reservationService;  
+    private final ReservationService reservationService;
+    private final UserService userService; // ✅ 추가
 
     /**
      * 메인 페이지
@@ -124,16 +127,24 @@ public class MainController {
             @RequestParam("checkout") String checkout,
             @RequestParam("nights") int nights,
             @RequestParam("total") int total,
+            @RequestParam(value="petNo", required=false) Long petNo,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("totalPrice") int totalPrice,
             RedirectAttributes redirectAttributes
-    ) {
+    ) throws Exception {
         System.out.println("=== 서버에서 받은 값 ===");
         System.out.println("체크인: " + checkin);
         System.out.println("체크아웃: " + checkout);
         System.out.println("박수: " + nights);
         
-        Long userNo = 1L;
-        Long petNo = 1L;
+        // ✅ 로그인한 사용자 정보 조회
+        User user = userService.select(userDetails.getUsername());
+        Long userNo = user.getNo(); // ✅ no 필드 사용
+        
+        // petNo 처리
+        if (petNo == null) {
+            petNo = 1L; // 임시
+        }
 
         LocalDate checkinDate = LocalDate.parse(checkin);
         LocalDate checkoutDate = LocalDate.parse(checkout);
@@ -153,8 +164,13 @@ public class MainController {
      * 마이페이지
      */
     @GetMapping("/mypage")
-    public String mypage(Model model) {
-        Long userNo = 1L;
+    public String mypage(
+            Model model,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) throws Exception {
+        // ✅ 로그인한 사용자 정보 조회
+        User user = userService.select(userDetails.getUsername());
+        Long userNo = user.getNo(); // ✅ no 필드 사용
 
         List<ReservationDto> reservations = reservationService.getReservationsByUser(userNo);
         model.addAttribute("reservations", reservations);
@@ -164,8 +180,20 @@ public class MainController {
     // ✅ 예약 1건 조회 (AJAX용)
     @GetMapping("/api/reservation/{resNo}")
     @ResponseBody
-    public ReservationDto getReservation(@PathVariable("resNo") Long resNo) {
-        return reservationService.getReservationByResNo(resNo);
+    public ReservationDto getReservation(
+            @PathVariable("resNo") Long resNo,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) throws Exception {
+        // 본인의 예약만 조회 가능
+        ReservationDto reservation = reservationService.getReservationByResNo(resNo);
+        User user = userService.select(userDetails.getUsername());
+        Long userNo = user.getNo(); // ✅ no 필드 사용
+        
+        if (reservation != null && !reservation.getUserNo().equals(userNo)) {
+            return null;
+        }
+        
+        return reservation;
     }
 
     // ✅ 예약 수정 (AJAX용)
@@ -176,10 +204,22 @@ public class MainController {
         @RequestParam("checkin") String checkin,
         @RequestParam("checkout") String checkout,
         @RequestParam("total") int total,
+        @AuthenticationPrincipal UserDetails userDetails,
         @RequestParam("totalPrice") int totalPrice
     ) {
         Map<String, Object> result = new HashMap<>();
         try {
+            // 본인의 예약만 수정 가능
+            ReservationDto reservation = reservationService.getReservationByResNo(resNo);
+            User user = userService.select(userDetails.getUsername());
+            Long userNo = user.getNo(); // ✅ no 필드 사용
+            
+            if (reservation == null || !reservation.getUserNo().equals(userNo)) {
+                result.put("success", false);
+                result.put("message", "권한이 없습니다.");
+                return result;
+            }
+            
             LocalDate checkinDate = LocalDate.parse(checkin);
             LocalDate checkoutDate = LocalDate.parse(checkout);
             
@@ -195,24 +235,33 @@ public class MainController {
     }
 
     // 예약 삭제 (AJAX용)
-        @DeleteMapping("/api/reservation/delete/{resNo}")
-        @ResponseBody
-        public Map<String, Object> deleteReservation(@PathVariable("resNo") Long resNo) {
-            Map<String, Object> result = new HashMap<>();
-            try {
-                reservationService.delete(resNo);
-                result.put("success", true);
-                result.put("message", "예약이 삭제되었습니다.");
-            } catch (Exception e) {
-                e.printStackTrace(); // ✅ 로그 찍기
+    @DeleteMapping("/api/reservation/delete/{resNo}")
+    @ResponseBody
+    public Map<String, Object> deleteReservation(
+            @PathVariable("resNo") Long resNo,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 본인의 예약만 삭제 가능
+            ReservationDto reservation = reservationService.getReservationByResNo(resNo);
+            User user = userService.select(userDetails.getUsername());
+            Long userNo = user.getNo(); // ✅ no 필드 사용
+            
+            if (reservation == null || !reservation.getUserNo().equals(userNo)) {
                 result.put("success", false);
-                result.put("message", "삭제 실패: " + e.getMessage());
+                result.put("message", "권한이 없습니다.");
+                return result;
             }
-            return result;
+            
+            reservationService.delete(resNo);
+            result.put("success", true);
+            result.put("message", "예약이 삭제되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("success", false);
+            result.put("message", "삭제 실패: " + e.getMessage());
         }
-
-
-
+        return result;
+    }
 }
-
-// 컨트롤러 reservationservice.java, ReservationServiceImple.java, ReservationMapper.java ReservationMapper.xml, myPage.html

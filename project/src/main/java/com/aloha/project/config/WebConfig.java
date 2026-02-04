@@ -19,6 +19,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:///" + uploadPath);
 
         // static 리소스 (img, css, js)
+    //     registry.addResourceHandler("/**")
+                // .addResourceLocations("classpath:/static/");
         /* registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/"); */
     }

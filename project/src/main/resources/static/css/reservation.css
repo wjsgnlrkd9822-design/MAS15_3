@@ -42,7 +42,10 @@ label {
 }
 
 .room-list {
-    margin: 20px;
+    margin-top: -20px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
     padding: 30px;
     display: grid;
     grid-template-columns: repeat(5, 1fr); /* 가로 4개씩 */
@@ -165,9 +168,18 @@ label {
     outline: none;
 }
 
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 45px;   /* ← 여기 */
+    margin-top: -20px;
+}
+
+
 /* select 화살표 커스텀 */
 .reservation-filter {
     position: relative;
+    margin-left: 50px;
 }
 .filter-select-wrapper::after {
     content: "▾";
