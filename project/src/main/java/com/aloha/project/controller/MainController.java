@@ -142,7 +142,6 @@ public class MainController {
             @RequestParam(value="petNo", required=false) Long petNo,
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("totalPrice") int totalPrice,
-            @RequestParam("petNo") Long petNo,
             @AuthenticationPrincipal CustomUser customUser,
             RedirectAttributes redirectAttributes
     ) {

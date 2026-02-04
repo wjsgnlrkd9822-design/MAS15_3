@@ -54,6 +54,11 @@
         WHERE res_no = #{resNo}
     </update>
 
+    <!-- 매출 총 합계 구하기 -->
+    <select id="getTotalSales" resultType="long">
+        SELECT SUM(total_price) 
+        FROM reservations
+    </select>
     <!-- 삭제 -->
     <!-- 예약 삭제 -->
     <delete id="deleteReservation" parameterType="long">

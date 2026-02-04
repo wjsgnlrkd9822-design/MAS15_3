@@ -69,6 +69,11 @@ public class ReservationServiceImpl implements ReservationService {
     reservationMapper.deleteReservation(resNo); // Mapper 메서드 호출
 }
 
+         @Override
+        public Long getTotalSales() {
+            Long total = reservationMapper.getTotalSales();
+            return (total == null) ? 0L : total; // 예약이 하나도 없을 때를 대비해 0L 처리
+        }
 
 
 }

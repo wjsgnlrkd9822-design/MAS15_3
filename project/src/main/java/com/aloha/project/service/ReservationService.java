@@ -19,4 +19,6 @@ public interface ReservationService {
     
     void delete(Long resNo);
 
+    public Long getTotalSales();
+
 }

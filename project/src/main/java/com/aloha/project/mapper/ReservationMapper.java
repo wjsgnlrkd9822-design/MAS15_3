@@ -35,6 +35,7 @@ public interface ReservationMapper {
         @Param("total") int total,
         @Param("totalPrice") int totalPrice
     );
+    public Long getTotalSales();
 
    void deleteReservation(Long resNo); 
     
