@@ -24,6 +24,7 @@
     <select id="findByUserNo" resultType="com.aloha.project.dto.ReservationDto">
         SELECT 
               r.res_no AS resNo,
+              r.res_no AS userNo,
               r.res_date AS checkin,
               r.checkout_date AS checkout,
               r.total_price AS totalPrice,
@@ -41,6 +42,7 @@
     <select id="findByResNo" resultType="com.aloha.project.dto.ReservationDto">
         SELECT 
               r.res_no AS resNo,
+              r.res_no AS userNo,
               r.res_date AS checkin,
               r.checkout_date AS checkout,
               r.total_price AS totalPrice,
