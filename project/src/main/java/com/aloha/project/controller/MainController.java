@@ -25,12 +25,10 @@ import com.aloha.project.dto.CustomUser;
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.Pet;
 import com.aloha.project.dto.ReservationDto;
-import com.aloha.project.dto.User;
 import com.aloha.project.service.HotelRoomService;
 import com.aloha.project.service.HotelServiceService;
 import com.aloha.project.service.PetService;
 import com.aloha.project.service.ReservationService;
-import com.aloha.project.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,8 +39,7 @@ public class MainController {
     private final PetService petService;
     private final HotelRoomService hotelRoomService;       
     private final HotelServiceService hotelServiceService; 
-    private final ReservationService reservationService;
-    private final UserService userService; // ✅ 추가
+    private final ReservationService reservationService;  
 
     /**
      * 메인 페이지
@@ -198,20 +195,8 @@ public String mypage(Model model, @AuthenticationPrincipal CustomUser customUser
     // ✅ 예약 1건 조회 (AJAX용)
     @GetMapping("/api/reservation/{resNo}")
     @ResponseBody
-    public ReservationDto getReservation(
-            @PathVariable("resNo") Long resNo,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) throws Exception {
-        // 본인의 예약만 조회 가능
-        ReservationDto reservation = reservationService.getReservationByResNo(resNo);
-        User user = userService.select(userDetails.getUsername());
-        Long userNo = user.getNo(); // ✅ no 필드 사용
-        
-        if (reservation != null && !reservation.getUserNo().equals(userNo)) {
-            return null;
-        }
-        
-        return reservation;
+    public ReservationDto getReservation(@PathVariable("resNo") Long resNo) {
+        return reservationService.getReservationByResNo(resNo);
     }
 
     // ✅ 예약 수정 (AJAX용)
@@ -223,22 +208,10 @@ public String mypage(Model model, @AuthenticationPrincipal CustomUser customUser
             @RequestParam("checkout") String checkout,
             @RequestParam("total") int total,
             @RequestParam("totalPrice") int totalPrice,
-            @RequestParam(value="serviceIds", required=false) List<Long> serviceIds,
-            @AuthenticationPrincipal UserDetails userDetails
+            @RequestParam(value="serviceIds", required=false) List<Long> serviceIds
     ) {
         Map<String, Object> result = new HashMap<>();
         try {
-            // 본인의 예약만 수정 가능
-            ReservationDto reservation = reservationService.getReservationByResNo(resNo);
-            User user = userService.select(userDetails.getUsername());
-            Long userNo = user.getNo(); // ✅ no 필드 사용
-            
-            if (reservation == null || !reservation.getUserNo().equals(userNo)) {
-                result.put("success", false);
-                result.put("message", "권한이 없습니다.");
-                return result;
-            }
-            
             LocalDate checkinDate = LocalDate.parse(checkin);
             LocalDate checkoutDate = LocalDate.parse(checkout);
 

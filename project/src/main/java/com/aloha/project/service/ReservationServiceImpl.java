@@ -21,33 +21,34 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationMapper reservationMapper;
 
     @Override
-@Transactional
-public void insert(Long userNo, Long petNo, Long roomNo, LocalDate checkinDate, LocalDate checkoutDate, LocalTime resTime, int totalPrice, List<Long> serviceNos) {
-    // ReservationDto 생성
-    ReservationDto dto = new ReservationDto();
-    dto.setUserNo(userNo);
-    dto.setPetNo(petNo);
-    dto.setRoomNo(roomNo);
-    dto.setCheckin(checkinDate);
-    dto.setCheckout(checkoutDate);
-    dto.setResTime(resTime.toString());
-    dto.setTotalPrice(totalPrice);
-    dto.setNights((int) ChronoUnit.DAYS.between(checkinDate, checkoutDate));
+    @Transactional
+    public void insert(Long userNo, Long petNo, Long roomNo, LocalDate checkinDate, LocalDate checkoutDate, LocalTime resTime, int totalPrice, List<Long> serviceNos) {
+        // ReservationDto 생성
+        ReservationDto dto = new ReservationDto();
+        dto.setUserNo(userNo);
+        dto.setPetNo(petNo);  // ✅ 추가
+        dto.setRoomNo(roomNo);
+        dto.setCheckin(checkinDate);
+        dto.setCheckout(checkoutDate);
+        dto.setResTime(resTime.toString());
+        dto.setTotalPrice(totalPrice);
+        dto.setNights((int) ChronoUnit.DAYS.between(checkinDate, checkoutDate));
 
-    // insert → useGeneratedKeys로 resNo 자동 세팅
-    int cnt = reservationMapper.insertReservation(dto);
-    if (cnt != 1) {
-        throw new RuntimeException("예약 추가 실패: userNo=" + userNo + ", petNo=" + petNo + ", roomNo=" + roomNo);
-    }
-    Long resNo = dto.getResNo(); // ✅ 여기서 정확한 방금 insert된 예약 ID 확보
+        // insert → useGeneratedKeys로 resNo 자동 세팅
+        int cnt = reservationMapper.insertReservation(dto);
+        if (cnt != 1) {
+            throw new RuntimeException("예약 추가 실패: userNo=" + userNo + ", petNo=" + petNo + ", roomNo=" + roomNo);
+        }
+        Long resNo = dto.getResNo(); // ✅ 여기서 정확한 방금 insert된 예약 ID 확보
 
-    // 서비스 등록
-    if(serviceNos != null && !serviceNos.isEmpty()) {
-        for(Long serviceNo : serviceNos) {
-            reservationMapper.insertReservationService(resNo, serviceNo);
+        // 서비스 등록
+        if(serviceNos != null && !serviceNos.isEmpty()) {
+            for(Long serviceNo : serviceNos) {
+                reservationMapper.insertReservationService(resNo, serviceNo);
+            }
         }
     }
-}
+
     @Override
     public List<ReservationDto> getReservationsByUser(Long userNo) {
         List<ReservationDto> reservations = reservationMapper.findByUserNo(userNo);
@@ -63,7 +64,6 @@ public void insert(Long userNo, Long petNo, Long roomNo, LocalDate checkinDate, 
         return reservations;
     }
 
-    // ✅ 추가
     @Override
     public ReservationDto getReservationByResNo(Long resNo) {
         ReservationDto reservation = reservationMapper.findByResNo(resNo);
@@ -81,7 +81,6 @@ public void insert(Long userNo, Long petNo, Long roomNo, LocalDate checkinDate, 
         return reservation;
     }
 
-    // ✅ 추가
     @Override
     @Transactional
     public void update(Long resNo, LocalDate checkinDate, LocalDate checkoutDate, int total, int totalPrice, List<Long> serviceNos) {
@@ -91,33 +90,28 @@ public void insert(Long userNo, Long petNo, Long roomNo, LocalDate checkinDate, 
         }
 
         // 기존 서비스 삭제
-    reservationMapper.deleteReservationServices(resNo); // Mapper에 추가 필요
+        reservationMapper.deleteReservationServices(resNo);
 
-    // 새로운 서비스 등록
-    if(serviceNos != null && !serviceNos.isEmpty()) {
-        for(Long serviceNo : serviceNos) {
-            reservationMapper.insertReservationService(resNo, serviceNo);
+        // 새로운 서비스 등록
+        if(serviceNos != null && !serviceNos.isEmpty()) {
+            for(Long serviceNo : serviceNos) {
+                reservationMapper.insertReservationService(resNo, serviceNo);
+            }
         }
     }
-}
-    
 
     @Override
     public void delete(Long resNo) {
-    reservationMapper.deleteReservation(resNo); // Mapper 메서드 호출
-}
+        reservationMapper.deleteReservation(resNo);
+    }
 
     @Override
-        public int getServicePrice(Long serviceNo) {
-            return reservationMapper.getServicePrice(serviceNo);
-        }
+    public int getServicePrice(Long serviceNo) {
+        return reservationMapper.getServicePrice(serviceNo);
+    }
 
     @Override
-        public List<HotelService> getServicesByReservation(Long resNo) {
-            return reservationMapper.selectServicesByReservation(resNo);
-        }
-
-
-
-
+    public List<HotelService> getServicesByReservation(Long resNo) {
+        return reservationMapper.selectServicesByReservation(resNo);
+    }
 }

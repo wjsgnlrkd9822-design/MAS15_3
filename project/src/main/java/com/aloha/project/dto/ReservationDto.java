@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 public class ReservationDto {
     private Long resNo;
-    private Long petNo;
+    private Long petNo; 
     private LocalDate checkin;
-    private LocalDate checkout; // calculateCheckout에서 계산
+    private LocalDate checkout;
     private int nights;        
     private int total;   
     private int totalPrice;       
@@ -28,7 +28,4 @@ public class ReservationDto {
             this.checkout = checkin.plusDays(nights);
         }
     }
-
-    
 }
-
