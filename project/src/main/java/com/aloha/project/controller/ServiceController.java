@@ -22,7 +22,5 @@ public class ServiceController {
         model.addAttribute("trainer", trainer);
         return "service/service";
     }
-    
 
-    
 }

@@ -351,6 +351,7 @@
                         <th>체크인</th>
                         <th>체크아웃</th>
                         <th>상태</th>
+                        <th>총금액</th>
                         <th>관리</th>
                     </tr>
                 </thead>
@@ -361,6 +362,7 @@
                   <td th:text="${res.checkin}">2024-07-01</td>
                   <td th:text="${res.checkout}">2024-07-05</td>
                   <td>예약 완료</td>
+                  <td th:text="${res.totalPrice}">총금액</td>
                   <td>
   <!-- ✅ 안전하게 모달 열기 -->
   <button class="btn-edit" type="button"
@@ -388,25 +390,54 @@
           <div class="modal-body">
             <input type="hidden" id="editResNo">
             
+
+            <div class="mb-3">
+              <label>객실 정보</label>
+              <input id="editRoomType" class="form-control mb-2" readonly>
+              <img id="editRoomImg" class="img-fluid rounded" 
+              style="width:100%; height:260px; object-fit:cover; border-radius:0; display:none;">
+            </div>
+
             <div class="mb-3">
               <label>반려견 이름</label>
               <input id="editPetName" class="form-control" readonly>
             </div>
             
+            <div class="row">
+
+              <div class="col-md-4 mb-3">
+                <label>체크인 날짜</label>
+                <input type="text" id="editCheckin" class="form-control">
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <label>체크아웃 날짜</label>
+                <input type="text" id="editCheckout" class="form-control">
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <label>박 수</label>
+                <input id="editNights" class="form-control" readonly>
+              </div>
+            </div>
+
             <div class="mb-3">
-              <label>체크인 날짜</label>
-              <input type="text" id="editCheckin" class="form-control">
+              <label>1박 가격</label>
+              <input id="editRoomPrice" class="form-control" readonly>
+            </div>
+
+            <div class="mb-3">
+              <label>선택 서비스</label>
+              <div id="editServiceList">
+                <!-- 서비스 체크박스가 JS로 동적으로 생성됨 -->
+              </div>
             </div>
             
             <div class="mb-3">
-              <label>체크아웃 날짜</label>
-              <input type="text" id="editCheckout" class="form-control">
+              <label>총 금액</label>
+              <input type="number" id="editTotalPrice" class="form-control" value="100000">
             </div>
             
-            <div class="mb-3">
-              <label>박 수</label>
-              <input id="editNights" class="form-control" readonly>
-            </div>
           </div>
 
           <div class="modal-footer">
@@ -434,28 +465,43 @@
   <!-- ✅ 예약 수정 JavaScript -->
 <script>
 let checkinPicker, checkoutPicker;
+let roomPrice = 0;
 
+// ============================
 // 모달 열기
+// ============================
 function openEditModal(resNo) {
     fetch(`/api/reservation/${resNo}`)
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('editResNo').value = data.resNo;
+        document.getElementById('editPetName').value = data.petName;
+
+        // 방 정보 가져오기
+        fetch(`/api/room/${data.roomNo}`)
         .then(res => res.json())
-        .then(data => {
-            document.getElementById('editResNo').value = data.resNo;
-            document.getElementById('editPetName').value = data.petName;
-            
+        .then(room => {
+            roomPrice = room.roomPrice;
+            document.getElementById("editRoomPrice").value = roomPrice.toLocaleString() + "원";
+            document.getElementById("editRoomType").value = room.roomType;
+
+            const img = document.getElementById("editRoomImg");
+            img.src = "/uploads/" + room.img;
+            img.style.display = "block";
+
             // Flatpickr 초기화
             if (checkinPicker) checkinPicker.destroy();
             if (checkoutPicker) checkoutPicker.destroy();
-            
+
             const today = new Date();
             today.setHours(0,0,0,0);
-            
+
             checkinPicker = flatpickr("#editCheckin", {
                 dateFormat: "Y-m-d",
                 defaultDate: data.checkin,
                 minDate: today,
                 onChange: function(selectedDates) {
-                    if (selectedDates.length > 0) {
+                    if(selectedDates.length > 0){
                         const minCheckout = new Date(selectedDates[0].getTime());
                         minCheckout.setDate(minCheckout.getDate() + 1);
                         checkoutPicker.set('minDate', minCheckout);
@@ -463,40 +509,123 @@ function openEditModal(resNo) {
                     calculateNights();
                 }
             });
-            
+
             checkoutPicker = flatpickr("#editCheckout", {
                 dateFormat: "Y-m-d",
                 defaultDate: data.checkout,
                 minDate: new Date(data.checkin),
                 onChange: calculateNights
             });
-            
+
+            // 서비스 체크박스 가져오기
+            fetch('/api/room/services')
+.then(res => res.json())
+.then(services => {
+    const serviceContainer = document.getElementById('editServiceList');
+    serviceContainer.innerHTML = '';
+
+    services.forEach(service => {
+        // ✅ 타입을 문자열로 통일해서 비교
+        const checked = data.serviceIds && data.serviceIds.some(id => String(id) === String(service.serviceNo));
+
+        const div = document.createElement('div');
+        div.classList.add('form-check');
+        if (checked) div.classList.add('selected'); // 체크된 카드 스타일 적용
+
+        div.innerHTML = `
+            <input class="form-check-input" type="checkbox" 
+                   value="${service.serviceNo}" 
+                   id="service${service.serviceNo}" 
+                   data-price="${service.price}" 
+                   ${checked ? 'checked' : ''}>
+            <label class="form-check-label" for="service${service.serviceNo}">
+                ${service.serviceName} (${service.price.toLocaleString()}원)
+            </label>
+        `;
+
+        serviceContainer.appendChild(div);
+    });
+
+    // 체크박스 변경 시 총액 재계산
+    serviceContainer.addEventListener('change', function(e){
+        if(e.target && e.target.classList.contains('form-check-input')){
+            const card = e.target.closest('.form-check');
+            card.classList.toggle('selected', e.target.checked);
             calculateNights();
-            
+        }
+    });
+
+    // 모달 열기 전에 계산 (체크된 서비스 포함)
+    calculateNights();
+});
+
             // 모달 열기
-            const modal = new bootstrap.Modal(document.getElementById('editReservationModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('editReservationModal')).show();
         });
+    })
+    .catch(err => {
+        console.error(err);
+        alert('예약 정보를 불러오는 중 오류가 발생했습니다.');
+    });
 }
 
-// 박 수 계산
+// ============================
+// 박 수 및 총액 계산
+// ============================
 function calculateNights() {
-    const checkin = checkinPicker.selectedDates[0];
-    const checkout = checkoutPicker.selectedDates[0];
-    
-    if (checkin && checkout && checkout > checkin) {
-        const nights = Math.ceil((checkout - checkin) / (1000*60*60*24));
+    let checkin = checkinPicker?.selectedDates[0] ?? (document.getElementById('editCheckin').value ? new Date(document.getElementById('editCheckin').value) : null);
+    let checkout = checkoutPicker?.selectedDates[0] ?? (document.getElementById('editCheckout').value ? new Date(document.getElementById('editCheckout').value) : null);
+
+    if(checkin && checkout && checkout > checkin){
+        const nights = Math.ceil((checkout - checkin)/(1000*60*60*24));
         document.getElementById('editNights').value = nights + '박';
+
+        // 체크된 서비스 가격 합산
+        let serviceTotal = 0;
+        let selectedServices = [];
+
+        document.querySelectorAll('#editServiceList input[type="checkbox"]').forEach(cb => {
+            const price = parseInt(cb.dataset.price) || 0;
+            if(cb.checked){
+                serviceTotal += price;
+                selectedServices.push({
+                    name: cb.nextElementSibling.innerText,
+                    price: price
+                });
+            }
+        });
+
+        const totalPrice = nights * roomPrice + serviceTotal;
+        document.getElementById('editTotalPrice').value = totalPrice;
+
+        // 콘솔 출력
+        console.clear();
+        console.log("===== 선택 서비스 =====");
+        selectedServices.forEach(s => console.log(s.name, s.price + "원"));
+        console.log("객실 가격:", roomPrice, "원 x", nights, "박");
+        console.log("총합:", totalPrice, "원");
+        console.log("=======================");
+
     } else {
         document.getElementById('editNights').value = '0박';
+        document.getElementById('editTotalPrice').value = 0;
     }
 }
 
+// ============================
 // 예약 수정
+// ============================
 function updateReservation() {
     const resNo = document.getElementById('editResNo').value;
     const checkin = document.getElementById('editCheckin').value;
     const checkout = document.getElementById('editCheckout').value;
+    const totalPrice = document.getElementById('editTotalPrice').value.replace(/,/g,'');
+    const nights = parseInt(document.getElementById('editNights').value.replace('박','')) || 0;
+
+    const selectedServices = [];
+    document.querySelectorAll('#editServiceList input[type="checkbox"]:checked').forEach(cb => {
+        selectedServices.push(cb.value);
+    });
 
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
@@ -504,61 +633,57 @@ function updateReservation() {
     const formData = new FormData();
     formData.append('checkin', checkin);
     formData.append('checkout', checkout);
-    formData.append('total', 100000); // 임시
+    formData.append('total', nights);
+    formData.append('totalPrice', totalPrice);
+    selectedServices.forEach(id => formData.append('serviceIds', id));
 
     fetch(`/api/reservation/update/${resNo}`, {
         method: 'POST',
         body: formData,
-        headers: {
-            [csrfHeader]: csrfToken // ✅ CSRF 헤더 추가
-        }
+        headers: { [csrfHeader]: csrfToken }
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload(); // 페이지 새로고침
-        } else {
-            alert(data.message);
-        }
+        alert(data.message);
+        if(data.success) location.reload();
     })
     .catch(err => {
-        alert('수정 중 오류가 발생했습니다.');
         console.error(err);
+        alert('예약 수정 중 오류가 발생했습니다.');
     });
 }
 
+// ============================
+// 체크박스 변경 이벤트
+// ============================
+document.getElementById('editServiceList').addEventListener('change', calculateNights);
+
+// ============================
+// 예약 삭제
+// ============================
 function deleteReservation() {
     const resNo = document.getElementById('editResNo').value;
-
-    if (!confirm("정말 이 예약을 삭제하시겠습니까?")) return;
+    if(!confirm("정말 이 예약을 삭제하시겠습니까?")) return;
 
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
     fetch(`/api/reservation/delete/${resNo}`, {
         method: 'DELETE',
-        headers: {
-            [csrfHeader]: csrfToken
-        }
+        headers: { [csrfHeader]: csrfToken }
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert(data.message);
-        }
+        alert(data.message);
+        if(data.success) location.reload();
     })
     .catch(err => {
-        alert('삭제 중 오류가 발생했습니다.');
         console.error(err);
+        alert('삭제 중 오류가 발생했습니다.');
     });
 }
-
-
 </script>
+
 </body>
 
 </html>

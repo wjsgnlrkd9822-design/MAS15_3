@@ -3,16 +3,24 @@ package com.aloha.project.controller;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.aloha.project.dto.CustomUser;
+import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.User;
-
+import com.aloha.project.service.HotelRoomService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
 public class MyPageController {
+
+    private final HotelRoomService hotelRoomService;
+
+    MyPageController(HotelRoomService hotelRoomService) {
+        this.hotelRoomService = hotelRoomService;
+    }
 
     // 1️⃣ 마이페이지 뷰 반환 (동기식)
 /*     @GetMapping("/mypage")
@@ -33,4 +41,6 @@ public class MyPageController {
             return null; // 필요하면 예외 처리 가능
         }
     }
+
+
 }
