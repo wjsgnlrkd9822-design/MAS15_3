@@ -6,12 +6,19 @@
 <mapper namespace="com.aloha.project.mapper.ReservationMapper">
 
     <!-- 예약 추가 -->
-    <insert id="insert">
+    <!-- <insert id="insert">
     INSERT INTO reservations
     (user_no, pet_no, room_no, res_date, res_time, checkout_date,total_price)
     VALUES
     (#{userNo}, #{petNo}, #{roomNo}, #{checkinDate}, #{resTime}, #{checkoutDate},#{totalPrice})
-   </insert>
+   </insert> -->
+   <insert id="insertReservation" parameterType="com.aloha.project.dto.ReservationDto" useGeneratedKeys="true" keyProperty="resNo">
+    INSERT INTO reservations
+    (user_no, pet_no, room_no, res_date, res_time, checkout_date, total_price)
+    VALUES
+    (#{userNo}, #{petNo}, #{roomNo}, #{checkin}, #{resTime}, #{checkout}, #{totalPrice})
+</insert>
+
 
     <!-- 회원별 예약 조회 -->
     <select id="findByUserNo" resultType="com.aloha.project.dto.ReservationDto">
@@ -20,6 +27,7 @@
               r.res_no AS userNo,
               r.res_date AS checkin,
               r.checkout_date AS checkout,
+              r.total_price AS totalPrice,
               p.name AS petName,
               h.room_type AS roomType,
               h.room_no AS roomNo
@@ -37,6 +45,7 @@
               r.res_no AS userNo,
               r.res_date AS checkin,
               r.checkout_date AS checkout,
+              r.total_price AS totalPrice,
               p.name AS petName,
               h.room_type AS roomType,
               h.room_no AS roomNo
@@ -46,11 +55,19 @@
         WHERE r.res_no = #{resNo}
     </select>
 
+    <!-- ✅ 예약의 선택된 서비스 번호 조회 -->
+    <select id="selectServiceIdsByReservation" resultType="long" parameterType="long">
+        SELECT service_no
+        FROM reservation_services
+        WHERE res_no = #{resNo}
+    </select>
+
     <!-- ✅ 예약 수정 -->
     <update id="update">
         UPDATE reservations
         SET res_date = #{checkinDate},
-            checkout_date = #{checkoutDate}
+            checkout_date = #{checkoutDate},
+            total_price = #{totalPrice} 
         WHERE res_no = #{resNo}
     </update>
 
@@ -64,6 +81,34 @@
     <delete id="deleteReservation" parameterType="long">
         DELETE FROM reservations WHERE res_no = #{resNo}
     </delete>
+
+    <!-- 예약 서비스 등록 -->
+    <insert id="insertReservationService">
+        INSERT INTO reservation_services (res_no, service_no)
+        VALUES (#{resNo}, #{serviceNo})
+    </insert>
+
+    <!-- 예약 서비스 삭제 (예약 번호 기준) -->
+    <delete id="deleteReservationServices" parameterType="long">
+        DELETE FROM reservation_services WHERE res_no = #{resNo}
+    </delete>
+
+    <select id="getServicePrice" resultType="int" parameterType="long">
+        SELECT service_price
+        FROM hotelservices
+        WHERE service_no = #{serviceNo}
+    </select>
+
+<!-- 예약별 선택 서비스 조회 -->
+    <select id="selectServicesByReservation" resultType="com.aloha.project.dto.HotelService" parameterType="long">
+        SELECT s.service_no AS serviceNo,
+            s.service_name AS serviceName,
+            s.description,
+            s.service_price AS servicePrice
+        FROM reservation_services rs
+        JOIN hotelservices s ON rs.service_no = s.service_no
+        WHERE rs.res_no = #{resNo}
+    </select>
 
 
 </mapper>
