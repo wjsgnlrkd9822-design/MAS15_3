@@ -2,6 +2,7 @@ package com.aloha.project.controller;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +25,10 @@ import com.aloha.project.dto.CustomUser;
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.Pet;
 import com.aloha.project.dto.ReservationDto;
-import com.aloha.project.dto.User;
 import com.aloha.project.service.HotelRoomService;
 import com.aloha.project.service.HotelServiceService;
 import com.aloha.project.service.PetService;
 import com.aloha.project.service.ReservationService;
-import com.aloha.project.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,8 +39,7 @@ public class MainController {
     private final PetService petService;
     private final HotelRoomService hotelRoomService;       
     private final HotelServiceService hotelServiceService; 
-    private final ReservationService reservationService;
-    private final UserService userService; // ✅ 추가
+    private final ReservationService reservationService;  
 
     /**
      * 메인 페이지
@@ -133,46 +131,47 @@ public class MainController {
      * 예약 확인
      */
     @PostMapping("/pet/reservation/confirm/{roomNo}")
-    public String confirmReservation(
-            @PathVariable("roomNo") Long roomNo,
-            @RequestParam("checkin") String checkin,
-            @RequestParam("checkout") String checkout,
-            @RequestParam("nights") int nights,
-            @RequestParam("total") int total,
-            @RequestParam(value="petNo", required=false) Long petNo,
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam("totalPrice") int totalPrice,
-            @RequestParam("petNo") Long petNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            RedirectAttributes redirectAttributes
-    ) {
-        if ( customUser == null ) {
-            return "redirect:/login";
+        public String confirmReservation(
+                @PathVariable("roomNo") Long roomNo,
+                @RequestParam("checkin") String checkin,
+                @RequestParam("checkout") String checkout,
+                @RequestParam("petNo") Long petNo,
+                @RequestParam(value="serviceIds", required=false) List<Long> serviceIds,
+                @AuthenticationPrincipal CustomUser customUser,
+                RedirectAttributes redirectAttributes
+        ) {
+            if (customUser == null) return "redirect:/login";
+
+            Long userNo = customUser.getNo();
+
+            LocalDate checkinDate = LocalDate.parse(checkin);
+            LocalDate checkoutDate = LocalDate.parse(checkout);
+            LocalTime resTime = LocalTime.now();
+
+            // 객실 가격 계산
+            int roomPrice = hotelRoomService.getRoom(roomNo).getRoomPrice();
+            int nights = (int) ChronoUnit.DAYS.between(checkinDate, checkoutDate);
+
+            // 서비스 가격 합산
+            int serviceTotal = 0;
+            if (serviceIds != null) {
+                for (Long serviceNo : serviceIds) {
+                    serviceTotal += reservationService.getServicePrice(serviceNo);
+                }
+            }
+
+            int totalPrice = roomPrice * nights + serviceTotal;
+
+            // 예약 DB 저장 + 선택 서비스 저장
+            reservationService.insert(userNo, petNo, roomNo, checkinDate, checkoutDate, resTime, totalPrice, serviceIds);
+
+            redirectAttributes.addFlashAttribute("checkin", checkin);
+            redirectAttributes.addFlashAttribute("checkout", checkout);
+            redirectAttributes.addFlashAttribute("nights", nights);
+            redirectAttributes.addFlashAttribute("total", totalPrice);
+
+            return "redirect:/mypage";
         }
-
-        Long userNo = customUser.getNo();
-
-        System.out.println("=== 서버에서 받은 값 ===");
-        System.out.println("체크인: " + checkin);
-        System.out.println("체크아웃: " + checkout);
-        System.out.println("박수: " + nights);
-        
-        /* Long userNo = 1L;
-        Long petNo = 1L; */
-
-        LocalDate checkinDate = LocalDate.parse(checkin);
-        LocalDate checkoutDate = LocalDate.parse(checkout);
-        LocalTime resTime = LocalTime.now();
-
-        reservationService.insert(userNo, petNo, roomNo, checkinDate, checkoutDate, resTime, totalPrice);
-
-        redirectAttributes.addFlashAttribute("checkin", checkin);
-        redirectAttributes.addFlashAttribute("checkout", checkout);
-        redirectAttributes.addFlashAttribute("nights", nights);
-        redirectAttributes.addFlashAttribute("total", total);
-
-        return "redirect:/mypage";
-    }
 
     /**
      * 마이페이지
@@ -196,51 +195,29 @@ public String mypage(Model model, @AuthenticationPrincipal CustomUser customUser
     // ✅ 예약 1건 조회 (AJAX용)
     @GetMapping("/api/reservation/{resNo}")
     @ResponseBody
-    public ReservationDto getReservation(
-            @PathVariable("resNo") Long resNo,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) throws Exception {
-        // 본인의 예약만 조회 가능
-        ReservationDto reservation = reservationService.getReservationByResNo(resNo);
-        User user = userService.select(userDetails.getUsername());
-        Long userNo = user.getNo(); // ✅ no 필드 사용
-        
-        if (reservation != null && !reservation.getUserNo().equals(userNo)) {
-            return null;
-        }
-        
-        return reservation;
+    public ReservationDto getReservation(@PathVariable("resNo") Long resNo) {
+        return reservationService.getReservationByResNo(resNo);
     }
 
     // ✅ 예약 수정 (AJAX용)
-    @PostMapping("/api/reservation/update/{resNo}")
+   @PostMapping("/api/reservation/update/{resNo}")
     @ResponseBody
     public Map<String, Object> updateReservation(
-        @PathVariable("resNo") Long resNo,
-        @RequestParam("checkin") String checkin,
-        @RequestParam("checkout") String checkout,
-        @RequestParam("total") int total,
-        @AuthenticationPrincipal UserDetails userDetails,
-        @RequestParam("totalPrice") int totalPrice
+            @PathVariable("resNo") Long resNo,
+            @RequestParam("checkin") String checkin,
+            @RequestParam("checkout") String checkout,
+            @RequestParam("total") int total,
+            @RequestParam("totalPrice") int totalPrice,
+            @RequestParam(value="serviceIds", required=false) List<Long> serviceIds
     ) {
         Map<String, Object> result = new HashMap<>();
         try {
-            // 본인의 예약만 수정 가능
-            ReservationDto reservation = reservationService.getReservationByResNo(resNo);
-            User user = userService.select(userDetails.getUsername());
-            Long userNo = user.getNo(); // ✅ no 필드 사용
-            
-            if (reservation == null || !reservation.getUserNo().equals(userNo)) {
-                result.put("success", false);
-                result.put("message", "권한이 없습니다.");
-                return result;
-            }
-            
             LocalDate checkinDate = LocalDate.parse(checkin);
             LocalDate checkoutDate = LocalDate.parse(checkout);
-            
-            reservationService.update(resNo, checkinDate, checkoutDate, total, totalPrice);
-            
+
+            // 서비스 포함 예약 업데이트
+            reservationService.update(resNo, checkinDate, checkoutDate, total, totalPrice, serviceIds);
+
             result.put("success", true);
             result.put("message", "예약이 수정되었습니다.");
         } catch (Exception e) {
@@ -251,33 +228,85 @@ public String mypage(Model model, @AuthenticationPrincipal CustomUser customUser
     }
 
     // 예약 삭제 (AJAX용)
-    @DeleteMapping("/api/reservation/delete/{resNo}")
-    @ResponseBody
-    public Map<String, Object> deleteReservation(
-            @PathVariable("resNo") Long resNo,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            // 본인의 예약만 삭제 가능
-            ReservationDto reservation = reservationService.getReservationByResNo(resNo);
-            User user = userService.select(userDetails.getUsername());
-            Long userNo = user.getNo(); // ✅ no 필드 사용
-            
-            if (reservation == null || !reservation.getUserNo().equals(userNo)) {
+        @DeleteMapping("/api/reservation/delete/{resNo}")
+        @ResponseBody
+        public Map<String, Object> deleteReservation(@PathVariable("resNo") Long resNo) {
+            Map<String, Object> result = new HashMap<>();
+            try {
+                reservationService.delete(resNo);
+                result.put("success", true);
+                result.put("message", "예약이 삭제되었습니다.");
+            } catch (Exception e) {
+                e.printStackTrace(); // ✅ 로그 찍기
                 result.put("success", false);
-                result.put("message", "권한이 없습니다.");
-                return result;
+                result.put("message", "삭제 실패: " + e.getMessage());
             }
-            
-            reservationService.delete(resNo);
-            result.put("success", true);
-            result.put("message", "예약이 삭제되었습니다.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("success", false);
-            result.put("message", "삭제 실패: " + e.getMessage());
+            return result;
         }
-        return result;
+            
+            
+            
+            
+            @GetMapping("/api/room/services")
+            @ResponseBody
+            public List<Map<String, Object>> getAllServices() {
+                return hotelServiceService.getAllServices()
+                    .stream()
+                    .map(s -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("serviceNo", s.getServiceNo());
+                        map.put("serviceName", s.getServiceName());
+                        map.put("price", s.getServicePrice());
+                        return map;
+                    })
+                    .collect(Collectors.toList());
+            }
+
+
+
+            /* insert 전용 */
+            @PostMapping("/pet/reservation/insert/{roomNo}")
+public String insertReservation(
+        @PathVariable("roomNo") Long roomNo,
+        @RequestParam("checkin") String checkin,
+        @RequestParam("checkout") String checkout,
+        @RequestParam("petNo") Long petNo,
+        @RequestParam(value="serviceIds", required=false) List<Long> serviceIds,
+        @AuthenticationPrincipal CustomUser customUser,
+        RedirectAttributes redirectAttributes
+) {
+    if(customUser == null) return "redirect:/login";
+
+    Long userNo = customUser.getNo();
+    LocalDate checkinDate = LocalDate.parse(checkin);
+    LocalDate checkoutDate = LocalDate.parse(checkout);
+    LocalTime resTime = LocalTime.now();
+
+    // 객실 가격 계산
+    int roomPrice = hotelRoomService.getRoom(roomNo).getRoomPrice();
+    int nights = (int) ChronoUnit.DAYS.between(checkinDate, checkoutDate);
+
+    // 서비스 가격 합산
+    int serviceTotal = 0;
+    if(serviceIds != null) {
+        for(Long serviceNo : serviceIds) {
+            serviceTotal += reservationService.getServicePrice(serviceNo);
+        }
     }
+
+    int totalPrice = roomPrice * nights + serviceTotal;
+
+    // DB 저장
+    reservationService.insert(userNo, petNo, roomNo, checkinDate, checkoutDate, resTime, totalPrice, serviceIds);
+
+    redirectAttributes.addFlashAttribute("checkin", checkin);
+    redirectAttributes.addFlashAttribute("checkout", checkout);
+    redirectAttributes.addFlashAttribute("nights", nights);
+    redirectAttributes.addFlashAttribute("total", totalPrice);
+
+    return "redirect:/mypage";
 }
+
+            
+    }
+// 컨트롤러 reservationservice.java, ReservationServiceImple.java, ReservationMapper.java ReservationMapper.xml, myPage.html
