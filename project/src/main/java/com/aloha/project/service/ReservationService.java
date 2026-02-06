@@ -22,6 +22,8 @@ public interface ReservationService {
     
     void delete(Long resNo);
 
+    public Long getTotalSales();
+
 
     // 추가: 서비스 가격 조회
     int getServicePrice(Long serviceNo);

@@ -114,4 +114,10 @@ public class ReservationServiceImpl implements ReservationService {
     public List<HotelService> getServicesByReservation(Long resNo) {
         return reservationMapper.selectServicesByReservation(resNo);
     }
+
+    @Override
+    public Long getTotalSales() {
+         Long total = reservationMapper.getTotalSales();
+            return (total == null) ? 0L : total; //
+    }
 }
