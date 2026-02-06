@@ -2,9 +2,12 @@ package com.aloha.project.controller;
 
 import java.security.Principal;
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +23,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aloha.project.dto.CustomUser;
 import com.aloha.project.dto.User;
+import com.aloha.project.dto.UserSocial;
 import com.aloha.project.service.UserService;
+import com.aloha.project.service.UserSocialService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserApiController {
 
     private final UserService userService;
+    private final UserSocialService userSocialService;
 
     /**
      * 회원가입 처리 (비동기식)
@@ -215,6 +222,59 @@ public class UserApiController {
         }
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/socialLogin")
+public ResponseEntity<Map<String,Object>> socialLogin(@RequestBody Map<String,String> payload, HttpServletRequest request) {
+    Map<String,Object> response = new HashMap<>();
+
+    try {
+        String provider = payload.get("provider");      
+        String socialId = payload.get("socialId");    
+        String nickname = payload.get("nickname");      
+
+        UserSocial social = userSocialService.selectByProviderAndSocialId(provider, socialId);
+
+        User user;
+        if (social == null) {
+            user = new User();
+            user.setId(UUID.randomUUID().toString());
+            user.setUsername(provider + "_" + socialId);
+            user.setName(nickname);           
+            
+            userService.join(user);
+
+            social = new UserSocial();
+            social.setUserNo(user.getNo());
+            social.setProvider(provider);
+            social.setSocialId(socialId);
+
+            userSocialService.insert(social);
+        } else {
+            user = userSocialService.selectById(social.getUserNo());
+        }
+
+        // ✅ SecurityContext 인증 처리
+        CustomUser customUser = new CustomUser(user);
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 세션에도 저장
+        request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+        log.info("[카카오 로그인 성공] username: {}, name: {}", user.getUsername(), user.getName());
+
+        response.put("success", true);
+        response.put("user", user);
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.put("success", false);
+        response.put("message", "서버 오류");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+}
 
     
 }

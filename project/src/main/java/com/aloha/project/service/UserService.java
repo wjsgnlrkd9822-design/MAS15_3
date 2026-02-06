@@ -30,5 +30,7 @@ public interface UserService {
     List<User> list() throws Exception;
 
     public String findId(String name, String email) throws Exception;
+
+    public User selectById(Long userNo) throws Exception;
     
 }
