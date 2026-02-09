@@ -108,7 +108,7 @@ VALUES
 ('Small Dog Deluxe', 70000, '소형견실(넓은공간)', '예약가능', 'room_305.jpg');
 
 
-SELECT * FROM hotelrooms
+SELECT * FROM reservations
 
  
 

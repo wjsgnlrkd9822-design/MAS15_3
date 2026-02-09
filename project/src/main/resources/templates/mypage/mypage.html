@@ -362,7 +362,7 @@
                   <td th:text="${res.checkin}">2024-07-01</td>
                   <td th:text="${res.checkout}">2024-07-05</td>
                   <td>예약 완료</td>
-                  <td th:text="${res.totalPrice}">총금액</td>
+                  <td th:text="${#numbers.formatInteger(res.totalPrice, 3, 'COMMA')} + '원'">총금액</td>  <!-- 천원 단위 컴마 추가 -->
                   <td>
   <!-- ✅ 안전하게 모달 열기 -->
   <button class="btn-edit" type="button"

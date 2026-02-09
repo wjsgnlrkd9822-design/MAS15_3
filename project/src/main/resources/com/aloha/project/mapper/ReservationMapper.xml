@@ -34,7 +34,7 @@
             WHERE status = '예약중'
             AND (
                     #{checkin} &lt; checkout_date
-                AND #{checkout} &gt; res_date
+                AND #{checkout} &gt;= res_date  <!-- ⭐ > 에서 >= 로 변경 -->
             )
         )
         ORDER BY h.room_price
@@ -51,7 +51,7 @@
         AND status = '예약중'
         AND (
                 #{checkin} &lt; checkout_date
-            AND #{checkout} &gt; res_date
+            AND #{checkout} &gt;= res_date  <!-- ⭐ > 에서 >= 로 변경 -->
         )
 
     </select>
@@ -67,7 +67,7 @@
         AND res_no != #{resNo}
         AND (
                 #{checkin} &lt; checkout_date
-            AND #{checkout} &gt; res_date
+            AND #{checkout} &gt;= res_date  <!-- ⭐ > 에서 >= 로 변경 -->
         )
 
     </select>
@@ -210,7 +210,7 @@
     <select id="getTotalSales" resultType="long">
         SELECT COALESCE(SUM(total_price), 0)
         FROM reservations
-        WHERE status = '완료'
+        <!-- WHERE status = '완료' -->
     </select>
 
     <!-- ✅ 예약 삭제 -->

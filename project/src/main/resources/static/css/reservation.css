@@ -18,11 +18,11 @@
    =================================== */
 .search-and-results-container {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
-  max-width: 1400px;
+  grid-template-columns: 260px 1fr;   /* 필터 조금 줄임 */
+  gap: 40px;                         /* 필터 ↔ 카드 간격 증가 */
+  max-width: 1600px;                 /* 전체 폭 확장 */
   margin: 0 auto;
-  padding: 0 20px 40px;
+  padding: 0 10px 40px;  
   overflow: visible;
 }
 
@@ -302,8 +302,8 @@
 /* --- Card Grid --- */
 .room-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
   padding-bottom: 80px;
 }
 
