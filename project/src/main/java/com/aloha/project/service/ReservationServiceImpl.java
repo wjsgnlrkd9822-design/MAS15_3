@@ -3,11 +3,14 @@ package com.aloha.project.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.HotelService;
 import com.aloha.project.dto.ReservationDto;
 import com.aloha.project.mapper.ReservationMapper;
@@ -26,7 +29,7 @@ public class ReservationServiceImpl implements ReservationService {
         // ReservationDto 생성
         ReservationDto dto = new ReservationDto();
         dto.setUserNo(userNo);
-        dto.setPetNo(petNo);  // ✅ 추가
+        dto.setPetNo(petNo);
         dto.setRoomNo(roomNo);
         dto.setCheckin(checkinDate);
         dto.setCheckout(checkoutDate);
@@ -39,7 +42,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (cnt != 1) {
             throw new RuntimeException("예약 추가 실패: userNo=" + userNo + ", petNo=" + petNo + ", roomNo=" + roomNo);
         }
-        Long resNo = dto.getResNo(); // ✅ 여기서 정확한 방금 insert된 예약 ID 확보
+        Long resNo = dto.getResNo();
 
         // 서비스 등록
         if(serviceNos != null && !serviceNos.isEmpty()) {
@@ -54,7 +57,6 @@ public class ReservationServiceImpl implements ReservationService {
         List<ReservationDto> reservations = reservationMapper.findByUserNo(userNo);
 
         for (ReservationDto res : reservations) {
-            // ✅ checkout은 이미 DB에서 가져왔으니 nights만 계산
             if (res.getCheckin() != null && res.getCheckout() != null) {
                 long days = ChronoUnit.DAYS.between(res.getCheckin(), res.getCheckout());
                 res.setNights((int) days);
@@ -68,13 +70,11 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationDto getReservationByResNo(Long resNo) {
         ReservationDto reservation = reservationMapper.findByResNo(resNo);
         if (reservation != null) {
-            // 예약 일자 계산
             if (reservation.getCheckin() != null && reservation.getCheckout() != null) {
                 long days = ChronoUnit.DAYS.between(reservation.getCheckin(), reservation.getCheckout());
                 reservation.setNights((int) days);
             }
             
-            // ✅ 서비스 ID 조회 및 설정
             List<Long> serviceIds = reservationMapper.selectServiceIdsByReservation(resNo);
             reservation.setServiceIds(serviceIds);
         }
@@ -114,4 +114,189 @@ public class ReservationServiceImpl implements ReservationService {
     public List<HotelService> getServicesByReservation(Long resNo) {
         return reservationMapper.selectServicesByReservation(resNo);
     }
+
+    @Override
+    public Long getTotalSales() {
+        Long total = reservationMapper.getTotalSales();
+        return (total == null) ? 0L : total;
+    }
+
+    // ⭐ 새로 추가: 날짜별 예약 관리 메서드 구현
+    
+    @Override
+    public List<HotelRoom> getAvailableRooms(String roomType, LocalDate checkin, LocalDate checkout) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomType", roomType);
+        params.put("checkin", checkin);
+        params.put("checkout", checkout);
+        
+        return reservationMapper.getAvailableRooms(params);
+    }
+    
+    @Override
+    public boolean isRoomAvailable(Long roomNo, LocalDate checkin, LocalDate checkout) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNo", roomNo);
+        params.put("checkin", checkin);
+        params.put("checkout", checkout);
+        
+        int conflict = reservationMapper.checkRoomAvailability(params);
+        return conflict == 0; // 0이면 예약 가능
+    }
+    
+    @Override
+    @Transactional
+    public boolean createReservation(ReservationDto reservation) {
+        try {
+            // 1. 체크아웃 날짜 자동 계산
+            reservation.calculateCheckout();
+            
+            // 2. 예약 가능 여부 확인
+            boolean available = isRoomAvailable(
+                reservation.getRoomNo(), 
+                reservation.getCheckin(), 
+                reservation.getCheckout()
+            );
+            
+            if (!available) {
+                throw new RuntimeException("선택하신 기간에 이미 예약이 있습니다.");
+            }
+            
+            // 3. status 기본값 설정
+            if (reservation.getStatus() == null || reservation.getStatus().isEmpty()) {
+                reservation.setStatus("예약중");
+            }
+            
+            // 4. 예약 생성
+            int result = reservationMapper.insertReservation(reservation);
+            
+            // 5. 서비스 등록
+            if (reservation.getServiceIds() != null && !reservation.getServiceIds().isEmpty()) {
+                Long resNo = reservation.getResNo();
+                for (Long serviceNo : reservation.getServiceIds()) {
+                    reservationMapper.insertReservationService(resNo, serviceNo);
+                }
+            }
+            
+            return result > 0;
+            
+        } catch (Exception e) {
+            throw new RuntimeException("예약 생성 실패: " + e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    @Transactional
+    public boolean cancelReservation(Long resNo) {
+        int result = reservationMapper.cancelReservation(resNo);
+        return result > 0;
+    }
+    
+    @Override
+    @Transactional
+    public boolean completeReservation(Long resNo) {
+        int result = reservationMapper.completeReservation(resNo);
+        return result > 0;
+    }
+    
+    @Override
+    @Transactional
+    public boolean updateReservationStatus(Long resNo, String status) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("resNo", resNo);
+        params.put("status", status);
+        
+        int result = reservationMapper.updateReservationStatus(params);
+        return result > 0;
+    }
+    
+    @Override
+    public List<ReservationDto> getTodayCheckIns() {
+        List<ReservationDto> reservations = reservationMapper.getTodayCheckIns();
+        
+        // nights 계산
+        for (ReservationDto res : reservations) {
+            if (res.getCheckin() != null && res.getCheckout() != null) {
+                long days = ChronoUnit.DAYS.between(res.getCheckin(), res.getCheckout());
+                res.setNights((int) days);
+            }
+        }
+        
+        return reservations;
+    }
+    
+    @Override
+    public List<ReservationDto> getTodayCheckOuts() {
+        List<ReservationDto> reservations = reservationMapper.getTodayCheckOuts();
+        
+        // nights 계산
+        for (ReservationDto res : reservations) {
+            if (res.getCheckin() != null && res.getCheckout() != null) {
+                long days = ChronoUnit.DAYS.between(res.getCheckin(), res.getCheckout());
+                res.setNights((int) days);
+            }
+        }
+        
+        return reservations;
+    }
+    
+    @Override
+    public List<ReservationDto> getRoomSchedule(Long roomNo) {
+        List<ReservationDto> reservations = reservationMapper.getRoomSchedule(roomNo);
+        
+        // nights 계산
+        for (ReservationDto res : reservations) {
+            if (res.getCheckin() != null && res.getCheckout() != null) {
+                long days = ChronoUnit.DAYS.between(res.getCheckin(), res.getCheckout());
+                res.setNights((int) days);
+            }
+        }
+        
+        return reservations;
+    }
+
+    /* 예약 수정  */
+    @Override
+    @Transactional
+    public boolean updateReservation(ReservationDto reservation) {
+
+        // 🔹 1. 자기 자신(resNo)은 제외하고 날짜 겹침 검사
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNo", reservation.getRoomNo());
+        params.put("checkin", reservation.getCheckin());
+        params.put("checkout", reservation.getCheckout());
+        params.put("resNo", reservation.getResNo());   // ⭐ 본인 예약 제외
+
+        int conflict = reservationMapper.checkRoomAvailabilityForUpdate(params);
+
+        if (conflict > 0) {
+            return false;   // ❌ 겹치는 예약 있음 → 수정 불가
+        }
+
+        // 🔹 2. 예약 날짜 + 금액 수정
+        int cnt = reservationMapper.update(
+            reservation.getResNo(),
+            reservation.getCheckin(),
+            reservation.getCheckout(),
+            reservation.getTotal(),
+            reservation.getTotalPrice()
+        );
+
+        if (cnt != 1) {
+            throw new RuntimeException("예약 수정 실패: resNo=" + reservation.getResNo());
+        }
+
+        // 🔹 3. 서비스 갱신
+        reservationMapper.deleteReservationServices(reservation.getResNo());
+
+        if (reservation.getServiceIds() != null && !reservation.getServiceIds().isEmpty()) {
+            for (Long serviceNo : reservation.getServiceIds()) {
+                reservationMapper.insertReservationService(reservation.getResNo(), serviceNo);
+            }
+        }
+
+        return true;
+    }
+
+    
 }

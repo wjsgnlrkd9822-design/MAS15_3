@@ -1,4 +1,4 @@
--- Active: 1767840807398@@127.0.0.1@3306@aloha
+-- Active: 1767920835424@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 drop TABLE IF EXISTS `users`;
@@ -172,7 +172,15 @@ CREATE TABLE `notices`(
 );
 
 
-
+DROP TABLE IF EXISTS `user_auth`;
+CREATE TABLE `user_auth` (
+    `auth_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '권한번호',
+    `id` VARCHAR(36) NOT NULL COMMENT '사용자ID (UK)',
+    `username` VARCHAR(50) NOT NULL COMMENT '사용자아이디',
+    `auth` VARCHAR(100) NOT NULL COMMENT '권한 (ROLE_USER, ROLE_ADMIN, ...)',
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '수정일시'
+);
 DROP TABLE IF EXISTS `trainers`;
 CREATE Table `trainers`(
     `trainer_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '트레이너 번호',
@@ -183,39 +191,5 @@ CREATE Table `trainers`(
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '등록일자'
 );
 
-DROP TABLE IF EXISTS `product`;
-CREATE TABLE `product`(
-    `product_no` BIGINT  NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '상품 번호',
-    `name` VARCHAR(100) NOT NULL COMMENT '상품 이름',
-    `description` TEXT NOT NULL COMMENT '상품 설명',
-    `price` INT NOT NULL COMMENT '가격',
-    `stock` INT NOT NULL COMMENT '재고',
-    `category` VARCHAR(50) NOT NULL COMMENT '카테고리',
-    `img` VARCHAR(255) DEFAULT NULL COMMENT '상품 이미지',
-    `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '등록일자'
-);
-
-DROP TABLE IF EXISTS `orders`;
-CREATE TABLE `orders` (
-    `order_no` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '주문 번호',
-    `user_no` BIGINT NOT NULL COMMENT '회원 번호',
-    `total_price` INT NOT NULL COMMENT '총 금액',
-    `status` VARCHAR(20) DEFAULT 'READY' COMMENT '주문 상태',
-    `order_date` TIMESTAMP DEFAULT NOW() COMMENT '주문일자',
-    FOREIGN KEY (`user_no`) REFERENCES users(no)
-);
-DROP TABLE IF EXISTS `order_items`;
-CREATE TABLE `order_items` (
-    `item_no` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '주문 상품 번호',
-    `order_no` BIGINT NOT NULL COMMENT '주문 번호',
-    `product_no` BIGINT NOT NULL COMMENT '상품 번호',
-    `quantity` INT NOT NULL COMMENT '수량',
-    `price` INT NOT NULL COMMENT '주문 당시 가격',
-    FOREIGN KEY (`order_no`) REFERENCES orders(order_no) ON DELETE CASCADE,
-    FOREIGN KEY (`product_no`) REFERENCES product(product_no)
-); 
-
 
 SET FOREIGN_KEY_CHECKS = 1;
-
-

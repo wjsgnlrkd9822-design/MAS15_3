@@ -26,6 +26,7 @@ import com.aloha.project.dto.User;
 import com.aloha.project.service.AddtionalService;
 import com.aloha.project.service.FileService;
 import com.aloha.project.service.NoticeService;
+import com.aloha.project.service.ReservationService;
 import com.aloha.project.service.RoomService;
 import com.aloha.project.service.TrainerService;
 import com.aloha.project.service.UserService;
@@ -47,8 +48,11 @@ public class AdminController {
   private final RoomService roomService;
   private final FileService fileService;
   private final UserService userService;
+  private final ReservationService reservationService;
   @GetMapping("")
-  public String admin() {
+  public String admin(Model model) {
+    Long totalSales = reservationService.getTotalSales();
+    model.addAttribute("totalSales", totalSales);
     return "admin/ad_main";
   }
   
