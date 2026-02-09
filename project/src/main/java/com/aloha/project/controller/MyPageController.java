@@ -3,9 +3,11 @@ package com.aloha.project.controller;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.aloha.project.dto.CustomUser;
+import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.User;
 import com.aloha.project.service.HotelRoomService;
 import lombok.extern.slf4j.Slf4j;
