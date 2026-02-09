@@ -117,9 +117,15 @@
 
                     <div class="service-bottom">
                         <p class="service-desc" th:text="${service.description}"></p>
-                        <input type="checkbox" class="service-checkbox" 
+                        <!-- <input type="checkbox" class="service-checkbox" 
                             th:value="${service.servicePrice}" 
+                            th:data-name="${service.serviceName}"> -->
+                        <input type="checkbox" class="service-checkbox" 
+                            name="serviceIds"
+                            th:value="${service.serviceNo}" 
+                            th:data-price="${service.servicePrice}" 
                             th:data-name="${service.serviceName}">
+                                                    
                     </div>
                 </div>
             </li>
@@ -151,20 +157,19 @@
             <span id="summary-total">0원</span>
         </div>
 
-        <form id="reservationForm" th:action="@{'/pet/reservation/confirm/' + ${room.roomNo}}" method="post">
+        <!-- <form id="reservationForm" th:action="@{'/pet/reservation/confirm/' + ${room.roomNo}}" method="post"> -->
+        <form id="reservationForm" th:action="@{'/pet/reservation/insert/' + ${room.roomNo}}" method="post">
             <input type="hidden" name="checkin" id="form-checkin">
             <input type="hidden" name="checkout" id="form-checkout">
             <input type="hidden" name="nights" id="form-nights">
             <input type="hidden" name="total" id="form-total">
             <input type="hidden" name="totalPrice" id="form-total-price">
-            <div class="pet-select-wrapper">
-                <select id="petSelect" name="petNo" required>
-                    <option value="" disabled selected>반려견 선택</option>
-                    <option th:each="pet : ${pets}" th:value="${pet.no}" th:text="${pet.name}"></option>
-                </select>
-                <span class="pet-select-arrow">⌵</span>
-            </div>
+            <input type="hidden" name="serviceIds" id="form-serviceIds">
 
+            <select id="petSelect" name="petNo" required>
+        <option value="" disabled selected>반려견 선택</option>
+        <option th:each="pet : ${pets}" th:value="${pet.no}" th:text="${pet.name}"></option>
+    </select>
             <button type="submit" id="reserveBtn" class="summary-btn">예약하기</button>
         </form>
     </div>
@@ -176,7 +181,122 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const roomPrice = parseInt(document.getElementById('room-price').textContent.replace(/,/g,''));
+    const nightEl = document.getElementById("night-count");
+    const serviceCheckboxes = document.querySelectorAll(".service-checkbox");
+    const serviceCards = document.querySelectorAll(".service-card");
+
+    const checkinInput = flatpickr("#checkin-date", { 
+        inline:true, 
+        minDate:"today", 
+        onChange: updateSummary 
+    });
+    const checkoutInput = flatpickr("#checkout-date", { 
+        inline:true, 
+        minDate:"today", 
+        onChange: updateSummary 
+    });
+
+    function formatDate(d){ 
+        return d.getFullYear() + "." + String(d.getMonth()+1).padStart(2,"0") + "." + String(d.getDate()).padStart(2,"0"); 
+    }
+    function formatLocalDate(d){ 
+        return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0'); 
+    }
+
+    // UI 및 금액 업데이트
+    function updateSummary(){
+        const checkin = checkinInput.selectedDates[0];
+        const checkout = checkoutInput.selectedDates[0];
+
+        let nights = 0;
+        if(checkin && checkout && checkout > checkin){
+            nights = Math.ceil((checkout - checkin)/(1000*60*60*24));
+        }
+
+        let roomTotal = nights * roomPrice;
+
+        let serviceTotal = 0;
+        serviceCheckboxes.forEach(cb => { 
+            if(cb.checked) serviceTotal += parseInt(cb.dataset.price); 
+        });
+
+        nightEl.textContent = nights;
+        document.getElementById("summary-date").textContent = checkin && checkout ? formatDate(checkin) + " ~ " + formatDate(checkout) : "-";
+        document.getElementById("summary-room").textContent = roomTotal.toLocaleString() + "원";
+        document.getElementById("summary-service").textContent = serviceTotal.toLocaleString() + "원";
+        document.getElementById("summary-total").textContent = (roomTotal + serviceTotal).toLocaleString() + "원";
+    }
+
+    // 서비스 카드 클릭 시 체크박스 토글
+    serviceCards.forEach(card => {
+        const checkbox = card.querySelector('.service-checkbox');
+        card.addEventListener('click', e => {
+            if(e.target !== checkbox) checkbox.checked = !checkbox.checked;
+            card.classList.toggle('selected', checkbox.checked);
+            updateSummary();
+        });
+    });
+
+    // 체크박스 클릭 시 카드 선택 표시
+    serviceCheckboxes.forEach(cb => {
+        cb.addEventListener("change", updateSummary);
+    });
+
+    // 폼 제출 시 최종 값 세팅
+    document.getElementById("reservationForm").addEventListener("submit", function(e){
+        const checkin = checkinInput.selectedDates[0];
+        const checkout = checkoutInput.selectedDates[0];
+        const petSelect = document.getElementById("petSelect");
+
+        if(!checkin || !checkout){
+            e.preventDefault();
+            alert("체크인/체크아웃 날짜를 선택해주세요.");
+            return;
+        }
+        if(checkout <= checkin){
+            e.preventDefault();
+            alert("체크인/체크아웃 날짜가 올바르지 않습니다.");
+            return;
+        }
+        if(!petSelect.value){
+            e.preventDefault();
+            alert("반려견을 선택해주세요.");
+            return;
+        }
+
+        // ✅ 최종 hidden 값 세팅
+        document.getElementById("form-checkin").value = formatLocalDate(checkin);
+        document.getElementById("form-checkout").value = formatLocalDate(checkout);
+        const nights = Math.ceil((checkout - checkin)/(1000*60*60*24));
+        document.getElementById("form-nights").value = nights;
+
+        const roomTotal = nights * roomPrice;
+        const serviceTotal = Array.from(serviceCheckboxes)
+                                  .filter(cb => cb.checked)
+                                  .reduce((sum, cb) => sum + parseInt(cb.dataset.price), 0);
+        const totalPrice = roomTotal + serviceTotal;
+
+        document.getElementById("form-total").value = totalPrice;
+        document.getElementById("form-total-price").value = totalPrice;
+
+        // 선택한 서비스 ID comma로 연결
+        const selectedServices = Array.from(serviceCheckboxes)
+                                    .filter(cb => cb.checked)
+                                    .map(cb => cb.value);
+        document.getElementById("form-serviceIds").value = selectedServices.join(',');
+    });
+
+});
+</script>
+
+
+
+<!-- <script>
 document.addEventListener("DOMContentLoaded", function(){
     let rawRoomPrice = parseInt(document.getElementById('room-price').textContent);
     document.getElementById('room-price').textContent = rawRoomPrice.toLocaleString();
@@ -320,7 +440,7 @@ document.addEventListener("DOMContentLoaded", function(){
         console.log("최종 박수:", document.getElementById("form-nights").value);
     });
 });
-</script>
+</script> -->
 
 
 

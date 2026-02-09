@@ -490,3 +490,11 @@ body {
     border-radius: 16px;
     border: 1px solid #d1d5db;
 }
+
+/* 방 디테일 이미지 */
+.room-detail-image{
+    width:100%;
+    height:260px;
+    object-fit:cover;
+    border-radius:0;
+}
