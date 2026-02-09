@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HomeController {
 
     @Autowired
-    private UserService userService;
+    private UserService userService; 
 
 
 
