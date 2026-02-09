@@ -210,7 +210,7 @@
     <select id="getTotalSales" resultType="long">
         SELECT COALESCE(SUM(total_price), 0)
         FROM reservations
-        WHERE status = '완료'
+a
     </select>
 
     <!-- ✅ 예약 삭제 -->
