@@ -13,13 +13,13 @@
 
 <style>
 .service-card.selected {
-    border: 3px solid #CC9966;
+    border: 3px solid #222;
 }
 </style>
 </head>
 <body>
 
-<div class="page-bg"></div>
+<!-- <div class="page-bg"></div> -->
 
 
 <th:block th:replace="~{fragments/header::header}"></th:block>
@@ -157,10 +157,14 @@
             <input type="hidden" name="nights" id="form-nights">
             <input type="hidden" name="total" id="form-total">
             <input type="hidden" name="totalPrice" id="form-total-price">
-            <select id="petSelect" name="petNo" required>
-        <option value="" disabled selected>반려견 선택</option>
-        <option th:each="pet : ${pets}" th:value="${pet.no}" th:text="${pet.name}"></option>
-    </select>
+            <div class="pet-select-wrapper">
+                <select id="petSelect" name="petNo" required>
+                    <option value="" disabled selected>반려견 선택</option>
+                    <option th:each="pet : ${pets}" th:value="${pet.no}" th:text="${pet.name}"></option>
+                </select>
+                <span class="pet-select-arrow">⌵</span>
+            </div>
+
             <button type="submit" id="reserveBtn" class="summary-btn">예약하기</button>
         </form>
     </div>

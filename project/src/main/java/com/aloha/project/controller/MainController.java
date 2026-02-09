@@ -65,40 +65,51 @@ public class MainController {
      * 로그인 필요는 SecurityConfig에서 처리
      */
     @GetMapping("/pet/reservation")
-    public String reservation(
-            Model model,
-            @RequestParam(value="sort", defaultValue="default") String sort,
-            @RequestParam(value="sizeType", defaultValue="all") String sizeType,
-            @RequestParam(value="status", defaultValue="all") String status
-    ) {
-        List<HotelRoom> rooms = hotelRoomService.getAllRooms();
+public String reservation(
+        Model model,
+        @RequestParam(value="sort", defaultValue="default") String sort,
+        @RequestParam(value="sizeType", defaultValue="all") String sizeType,
+        @RequestParam(value="status", defaultValue="all") String status
+) {
+    List<HotelRoom> rooms = hotelRoomService.getAllRooms();
 
-        if (!"all".equals(sizeType)) {
-            rooms = rooms.stream()
-                    .filter(r -> r.getEtc().contains(sizeType))
-                    .collect(Collectors.toList());
-        }
-
-        if (!"all".equals(status)) {
-            rooms = rooms.stream()
-                    .filter(r -> r.getActive().equals(status))
-                    .collect(Collectors.toList());
-        }
-
-        if ("priceAsc".equals(sort)) {
-            rooms = rooms.stream()
-                    .sorted(Comparator.comparingInt(HotelRoom::getRoomPrice))
-                    .collect(Collectors.toList());
-        } 
-        else if ("priceDesc".equals(sort)) {
-            rooms = rooms.stream()
-                    .sorted(Comparator.comparingInt(HotelRoom::getRoomPrice).reversed())
-                    .collect(Collectors.toList());
-        }
-
-        model.addAttribute("rooms", rooms);
-        return "pet/reservation";
+    // 🔹 견종 필터
+    if (!"all".equals(sizeType)) {
+        rooms = rooms.stream()
+                .filter(r -> r.getEtc().contains(sizeType))
+                .collect(Collectors.toList());
     }
+
+    // 🔹 예약 상태 필터
+    if (!"all".equals(status)) {
+        rooms = rooms.stream()
+                .filter(r -> r.getActive().equals(status))
+                .collect(Collectors.toList());
+    }
+
+    // 🔹 가격 정렬
+    if ("priceAsc".equals(sort)) {
+        rooms = rooms.stream()
+                .sorted(Comparator.comparingInt(HotelRoom::getRoomPrice))
+                .collect(Collectors.toList());
+    } 
+    else if ("priceDesc".equals(sort)) {
+        rooms = rooms.stream()
+                .sorted(Comparator.comparingInt(HotelRoom::getRoomPrice).reversed())
+                .collect(Collectors.toList());
+    }
+
+    // 🔥 화면에 데이터 전달
+    model.addAttribute("rooms", rooms);
+
+    // 🔥🔥🔥 선택한 필터값 다시 전달 (이게 핵심)
+    model.addAttribute("selectedSort", sort);
+    model.addAttribute("selectedSizeType", sizeType);
+    model.addAttribute("selectedStatus", status);
+
+    return "pet/reservation";
+}
+
 
     /**
      * 예약 상세 페이지
@@ -142,7 +153,6 @@ public class MainController {
             @RequestParam(value="petNo", required=false) Long petNo,
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("totalPrice") int totalPrice,
-            @RequestParam("petNo") Long petNo,
             @AuthenticationPrincipal CustomUser customUser,
             RedirectAttributes redirectAttributes
     ) {

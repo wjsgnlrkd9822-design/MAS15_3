@@ -1,101 +1,159 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>객실 리스트</title>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>객실 리스트</title>
 
-        <!-- 공통 CSS 불러오기 -->
-        <th:block th:replace="~{fragments/linkreservation::link}"></th:block>
-        <th:block th:replace="~{fragments/link::link}"></th:block>
-        <link rel="stylesheet" th:href="@{/css/reservation.css}">
-    </head>
-    <body>
+  <th:block th:replace="~{fragments/linkreservation::link}"></th:block>
+  <th:block th:replace="~{fragments/link::link}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/reservation.css}"/>
+</head>
 
-    <div class="page-bg"></div>   
+<body>
+<div class="page-bg"></div>
 
-    <!-- 헤더 -->
-    <th:block th:replace="~{fragments/header::header}"></th:block>
+<th:block th:replace="~{fragments/header::header}"></th:block>
 
-    <!-- 페이지 제목 -->
-    <p class="reservation-text">Room List</p>
+<p class="reservation-text">Room List</p>
 
-    <!-- 필터 영역 -->
-     <div class="top-bar">
-         <div class="reservation-filter" style="margin: 20px; display:flex; gap:10px; align-items:center;">
-            <form th:action="@{/pet/reservation}" method="get" style="display:flex; gap:10px; align-items:center;">
-                <!-- 정렬 선택 -->
-                <label>
-                    <select class="filter-select" name="sort">
-                        <option th:value="default" th:selected="${selectedSort=='default'}">가격 순</option>
-                        <option th:value="priceAsc" th:selected="${selectedSort=='priceAsc'}">저렴한 순</option>
-                        <option th:value="priceDesc" th:selected="${selectedSort=='priceDesc'}">비싼 순</option>
-                    </select>
-                </label>
-                
-                <!-- 견종 선택 -->
-                <label>
-                    <select class="filter-select" name="sizeType">
-                        <option th:value="all" th:selected="${selectedSizeType=='all'}">견종</option>
-                        <option th:value="소형견" th:selected="${selectedSizeType=='소형견'}">소형견</option>
-                        <option th:value="중형견" th:selected="${selectedSizeType=='중형견'}">중형견</option>
-                        <option th:value="대형견" th:selected="${selectedSizeType=='대형견'}">대형견</option>
-                    </select>
-                </label>
-                
-                <!-- 예약 상태 선택 -->
-                <label>
-                    <select class="filter-select" name="status">
-                        <option th:value="all" th:selected="${selectedStatus=='all'}">예약상태</option>
-                        <option th:value="예약가능" th:selected="${selectedStatus=='예약가능'}">예약가능</option>
-                        <option th:value="예약불가" th:selected="${selectedStatus=='예약불가'}">예약불가</option>
-                    </select>
-                </label>
-                <button type="submit" class="filter-apply-btn">적용</button>
-            </form>
+<!-- 필터 (기존 구조 유지) -->
+<div class="top-bar">
+  <!-- 필터 영역 -->
+<div class="filter-section">
+  <form th:action="@{/pet/reservation}" method="get" class="filter-form">
+
+    <!-- 가격 정렬 -->
+    <div class="filter-group">
+      <div class="filter-label">가격</div>
+      <div class="chip-container">
+        <label class="filter-chip">
+          <input type="radio" name="sort" value="default" th:checked="${selectedSort=='default'}">
+          <span>기본</span>
+        </label>
+        <label class="filter-chip">
+          <input type="radio" name="sort" value="priceAsc" th:checked="${selectedSort=='priceAsc'}">
+          <span>저렴</span>
+        </label>
+        <label class="filter-chip">
+          <input type="radio" name="sort" value="priceDesc" th:checked="${selectedSort=='priceDesc'}">
+          <span>비쌈</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 견종 -->
+    <div class="filter-group">
+      <div class="filter-label">견종</div>
+      <div class="chip-container">
+        <label class="filter-chip">
+          <input type="radio" name="sizeType" value="all" th:checked="${selectedSizeType=='all'}">
+          <span>전체</span>
+        </label>
+        <label class="filter-chip">
+          <input type="radio" name="sizeType" value="소형견" th:checked="${selectedSizeType=='소형견'}">
+          <span>소형견</span>
+        </label>
+        <label class="filter-chip">
+          <input type="radio" name="sizeType" value="중형견" th:checked="${selectedSizeType=='중형견'}">
+          <span>중형견</span>
+        </label>
+        <label class="filter-chip">
+          <input type="radio" name="sizeType" value="대형견" th:checked="${selectedSizeType=='대형견'}">
+          <span>대형견</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 예약 상태 -->
+    <div class="filter-group">
+      <div class="filter-label">상태</div>
+      <div class="chip-container">
+        <label class="filter-chip">
+          <input type="radio" name="status" value="all" th:checked="${selectedStatus=='all'}">
+          <span>전체</span>
+        </label>
+        <label class="filter-chip">
+          <input type="radio" name="status" value="예약가능" th:checked="${selectedStatus=='예약가능'}">
+          <span>가능</span>
+        </label>
+        <label class="filter-chip">
+          <input type="radio" name="status" value="예약불가" th:checked="${selectedStatus=='예약불가'}">
+          <span>불가</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 적용 버튼 -->
+    <button type="submit" class="reserve-btn">적용</button>
+
+  </form>
+</div>
+
+</div>
+
+<!-- 🔥 CSS가 요구하는 그리드 구조 -->
+<div class="container">
+  <div class="room-grid">
+
+    <a th:each="room : ${rooms}"
+       th:href="@{'/pet/reservation/' + ${room.roomNo}}"
+       class="reservation-card-link">
+
+      <div class="reservation-card"
+           th:classappend="${room.active=='예약불가'} ? ' disabled' : ''">
+
+        <!-- 이미지 영역 -->
+        <div class="card-image-wrapper">
+          <img th:src="@{'/uploads/' + ${room.img}}" class="room-image"/>
+
+          <div class="status-badge"
+               th:classappend="${room.active=='예약가능'} ? ' available' : ' booked'"
+               th:text="${room.active}">
+          </div>
         </div>
-    </div>
 
-    <!-- 객실 카드 리스트 -->
-    <div class="room-list">
-        <a th:href="@{'/pet/reservation/' + ${room.roomNo}}" class="reservation-card-link" th:each="room : ${rooms}">
-            <div class="reservation-card">
-                <!-- 객실 이미지 -->
-                <!-- <img th:src="@{'/img/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'"> -->
-                <img th:src="@{'/uploads/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'">
-                <!-- <img th:src="@{'/uploads/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'"> -->
-                <!-- <img th:src="@{'/img/' + ${room.img}}" class="room-detail-image"> -->
+        <!-- 내용 영역 -->
+        <div class="card-content">
 
-                <!-- 객실 정보 -->
-                <div class="room-info">
-                    <p class="room-type">객실 타입: <span th:text="${room.roomType}"></span></p>
-                    <p class="room-price">가격:<span th:text="${#numbers.formatInteger(room.roomPrice, 3, 'COMMA')}"></span>원</p>
-                    <p class="room-etc">세부 사항: <span th:text="${room.etc}"></span></p>
-                    <p class="room-active">예약 상태: <span th:text="${room.active}"></span></p>
-                    <span class="reserve-btn">예약하기</span>
-                </div>
+          <div class="card-header-row">
+            <p class="room-type" th:text="${room.roomType}"></p>
+          </div>
+
+          <p class="room-desc" th:text="${room.etc}"></p>
+
+          <div class="card-footer-row">
+            <div class="price-box">
+              <span class="price-label">1박</span>
+              <span class="room-price">
+                <span th:text="${#numbers.formatInteger(room.roomPrice,3,'COMMA')}"></span>
+                <span class="currency">원</span>
+              </span>
             </div>
-        </a>
-    </div>
 
-    <!-- 푸터 -->
-    <th:block th:replace="~{fragments/footer::footer}"></th:block>
+            <span class="reserve-btn">예약하기</span>
+          </div>
 
-    <!-- 예약불가 객실 클릭 방지 스크립트 -->
-    <script>
-        document.querySelectorAll('.reservation-card-link').forEach(link => {
-            link.addEventListener('click', function(event) {
-                // 해당 객실의 예약 상태를 확인
-                const status = link.querySelector('.room-active span').textContent.trim();
+        </div>
+      </div>
+    </a>
 
-                // 예약불가이면 링크 이동 막고 경고
-                if (status === '예약불가') {
-                    event.preventDefault();
-                    alert('이미 예약된 객실입니다.');
-                }
-            });
-        });
-    </script>
+  </div>
+</div>
 
-    </body>
-    </html>
+<th:block th:replace="~{fragments/footer::footer}"></th:block>
+
+<script>
+  document.querySelectorAll(".reservation-card-link").forEach(link => {
+    link.addEventListener("click", e => {
+      const status = link.querySelector(".status-badge").textContent.trim();
+      if (status === "예약불가") {
+        e.preventDefault();
+        alert("이미 예약된 객실입니다.");
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

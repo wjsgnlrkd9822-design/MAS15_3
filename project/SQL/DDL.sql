@@ -156,7 +156,6 @@ CREATE TABLE `user_auth` (
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '수정일시'
 );
-
 DROP TABLE IF EXISTS `trainers`;
 CREATE Table `trainers`(
     `trainer_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '트레이너 번호',
@@ -201,5 +200,3 @@ CREATE TABLE `order_items` (
 
 
 SET FOREIGN_KEY_CHECKS = 1;
-
-
