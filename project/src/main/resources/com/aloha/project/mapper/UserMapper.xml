@@ -95,4 +95,10 @@
     WHERE name = #{name}
       AND email = #{email}
     </select>
+
+    <select id="selectByNo" resultType="com.aloha.project.dto.User">
+        SELECT *
+        FROM users
+        WHERE no = #{userNo}
+    </select>
   </mapper>
