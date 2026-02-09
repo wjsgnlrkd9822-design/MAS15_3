@@ -123,6 +123,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectByUserNo(userNo);
     }
 
+    @Override
+    public User selectByNo(Long no) throws Exception {
+        return userMapper.selectByNo(no);
+    }
+
     
 
 }

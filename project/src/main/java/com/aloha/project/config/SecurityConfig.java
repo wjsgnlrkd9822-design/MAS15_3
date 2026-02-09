@@ -20,7 +20,8 @@ import com.aloha.project.handler.CustomAccessDeniedHandler;
 import com.aloha.project.handler.LoginFailureHandler;
 import com.aloha.project.handler.LoginSuccessHandler;
 import com.aloha.project.handler.LogoutSuccessHandler;
-import com.aloha.project.handler.SocialLoginSuccessHandler;
+import com.aloha.project.handler.OAuth2LoginSuccessHandler;  // ✅ 추가
+import com.aloha.project.service.CustomOAuth2UserService;
 import com.aloha.project.service.UserDetailServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -35,11 +36,12 @@ public class SecurityConfig {
 
     private final DataSource dataSource;
     private final UserDetailServiceImpl userDetailServiceImpl;
-    private final LoginSuccessHandler loginSuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final LoginSuccessHandler loginSuccessHandler;           // 일반 로그인용
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;  // ✅ OAuth2 로그인용
     private final LoginFailureHandler loginFailureHandler;
     private final LogoutSuccessHandler logoutSuccessHandler;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    private final SocialLoginSuccessHandler socialLoginSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,19 +53,21 @@ public class SecurityConfig {
                 .requestMatchers("/**").permitAll()
         );
 
-        // form 로그인 설정
+        // form 로그인 설정 (일반 로그인)
         http.formLogin(login -> login
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .successHandler(loginSuccessHandler)
+                .successHandler(loginSuccessHandler)      // 일반 로그인 핸들러
                 .failureHandler(loginFailureHandler)
         );
 
         // 카카오 OAuth 로그인 설정
         http.oauth2Login(oauth2 -> oauth2
-                .loginPage("/login")                     // 로그인 선택 페이지
-                /* .successHandler(socialLoginSuccessHandler) */ // DB 저장 처리
-                .defaultSuccessUrl("/")                  // fallback
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService))
+                .successHandler(oAuth2LoginSuccessHandler)  // ✅ OAuth2 전용 핸들러
+                .failureUrl("/login?error=oauth2")
         );
 
         // 로그아웃 설정

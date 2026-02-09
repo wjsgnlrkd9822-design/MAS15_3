@@ -6,8 +6,8 @@ CREATE TABLE `users`(
     `no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '회원번호',
     `id` VARCHAR(36) NOT NULL UNIQUE COMMENT '아이디',
     `username` VARCHAR(100) NOT NULL UNIQUE COMMENT '사용자아이디',
-    `password` VARCHAR(100) DEFAULT NULL COMMENT '비밀번호', -- default null
-    `name` VARCHAR(100) DEFAULT NULL COMMENT '이름',        -- deufault null
+    `password` VARCHAR(100) NOT NULL COMMENT '비밀번호', 
+    `name` VARCHAR(100) NOT NULL COMMENT '이름',        
     `birth` VARCHAR(10) DEFAULT NULL COMMENT '생년월일',    -- default null
     `email` VARCHAR(100) DEFAULT NULL COMMENT '이메일',     -- default null
     `phone` VARCHAR(15) DEFAULT NULL COMMENT '전화번호',    -- default null
@@ -21,8 +21,11 @@ CREATE TABLE `users`(
 CREATE TABLE users_social (
     `no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '소셜 PK',
     `user_no` BIGINT NOT NULL COMMENT '회원번호(FK)',
-    `provider` VARCHAR(20) NOT NULL COMMENT 'KAKAO/GOOGLE',
-    `social_id` VARCHAR(100) NOT NULL COMMENT '소셜 고유 ID',
+    `username` VARCHAR(100) NOT NULL COMMENT '유저 아이디',
+    `provider` VARCHAR(50) NOT NULL COMMENT 'KAKAO/GOOGLE',
+    `social_id` VARCHAR(255) NOT NULL COMMENT '소셜 고유 ID',
+    `name` VARCHAR(100) NOT NULL COMMENT '이름',
+    `email` VARCHAR(200) DEFAULT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP 
         ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
@@ -31,6 +34,15 @@ CREATE TABLE users_social (
     FOREIGN KEY (user_no) REFERENCES users(no)
 );
 
+DROP TABLE IF EXISTS `user_auth`;
+CREATE TABLE `user_auth` (
+    `auth_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '권한번호',
+    `id` VARCHAR(36) NOT NULL COMMENT '사용자ID (UK)',
+    `username` VARCHAR(100) NOT NULL COMMENT '사용자아이디',
+    `auth` VARCHAR(100) NOT NULL COMMENT '권한 (ROLE_USER, ROLE_ADMIN, ...)',
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '수정일시'
+);
 
 drop TABLE IF EXISTS `pets`;
 create Table `pets`(
@@ -160,15 +172,6 @@ CREATE TABLE `notices`(
 );
 
 
-DROP TABLE IF EXISTS `user_auth`;
-CREATE TABLE `user_auth` (
-    `auth_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '권한번호',
-    `id` VARCHAR(36) NOT NULL COMMENT '사용자ID (UK)',
-    `username` VARCHAR(50) NOT NULL COMMENT '사용자아이디',
-    `auth` VARCHAR(100) NOT NULL COMMENT '권한 (ROLE_USER, ROLE_ADMIN, ...)',
-    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
-    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '수정일시'
-);
 
 DROP TABLE IF EXISTS `trainers`;
 CREATE Table `trainers`(

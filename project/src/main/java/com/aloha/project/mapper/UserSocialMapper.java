@@ -1,22 +1,22 @@
 package com.aloha.project.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
+import com.aloha.project.dto.User;
 import com.aloha.project.dto.UserSocial;
 
 @Mapper
 public interface UserSocialMapper {
 
-    UserSocial selectByProviderAndSocialId(
-        @Param("provider") String provider,
-        @Param("socialId") String socialId
-    );
 
-    UserSocial selectByUserNo(@Param("userNo") Long userNo);
+    public UserSocial selectSocial(UserSocial userSocial) throws Exception;
 
-    int insert(UserSocial userSocial);
+    public int insertSocial(UserSocial userSocial) throws Exception;
 
-    int deleteByUserno(@Param("userno") Long userNo);
+    public int updateSocial(UserSocial userSocial) throws Exception;
+
+    public User selectBySocial(UserSocial userSocial) throws Exception;
+
+
     
 }
