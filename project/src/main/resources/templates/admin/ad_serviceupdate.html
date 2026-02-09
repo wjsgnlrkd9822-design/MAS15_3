@@ -57,7 +57,7 @@ body { background-color: #f5f6f7; }
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="ad_service.html" class="btn btn-secondary">목록으로</a>
+                        <a href="/admin/service" class="btn btn-secondary">목록으로</a>
                         <button type="submit" class="btn btn-primary">저장</button>
                         <button type="button" class="btn btn-danger" onclick=actiondelete()>삭제</button>
                     </div>
@@ -103,12 +103,12 @@ const result = await updateResponse.text();
             return;
         }
 
-        const deleteResponse = await fetch(`/admin/room/delete/${serviceNo}`, {
+        const deleteResponse = await fetch(`/admin/service/delete/${serviceNo}`, {
             method: "DELETE",
             headers: {
                 [csrfHeader]: csrfToken
             }
-        });
+        }); 
 
         const result = await deleteResponse.text();
         if (result === "SUCCESS") {

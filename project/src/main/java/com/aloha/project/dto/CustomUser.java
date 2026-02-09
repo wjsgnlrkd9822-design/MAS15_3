@@ -1,6 +1,7 @@
 package com.aloha.project.dto;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -27,12 +28,23 @@ public class CustomUser implements UserDetails {
      *  Spring Security 의 User 대신 사용자 정의 인증 객체(CustomUser)로 적용
      * CustomUser 적용 시, 권한을 사용할 때는 'ROLE_' 붙여서 사용해야한다.
      */
-    @Override
+    /* @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getAuthList().stream()
                                 .map( (auth) -> new SimpleGrantedAuthority(auth.getAuth()) )
                                 .collect(Collectors.toList());
+    } */
+   @Override
+public Collection<? extends GrantedAuthority> getAuthorities() {
+    if (user.getAuthList() == null || user.getAuthList().isEmpty()) {
+        // 기본 권한 부여 (예: ROLE_USER)
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
+
+    return user.getAuthList().stream()
+               .map(auth -> new SimpleGrantedAuthority(auth.getAuth()))
+               .collect(Collectors.toList());
+}
 
     @Override
     public String getPassword() {
