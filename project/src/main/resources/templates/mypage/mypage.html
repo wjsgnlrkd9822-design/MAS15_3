@@ -389,6 +389,7 @@
 
           <div class="modal-body">
             <input type="hidden" id="editResNo">
+            <input type="hidden" id="editRoomNo"> <!-- 한줄 추가 -->
             
 
             <div class="mb-3">
@@ -476,6 +477,7 @@ function openEditModal(resNo) {
     .then(data => {
         document.getElementById('editResNo').value = data.resNo;
         document.getElementById('editPetName').value = data.petName;
+        document.getElementById('editRoomNo').value = data.roomNo; /* 한줄 추가 */
 
         // 방 정보 가져오기
         fetch(`/api/room/${data.roomNo}`)
@@ -630,11 +632,14 @@ function updateReservation() {
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
+    const roomNo = document.getElementById('editRoomNo').value; /* 한줄 추가 */
+
     const formData = new FormData();
     formData.append('checkin', checkin);
     formData.append('checkout', checkout);
     formData.append('total', nights);
     formData.append('totalPrice', totalPrice);
+    formData.append('roomNo', roomNo);  /* 한줄 추가 */
     selectedServices.forEach(id => formData.append('serviceIds', id));
 
     fetch(`/api/reservation/update/${resNo}`, {
