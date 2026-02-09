@@ -2,6 +2,7 @@ package com.aloha.project.dto;
 
 import java.util.Date;
 
+import groovy.transform.builder.Builder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

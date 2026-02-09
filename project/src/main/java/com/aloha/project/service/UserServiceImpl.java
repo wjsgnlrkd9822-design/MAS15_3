@@ -118,16 +118,6 @@ public class UserServiceImpl implements UserService {
         return username;
     }
 
-    @Override
-    public User selectById(Long userNo) throws Exception {
-        return userMapper.selectByUserNo(userNo);
-    }
-
-    @Override
-    public User selectByNo(Long no) throws Exception {
-        return userMapper.selectByNo(no);
-    }
-
     
 
 }
