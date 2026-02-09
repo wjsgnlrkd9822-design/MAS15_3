@@ -53,8 +53,8 @@ public class MainController {
      * 메인 페이지
      */
     @GetMapping("/")
-    public String index(Model model, Authentication authentication) {
-        boolean isLogin = authentication != null && authentication.isAuthenticated();
+    public String index(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        boolean isLogin = userDetails != null;
         model.addAttribute("isLogin", isLogin);
         
         // ⭐ 공지사항 최근 5개 조회
@@ -366,7 +366,7 @@ public class MainController {
     }
 
     /**
-     * 마이페이지 
+     * 마이페이지
      */
     @GetMapping("/mypage")
     public String mypage(Model model, @AuthenticationPrincipal CustomUser customUser) throws Exception {
