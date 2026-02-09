@@ -1,4 +1,4 @@
--- Active: 1767920835424@@127.0.0.1@3306@aloha
+-- Active: 1767840807398@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 drop TABLE IF EXISTS `users`;
@@ -100,9 +100,6 @@ VALUES
 
 SELECT * FROM hotelrooms
 
- 
-
-
  drop TABLE IF EXISTS `reservations`;
 
  CREATE TABLE `reservations`(
@@ -115,6 +112,7 @@ SELECT * FROM hotelrooms
     `total_price` int NOT NULL COMMENT '총 가격',
     `res_time` TIME NOT NULL COMMENT '예약 시간',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
+    `status` VARCHAR(20) NOT NULL DEFAULT '예약중' COMMENT '예약상태 (예약중/완료/취소)',  /* 예약 추가 */
 
     FOREIGN KEY (user_no) REFERENCES users(no)
     on update CASCADE
@@ -126,8 +124,12 @@ SELECT * FROM hotelrooms
     
     FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no)
     on update CASCADE
-    on delete CASCADE
+    on delete CASCADE,
+
+    INDEX idx_check_dates (res_date, checkout_date),    /* 예약 추가 */
+    INDEX idx_room_status (room_no, status)             /* 예약 추가 */
 );
+
 
  SELECT * FROM reservations;
 

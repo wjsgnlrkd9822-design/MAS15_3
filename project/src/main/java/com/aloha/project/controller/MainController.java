@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -235,7 +236,7 @@ public class MainController {
             @RequestParam(value="checkin", required=false) String checkin,
             @RequestParam(value="checkout", required=false) String checkout,
             Model model,
-            Authentication authentication
+            @AuthenticationPrincipal CustomUser customUser
     ) throws Exception {
 
         HotelRoom room = hotelRoomService.getRoom(roomNo);
