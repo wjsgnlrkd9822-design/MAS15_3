@@ -1,4 +1,4 @@
--- Active: 1767920835424@@127.0.0.1@3306@aloha
+-- Active: 1767840807398@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 
@@ -133,7 +133,7 @@ VALUES
 
 
 DROP TABLE IF EXISTS `reservation_services`;
-CREATE TABLE reservation_services (
+CREATE TABLE reservation_services ( 
     `rs_no` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '예약 서비스 번호',
     `res_no` BIGINT NOT NULL COMMENT '예약 번호',
     `service_no` BIGINT NOT NULL COMMENT '서비스 번호',

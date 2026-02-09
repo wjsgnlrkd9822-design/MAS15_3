@@ -10,7 +10,7 @@ WHERE username = 'admin1234';
 INSERT INTO `user` (id, username, password, name, email)
 VALUES (UUID(), 'admin', '123456', 
         '관리자', 'admin@naver.com');
- 
+                        
 INSERT INTO `user_auth` (id, username, auth )
 VALUES 
   ('admin1234', 'admin1234', 'ROLE_USER'),
