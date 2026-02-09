@@ -47,4 +47,10 @@ public class NoticeServiceImpl implements NoticeService{
 
     }
     
+    // ⭐ 메인 페이지용 최근 공지사항 조회 추가
+    @Override
+    public List<Notice> getRecentNotices(int limit) throws Exception {
+        return noticeMapper.getRecentNotices(limit);
+    }
+    
 }

@@ -19,6 +19,7 @@ public class ReservationDto {
     private Long roomNo;
     private Long userNo;
     private String resTime;
+    private String status;          /* 예약 상태 추가 */
 
     private List<Long> serviceIds;
     private List<HotelService> services;
