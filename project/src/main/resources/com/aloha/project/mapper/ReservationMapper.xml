@@ -18,7 +18,7 @@
     VALUES
     (#{userNo}, #{petNo}, #{roomNo}, #{checkin}, #{resTime}, #{checkout}, #{totalPrice})
 </insert>
-
+   
 
     <!-- 회원별 예약 조회 -->
     <select id="findByUserNo" resultType="com.aloha.project.dto.ReservationDto">
