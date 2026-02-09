@@ -2,6 +2,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 
+SELECT * FROM hotelrooms
 
  drop TABLE IF EXISTS `reservations`;
 
@@ -15,6 +16,7 @@ SET FOREIGN_KEY_CHECKS = 0;
     `total_price` int NOT NULL COMMENT '총 가격',
     `res_time` TIME NOT NULL COMMENT '예약 시간',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
+    `status` VARCHAR(20) NOT NULL DEFAULT '예약중' COMMENT '예약상태 (예약중/완료/취소)',  /* 예약 추가 */
 
     FOREIGN KEY (user_no) REFERENCES users(no)
     on update CASCADE
@@ -26,7 +28,10 @@ SET FOREIGN_KEY_CHECKS = 0;
     
     FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no)
     on update CASCADE
-    on delete CASCADE
+    on delete CASCADE,
+
+    INDEX idx_check_dates (res_date, checkout_date),    /* 예약 추가 */
+    INDEX idx_room_status (room_no, status)             /* 예약 추가 */
 );
 
  SELECT * FROM hotelrooms;

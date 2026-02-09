@@ -446,3 +446,14 @@ body{
     padding: 12px;
     font-size: 15px;
 }
+
+/* 🚫 커서 완전 제거 (예약불가 날짜) */
+.flatpickr-day.unavailable,
+.flatpickr-day.unavailable:hover,
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover,
+.flatpickr-day.disabled,
+.flatpickr-day.disabled:hover {
+    cursor: default !important;   /* ← 기본 화살표 */
+    pointer-events: none;         /* ← 마우스 반응 자체 제거 */
+}
