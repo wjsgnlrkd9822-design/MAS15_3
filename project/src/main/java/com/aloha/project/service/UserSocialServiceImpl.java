@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import com.aloha.project.dto.User;
 import com.aloha.project.dto.UserSocial;
-import com.aloha.project.mapper.UserMapper;
 import com.aloha.project.mapper.UserSocialMapper;
 
 @Service

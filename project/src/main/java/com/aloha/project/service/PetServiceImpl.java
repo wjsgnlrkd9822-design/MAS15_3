@@ -5,8 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.aloha.project.dto.Pet;
 import com.aloha.project.mapper.PetMapper;
-import com.aloha.project.service.PetService;
-import com.aloha.project.mapper.UserMapper; // 로그인 UUID → ownerNo 조회용
+import com.aloha.project.mapper.UserMapper;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
@@ -15,11 +14,11 @@ import java.util.List;
 public class PetServiceImpl implements PetService {
 
     private final PetMapper petMapper;
-    private final UserMapper userMapper;
+    /* private final UserMapper userMapper; */
 
     public PetServiceImpl(PetMapper petMapper, UserMapper userMapper) {
         this.petMapper = petMapper;
-        this.userMapper = userMapper;
+        /* this.userMapper = userMapper; */
     }
 
     // 단일 조회

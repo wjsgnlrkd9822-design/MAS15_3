@@ -1,7 +1,6 @@
 package com.aloha.project.mapper;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
