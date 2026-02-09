@@ -1,101 +1,364 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>객실 리스트</title>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>객실 리스트</title>
 
-        <!-- 공통 CSS 불러오기 -->
-        <th:block th:replace="~{fragments/linkreservation::link}"></th:block>
-        <th:block th:replace="~{fragments/link::link}"></th:block>
-        <link rel="stylesheet" th:href="@{/css/reservation.css}">
-    </head>
-    <body>
+  <th:block th:replace="~{fragments/linkreservation::link}"></th:block>
+  <th:block th:replace="~{fragments/link::link}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/reservation.css}"/>
+</head>
 
-    <div class="page-bg"></div>   
+<body>
+<div class="page-bg"></div>
 
-    <!-- 헤더 -->
-    <th:block th:replace="~{fragments/header::header}"></th:block>
+<th:block th:replace="~{fragments/header::header}"></th:block>
 
-    <!-- 페이지 제목 -->
-    <p class="reservation-text">Room List</p>
+<p class="reservation-text">Room List</p>
 
-    <!-- 필터 영역 -->
-     <div class="top-bar">
-         <div class="reservation-filter" style="margin: 20px; display:flex; gap:10px; align-items:center;">
-            <form th:action="@{/pet/reservation}" method="get" style="display:flex; gap:10px; align-items:center;">
-                <!-- 정렬 선택 -->
-                <label>
-                    <select class="filter-select" name="sort">
-                        <option th:value="default" th:selected="${selectedSort=='default'}">가격 순</option>
-                        <option th:value="priceAsc" th:selected="${selectedSort=='priceAsc'}">저렴한 순</option>
-                        <option th:value="priceDesc" th:selected="${selectedSort=='priceDesc'}">비싼 순</option>
-                    </select>
-                </label>
-                
-                <!-- 견종 선택 -->
-                <label>
-                    <select class="filter-select" name="sizeType">
-                        <option th:value="all" th:selected="${selectedSizeType=='all'}">견종</option>
-                        <option th:value="소형견" th:selected="${selectedSizeType=='소형견'}">소형견</option>
-                        <option th:value="중형견" th:selected="${selectedSizeType=='중형견'}">중형견</option>
-                        <option th:value="대형견" th:selected="${selectedSizeType=='대형견'}">대형견</option>
-                    </select>
-                </label>
-                
-                <!-- 예약 상태 선택 -->
-                <label>
-                    <select class="filter-select" name="status">
-                        <option th:value="all" th:selected="${selectedStatus=='all'}">예약상태</option>
-                        <option th:value="예약가능" th:selected="${selectedStatus=='예약가능'}">예약가능</option>
-                        <option th:value="예약불가" th:selected="${selectedStatus=='예약불가'}">예약불가</option>
-                    </select>
-                </label>
-                <button type="submit" class="filter-apply-btn">적용</button>
-            </form>
+<!-- ⭐ 사이드바 레이아웃: 왼쪽 필터 + 오른쪽 리스트 -->
+<div class="search-and-results-container">
+  
+  <!-- 왼쪽: 검색 필터 사이드바 -->
+  <aside class="integrated-search-section">
+    <div class="search-title">객실 검색</div>
+    
+    <div class="search-form-container">
+      <!-- 1줄: 체크인 -->
+      <div class="date-row">
+        <div class="filter-group-integrated">
+          <label class="group-label">체크인</label>
+          <input 
+            type="date" 
+            id="search-checkin" 
+            class="date-input-integrated"
+            name="checkin">
         </div>
+        
+        <!-- 2줄: 체크아웃 -->
+        <div class="filter-group-integrated">
+          <label class="group-label">체크아웃</label>
+          <input 
+            type="date" 
+            id="search-checkout" 
+            class="date-input-integrated"
+            name="checkout">
+        </div>
+      </div>
+      
+      <!-- 3줄: 견종 -->
+      <div class="filter-row">
+        <div class="filter-group-integrated">
+          <label class="group-label">견종</label>
+          <div class="chip-container-integrated">
+            <label class="filter-chip-integrated">
+              <input type="radio" name="sizeType" value="all" checked>
+              <span>전체</span>
+            </label>
+            <label class="filter-chip-integrated">
+              <input type="radio" name="sizeType" value="소형견">
+              <span>소형견</span>
+            </label>
+            <label class="filter-chip-integrated">
+              <input type="radio" name="sizeType" value="중형견">
+              <span>중형견</span>
+            </label>
+            <label class="filter-chip-integrated">
+              <input type="radio" name="sizeType" value="대형견">
+              <span>대형견</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 4줄: 가격 -->
+        <div class="filter-group-integrated">
+          <label class="group-label">가격</label>
+          <div class="chip-container-integrated">
+            <label class="filter-chip-integrated">
+              <input type="radio" name="sort" value="default" checked>
+              <span>기본</span>
+            </label>
+            <label class="filter-chip-integrated">
+              <input type="radio" name="sort" value="priceAsc">
+              <span>저렴한 순</span>
+            </label>
+            <label class="filter-chip-integrated">
+              <input type="radio" name="sort" value="priceDesc">
+              <span>비싼 순</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 5줄, 6줄: 버튼 -->
+      <div class="search-buttons">
+        <button type="button" class="search-btn-integrated" onclick="searchRooms()">
+          검색하기
+        </button>
+        <button type="button" class="reset-btn-integrated" onclick="resetSearch()">
+          초기화
+        </button>
+      </div>
     </div>
+    
+    <!-- 결과 카운트 -->
+    <div class="search-result-info" id="result-info" style="display: none;">
+      <strong id="result-count">0</strong>
+      <div>개의 객실</div>
+    </div>
+  </aside>
 
-    <!-- 객실 카드 리스트 -->
-    <div class="room-list">
-        <a th:href="@{'/pet/reservation/' + ${room.roomNo}}" class="reservation-card-link" th:each="room : ${rooms}">
-            <div class="reservation-card">
-                <!-- 객실 이미지 -->
-                <!-- <img th:src="@{'/img/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'"> -->
-                <img th:src="@{'/uploads/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'">
-                <!-- <img th:src="@{'/uploads/' + ${room.img}}" class="room-image" th:alt="${room.roomNo} + ' 이미지'"> -->
-                <!-- <img th:src="@{'/img/' + ${room.img}}" class="room-detail-image"> -->
+  <!-- 오른쪽: 객실 목록 -->
+  <main class="room-list-section">
+    <div class="room-grid" id="room-grid">
+      <!-- 초기 로딩 시 서버에서 렌더링된 객실 목록 -->
+      <a th:each="room : ${rooms}"
+         th:href="@{'/pet/reservation/' + ${room.roomNo}}"
+         class="reservation-card-link"
+         th:data-room-no="${room.roomNo}">
 
-                <!-- 객실 정보 -->
-                <div class="room-info">
-                    <p class="room-type">객실 타입: <span th:text="${room.roomType}"></span></p>
-                    <p class="room-price">가격:<span th:text="${#numbers.formatInteger(room.roomPrice, 3, 'COMMA')}"></span>원</p>
-                    <p class="room-etc">세부 사항: <span th:text="${room.etc}"></span></p>
-                    <p class="room-active">예약 상태: <span th:text="${room.active}"></span></p>
-                    <span class="reserve-btn">예약하기</span>
-                </div>
+        <div class="reservation-card">
+          <!-- 이미지 영역 -->
+          <div class="card-image-wrapper">
+            <img th:src="@{'/uploads/' + ${room.img}}" class="room-image"/>
+            <div class="status-badge available">예약 가능</div>
+          </div>
+
+          <!-- 내용 영역 -->
+          <div class="card-content">
+            <div class="card-header-row">
+              <p class="room-type" th:text="${room.roomType}"></p>
             </div>
-        </a>
+
+            <p class="room-desc" th:text="${room.etc}"></p>
+
+            <div class="card-footer-row">
+              <div class="price-box">
+                <span class="price-label">1박</span>
+                <span class="room-price">
+                  <span th:text="${#numbers.formatInteger(room.roomPrice,3,'COMMA')}"></span>
+                  <span class="currency">원</span>
+                </span>
+              </div>
+
+              <span class="reserve-btn">예약하기</span>
+            </div>
+          </div>
+        </div>
+      </a>
     </div>
+  </main>
 
-    <!-- 푸터 -->
-    <th:block th:replace="~{fragments/footer::footer}"></th:block>
+</div>
 
-    <!-- 예약불가 객실 클릭 방지 스크립트 -->
-    <script>
-        document.querySelectorAll('.reservation-card-link').forEach(link => {
-            link.addEventListener('click', function(event) {
-                // 해당 객실의 예약 상태를 확인
-                const status = link.querySelector('.room-active span').textContent.trim();
+<!-- 로딩 오버레이 -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-spinner"></div>
+</div>
 
-                // 예약불가이면 링크 이동 막고 경고
-                if (status === '예약불가') {
-                    event.preventDefault();
-                    alert('이미 예약된 객실입니다.');
-                }
-            });
-        });
-    </script>
+<th:block th:replace="~{fragments/footer::footer}"></th:block>
 
-    </body>
-    </html>
+<script>
+// ===================================
+// 초기 설정
+// ===================================
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('search-checkin').setAttribute('min', today);
+document.getElementById('search-checkout').setAttribute('min', today);
+
+// 체크인 날짜 변경 시 체크아웃 최소 날짜 설정
+document.getElementById('search-checkin').addEventListener('change', function() {
+  const checkin = this.value;
+  if (checkin) {
+    const nextDay = new Date(checkin);
+    nextDay.setDate(nextDay.getDate() + 1);
+    document.getElementById('search-checkout').setAttribute('min', nextDay.toISOString().split('T')[0]);
+    
+    // 체크아웃이 체크인보다 이전이면 자동으로 다음날로 설정
+    const checkout = document.getElementById('search-checkout').value;
+    if (checkout && new Date(checkout) <= new Date(checkin)) {
+      document.getElementById('search-checkout').value = nextDay.toISOString().split('T')[0];
+    }
+  }
+});
+
+// ===================================
+// 통합 검색 함수
+// ===================================
+function searchRooms() {
+  const checkin = document.getElementById('search-checkin').value;
+  const checkout = document.getElementById('search-checkout').value;
+  const sizeType = document.querySelector('input[name="sizeType"]:checked').value;
+  const sort = document.querySelector('input[name="sort"]:checked').value;
+  
+  // 날짜 유효성 검사
+  if (checkin && checkout) {
+    if (new Date(checkout) <= new Date(checkin)) {
+      alert('체크아웃 날짜는 체크인 날짜보다 이후여야 합니다.');
+      return;
+    }
+  }
+  
+  // 로딩 표시
+  showLoading();
+  
+  // URL 파라미터 구성
+  const params = new URLSearchParams();
+  if (checkin) params.append('checkin', checkin);
+  if (checkout) params.append('checkout', checkout);
+  if (sizeType !== 'all') params.append('sizeType', sizeType);
+  if (sort !== 'default') params.append('sort', sort);
+  
+  // AJAX 요청
+  fetch(`/api/rooms/search?${params.toString()}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('검색 실패');
+      }
+      return response.json();
+    })
+    .then(data => {
+      hideLoading();
+      
+      if (data.success) {
+        displayRooms(data.rooms, checkin, checkout);
+        showResultCount(data.count);
+      } else {
+        alert('검색 실패: ' + data.message);
+      }
+    })
+    .catch(error => {
+      hideLoading();
+      console.error('Error:', error);
+      alert('검색 중 오류가 발생했습니다.');
+    });
+}
+
+// ===================================
+// 객실 목록 표시
+// ===================================
+function displayRooms(rooms, checkin, checkout) {
+  const roomGrid = document.getElementById('room-grid');
+  
+  if (rooms.length === 0) {
+    roomGrid.innerHTML = `
+      <div class="empty-result">
+        <div class="empty-result-icon">😔</div>
+        <div class="empty-result-title">검색 결과가 없습니다</div>
+        <div class="empty-result-desc">다른 조건으로 검색해보세요</div>
+      </div>
+    `;
+    return;
+  }
+  
+  roomGrid.innerHTML = '';
+  
+  rooms.forEach(room => {
+    // URL 구성 (날짜가 있으면 쿼리 파라미터로 전달)
+    let url = `/pet/reservation/${room.roomNo}`;
+    if (checkin && checkout) {
+      url += `?checkin=${checkin}&checkout=${checkout}`;
+    }
+    
+    const roomCard = `
+      <a href="${url}" class="reservation-card-link" data-room-no="${room.roomNo}">
+        <div class="reservation-card">
+          <div class="card-image-wrapper">
+            <img src="/uploads/${room.img}" class="room-image" alt="${room.roomType}"/>
+            <div class="status-badge available">예약 가능</div>
+          </div>
+          
+          <div class="card-content">
+            <div class="card-header-row">
+              <p class="room-type">${room.roomType}</p>
+            </div>
+            
+            <p class="room-desc">${room.etc || ''}</p>
+            
+            <div class="card-footer-row">
+              <div class="price-box">
+                <span class="price-label">1박</span>
+                <span class="room-price">
+                  <span>${room.roomPrice.toLocaleString()}</span>
+                  <span class="currency">원</span>
+                </span>
+              </div>
+              
+              <span class="reserve-btn">예약하기</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    `;
+    
+    roomGrid.innerHTML += roomCard;
+  });
+}
+
+// ===================================
+// 결과 카운트 표시
+// ===================================
+function showResultCount(count) {
+  const resultInfo = document.getElementById('result-info');
+  const resultCount = document.getElementById('result-count');
+  
+  resultCount.textContent = count;
+  resultInfo.style.display = 'block';
+}
+
+// ===================================
+// 검색 초기화
+// ===================================
+function resetSearch() {
+  // 폼 초기화
+  document.getElementById('search-checkin').value = '';
+  document.getElementById('search-checkout').value = '';
+  document.querySelector('input[name="sizeType"][value="all"]').checked = true;
+  document.querySelector('input[name="sort"][value="default"]').checked = true;
+  
+  // 결과 카운트 숨기기
+  document.getElementById('result-info').style.display = 'none';
+  
+  // 페이지 새로고침 (초기 상태로 복원)
+  location.reload();
+}
+
+// ===================================
+// 로딩 상태 관리
+// ===================================
+function showLoading() {
+  document.getElementById('loading-overlay').classList.add('active');
+}
+
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('active');
+}
+
+// ===================================
+// URL 파라미터로 초기 검색 (선택사항)
+// ===================================
+window.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // URL에 파라미터가 있으면 폼에 반영
+  const checkin = urlParams.get('checkin');
+  const checkout = urlParams.get('checkout');
+  const sizeType = urlParams.get('sizeType');
+  const sort = urlParams.get('sort');
+  
+  if (checkin) document.getElementById('search-checkin').value = checkin;
+  if (checkout) document.getElementById('search-checkout').value = checkout;
+  if (sizeType) {
+    const sizeRadio = document.querySelector(`input[name="sizeType"][value="${sizeType}"]`);
+    if (sizeRadio) sizeRadio.checked = true;
+  }
+  if (sort) {
+    const sortRadio = document.querySelector(`input[name="sort"][value="${sort}"]`);
+    if (sortRadio) sortRadio.checked = true;
+  }
+});
+</script>
+
+</body>
+</html>

@@ -10,6 +10,276 @@
  
     <!-- Font Awesome 아이콘 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* 공지사항 팝업 스타일 */
+        .notice-popup-trigger {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        .notice-popup-trigger:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .notice-popup-trigger i {
+            color: white;
+            font-size: 24px;
+        }
+        
+        .notice-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(44, 62, 80, 0.6);
+            }
+        }
+        
+        /* 모달 오버레이 */
+        .notice-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+        
+        .notice-modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 모달 컨테이너 */
+        .notice-modal {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .notice-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 2px solid #f1f3f5;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+        
+        .notice-modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .notice-modal-header h3 i {
+            margin-right: 8px;
+        }
+        
+        .notice-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+        
+        .notice-close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .notice-modal-body {
+            overflow-y: auto;
+            max-height: calc(80vh - 140px);
+        }
+        
+        .notice-slides {
+            position: relative;
+            min-height: 200px;
+        }
+        
+        .notice-slide {
+            display: none;
+            padding: 24px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .notice-slide.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .notice-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .notice-slide-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 12px 0;
+            line-height: 1.4;
+        }
+        
+        .notice-slide-content {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin: 0 0 16px 0;
+            white-space: pre-line;
+        }
+        
+        .notice-slide-date {
+            color: #999;
+            font-size: 0.85rem;
+        }
+        
+        .notice-modal-footer {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .notice-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .notice-no-show-today {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .notice-no-show-today input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .notice-no-show-today:hover {
+            color: #2c3e50;
+        }
+        
+        .notice-indicators {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator.active {
+            background: #2c3e50;
+            width: 24px;
+            border-radius: 4px;
+        }
+        
+        .more-link {
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .more-link:hover {
+            color: #34495e;
+        }
+        
+        .notice-empty {
+            padding: 40px;
+            text-align: center;
+            color: #999;
+        }
+        
+        .notice-link:hover .notice-slide-title {
+            color: #34495e;
+        }
+    </style>
 </head>
 <body>
 
@@ -131,6 +401,58 @@
         </div>
     </section>
 
+    <!-- 공지사항 팝업 트리거 버튼 -->
+    <div class="notice-popup-trigger" id="noticePopupBtn" th:if="${noticeList != null and !noticeList.isEmpty()}">
+        <i class="fa-solid fa-bullhorn"></i>
+        <span class="notice-badge" th:text="${noticeList.size()}"></span>
+    </div>
+
+    <!-- 공지사항 팝업 모달 -->
+    <div class="notice-modal-overlay" id="noticeModal">
+        <div class="notice-modal">
+            <div class="notice-modal-header">
+                <h3><i class="fa-solid fa-bullhorn"></i> 공지사항</h3>
+                <button class="notice-close-btn" id="closeModalBtn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="notice-modal-body">
+                <div class="notice-slides" th:if="${noticeList != null and !noticeList.isEmpty()}">
+                    <div class="notice-slide" th:each="notice, stat : ${noticeList}" 
+                         th:classappend="${stat.index == 0} ? 'active' : ''">
+                        <a th:href="@{/noticedetail(no=${notice.no})}" class="notice-link">
+                            <h4 class="notice-slide-title" th:text="${notice.title}"></h4>
+                            <p class="notice-slide-content" th:text="${notice.content}"></p>
+                            <span class="notice-slide-date" th:text="${#dates.format(notice.regDate, 'yyyy-MM-dd')}"></span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="notice-empty" th:if="${noticeList == null or noticeList.isEmpty()}">
+                    <p>등록된 공지사항이 없습니다.</p>
+                </div>
+            </div>
+            
+            <div class="notice-modal-footer" th:if="${noticeList != null and !noticeList.isEmpty()}">
+                <div class="notice-footer-left">
+                    <label class="notice-no-show-today">
+                        <input type="checkbox" id="noShowToday">
+                        <span>오늘 하루 열지 않기</span>
+                    </label>
+                    <div class="notice-indicators" th:if="${noticeList.size() > 1}">
+                        <span class="indicator" th:each="notice, stat : ${noticeList}" 
+                              th:classappend="${stat.index == 0} ? 'active' : ''"
+                              th:data-index="${stat.index}"></span>
+                    </div>
+                </div>
+                <a th:href="@{/noticelist}" class="more-link">
+                    전체보기 <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- 예약 섹션 -->
     <section class="reservation">
         <p class="reservation-text">지금 바로 예약하세요!</p>
@@ -148,30 +470,148 @@
     <script th:inline="javascript">
     /*<![CDATA[*/
     document.addEventListener('DOMContentLoaded', () => {
-    // 1️⃣ 예약 버튼 로그인 체크
-    // document.querySelectorAll('a[data-login]').forEach(link => {
-    //     link.addEventListener('click', (e) => {
-    //         const isLogin = link.getAttribute('data-login') === 'true'
-    //         window.location.href = '/pet/reservation'
-    //         if (!isLogin) {
-    //             e.preventDefault();
-    //             alert('로그인 후 이용 가능합니다');
-    //             window.location.href = '/login';
-    //         }
-    //     });
-    // });
+        // 1️⃣ 예약 버튼 로그인 체크
+        // document.querySelectorAll('a[data-login]').forEach(link => {
+        //     link.addEventListener('click', (e) => {
+        //         const isLogin = link.getAttribute('data-login') === 'true'
+        //         window.location.href = '/pet/reservation'
+        //         if (!isLogin) {
+        //             e.preventDefault();
+        //             alert('로그인 후 이용 가능합니다');
+        //             window.location.href = '/login';
+        //         }
+        //     });
+        // });
 
-    // 2️⃣ 로그아웃 버튼
-    const logoutLink = document.getElementById('logoutLink');
-    if (logoutLink) {
-        logoutLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('logoutForm').submit();
+        // 2️⃣ 로그아웃 버튼
+        const logoutLink = document.getElementById('logoutLink');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('logoutForm').submit();
+            });
+        }
+
+        // 3️⃣ 공지사항 팝업 모달
+        const popupBtn = document.getElementById('noticePopupBtn');
+        const modal = document.getElementById('noticeModal');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const noShowTodayCheckbox = document.getElementById('noShowToday');
+        const slides = document.querySelectorAll('.notice-slide');
+        const indicators = document.querySelectorAll('.indicator');
+        
+        // ⭐ 오늘 하루 열지 않기 체크 함수
+        function shouldShowNoticePopup() {
+            const noShowDate = localStorage.getItem('noticeNoShowDate');
+            if (!noShowDate) return true;
+            
+            const today = new Date().toDateString();
+            return noShowDate !== today;
+        }
+        
+        // ⭐ 오늘 하루 열지 않기 설정 함수
+        function setNoShowToday() {
+            const today = new Date().toDateString();
+            localStorage.setItem('noticeNoShowDate', today);
+        }
+        
+        if (popupBtn && modal) {
+            // ⭐ 페이지 로드 시 자동으로 팝업 열기 (오늘 하루 열지 않기 체크)
+            if (slides.length > 0 && shouldShowNoticePopup()) {
+                setTimeout(() => {
+                    modal.classList.add('active');
+                    if (slides.length > 1) {
+                        startAutoSlide();
+                    }
+                }, 500); // 0.5초 딜레이 후 열림
+            }
+            
+            // 팝업 열기 - 버튼 클릭
+            popupBtn.addEventListener('click', () => {
+                modal.classList.add('active');
+                if (slides.length > 1) {
+                    startAutoSlide();
+                }
+            });
+            
+            // 팝업 닫기 - X 버튼
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    // ⭐ 오늘 하루 열지 않기 체크되어 있으면 저장
+                    if (noShowTodayCheckbox && noShowTodayCheckbox.checked) {
+                        setNoShowToday();
+                    }
+                    modal.classList.remove('active');
+                    stopAutoSlide();
+                });
+            }
+            
+            // 팝업 닫기 - 오버레이 클릭
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    // ⭐ 오늘 하루 열지 않기 체크되어 있으면 저장
+                    if (noShowTodayCheckbox && noShowTodayCheckbox.checked) {
+                        setNoShowToday();
+                    }
+                    modal.classList.remove('active');
+                    stopAutoSlide();
+                }
+            });
+            
+            // ESC 키로 닫기
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    // ⭐ 오늘 하루 열지 않기 체크되어 있으면 저장
+                    if (noShowTodayCheckbox && noShowTodayCheckbox.checked) {
+                        setNoShowToday();
+                    }
+                    modal.classList.remove('active');
+                    stopAutoSlide();
+                }
+            });
+        }
+        
+        // 슬라이드 기능
+        let currentSlide = 0;
+        let autoSlideInterval;
+        
+        function startAutoSlide() {
+            stopAutoSlide(); // 기존 인터벌 제거
+            if (slides.length > 1) {
+                autoSlideInterval = setInterval(() => {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    updateSlide();
+                }, 3000);
+            }
+        }
+        
+        function stopAutoSlide() {
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = null;
+            }
+        }
+        
+        function updateSlide() {
+            slides.forEach(slide => slide.classList.remove('active'));
+            indicators.forEach(ind => ind.classList.remove('active'));
+            
+            slides[currentSlide].classList.add('active');
+            if (indicators[currentSlide]) {
+                indicators[currentSlide].classList.add('active');
+            }
+        }
+        
+        // 인디케이터 클릭
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                currentSlide = index;
+                updateSlide();
+                stopAutoSlide();
+                startAutoSlide();
+            });
         });
-    }
-});
-
-
+    });
     /*]]>*/
     </script>
 

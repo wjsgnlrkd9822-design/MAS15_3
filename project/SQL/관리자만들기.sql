@@ -5,7 +5,7 @@
 INSERT INTO user_auth (id, username, auth)
 SELECT id, username, 'ROLE_ADMIN'
 FROM users
-WHERE username = '아이디';  
+WHERE username = 'admin1234';  
 
 INSERT INTO `user` (id, username, password, name, email)
 VALUES (UUID(), 'admin', '123456', 
@@ -13,5 +13,5 @@ VALUES (UUID(), 'admin', '123456',
                         
 INSERT INTO `user_auth` (id, username, auth )
 VALUES 
-  ('admin123', 'admin123', 'ROLE_USER'),
-  ('admin123', 'admin123', 'ROLE_ADMIN');
+  ('admin1234', 'admin1234', 'ROLE_USER'),
+  ('admin1234', 'admin1234', 'ROLE_ADMIN');

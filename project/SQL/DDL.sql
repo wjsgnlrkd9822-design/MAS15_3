@@ -1,7 +1,8 @@
--- Active: 1767840691076@@127.0.0.1@3306@aloha
+-- Active: 1767840807398@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 
+SELECT * FROM hotelrooms
 
  drop TABLE IF EXISTS `reservations`;
 
@@ -15,6 +16,7 @@ SET FOREIGN_KEY_CHECKS = 0;
     `total_price` int NOT NULL COMMENT '총 가격',
     `res_time` TIME NOT NULL COMMENT '예약 시간',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
+    `status` VARCHAR(20) NOT NULL DEFAULT '예약중' COMMENT '예약상태 (예약중/완료/취소)',  /* 예약 추가 */
 
     FOREIGN KEY (user_no) REFERENCES users(no)
     on update CASCADE
@@ -26,10 +28,13 @@ SET FOREIGN_KEY_CHECKS = 0;
     
     FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no)
     on update CASCADE
-    on delete CASCADE
+    on delete CASCADE,
+
+    INDEX idx_check_dates (res_date, checkout_date),    /* 예약 추가 */
+    INDEX idx_room_status (room_no, status)             /* 예약 추가 */
 );
 
- SELECT * FROM reservations;
+ SELECT * FROM hotelrooms;
 
 
 drop TABLE IF EXISTS `users`;
@@ -156,7 +161,6 @@ CREATE TABLE `user_auth` (
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '수정일시'
 );
-
 DROP TABLE IF EXISTS `trainers`;
 CREATE Table `trainers`(
     `trainer_no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '트레이너 번호',
@@ -169,5 +173,3 @@ CREATE Table `trainers`(
 
 
 SET FOREIGN_KEY_CHECKS = 1;
-
-

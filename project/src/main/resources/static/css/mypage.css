@@ -4,10 +4,12 @@
     box-sizing: border-box;
 }
 
-html, body {
+
+/* html, body {
     background-color: #f5f5f5 !important;
     height: 100%;
-}
+    padding-top: 72px;
+} */
 
 .mypage-header {
     display: flex;
@@ -381,6 +383,112 @@ html, body {
 
 #imagePreviewModal .modal-backdrop {
     z-index: 1055;
+}
+/* ===== GLOBAL RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    font-family: 'Noto Sans KR', system-ui, sans-serif;
+}
+
+/* ================= HEADER ================= */
+.mypage-header {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+}
+
+.mypage-header-inner {
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 40px;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.05), 0 10px 20px rgba(0,0,0,.08);
+    text-align: center;
+}
+
+.mypage-header-inner h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.mypage-header-inner p {
+    font-size: 15px;
+    color: #6b7280;
+}
+
+/* ================= INFO ================= */
+.mypage-info {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.mypage-info-inner {
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 40px;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.05), 0 10px 20px rgba(0,0,0,.08);
+}
+
+/* ================= PET CARDS ================= */
+.mypage-pets {
+    display: flex;
+    justify-content: center;
+}
+
+.mypage-pets-inner {
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 40px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 4px 6px rgba(0,0,0,.05), 0 10px 20px rgba(0,0,0,.08);
+}
+
+.pet-card {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    padding: 24px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 4px 6px rgba(0,0,0,.05);
+}
+
+.pet-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 30px;
+}
+
+/* ================= RESERVATIONS ================= */
+.mypage-reservations {
+    margin: 40px 0;
+}
+
+.mypage-reservations-inner {
+    max-width: 900px;
+    margin: auto;
+    padding: 24px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #d1d5db;
 }
 
 /* 방 디테일 이미지 */
