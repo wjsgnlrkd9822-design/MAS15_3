@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aloha.project.mapper.PetStatusMapper">
+
+    <!-- 현재 체크인 중인 반려견 목록 + 상태 조회 (관리자용) -->
+    <select id="selectActiveReservationsWithPetStatus" resultType="map">
+        SELECT 
+            r.res_no AS resNo,
+            r.res_date AS checkin,
+            r.checkout_date AS checkout,
+            r.room_no AS roomNo,
+            
+            p.no AS petNo,
+            p.name AS petName,
+            p.species AS petSpecies,
+            p.size AS petSize,
+            
+            u.name AS ownerName,
+            u.phone AS ownerPhone,
+            
+            h.room_type AS roomType,
+            h.img AS roomImg,
+            
+            ps.status AS petStatus,
+            ps.next_schedule AS nextSchedule,
+            ps.updated_at AS updatedAt
+            
+        FROM reservations r
+        JOIN pets p ON r.pet_no = p.no
+        JOIN users u ON r.user_no = u.no
+        JOIN hotelrooms h ON r.room_no = h.room_no
+        LEFT JOIN pet_status ps ON p.no = ps.pet_no
+        
+        WHERE r.status = '예약중'
+          AND CURDATE() BETWEEN r.res_date AND r.checkout_date
+          
+        ORDER BY r.res_date DESC, r.res_no DESC
+    </select>
+
+    <!-- 반려견 상태 조회 -->
+    <select id="selectPetStatus" resultType="com.aloha.project.dto.PetStatus">
+        SELECT 
+            pet_no AS petNo,
+            status,
+            next_schedule AS nextSchedule,
+            updated_at AS updatedAt
+        FROM pet_status
+        WHERE pet_no = #{petNo}
+    </select>
+
+    <!-- 반려견 상태 등록 -->
+    <insert id="insertPetStatus" parameterType="com.aloha.project.dto.PetStatus">
+        INSERT INTO pet_status (pet_no, status, next_schedule)
+        VALUES (#{petNo}, #{status}, #{nextSchedule})
+    </insert>
+
+    <!-- 반려견 상태 수정 -->
+    <update id="updatePetStatus" parameterType="com.aloha.project.dto.PetStatus">
+        UPDATE pet_status
+        SET status = #{status},
+            next_schedule = #{nextSchedule},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE pet_no = #{petNo}
+    </update>
+
+    <!-- 반려견 상태 삭제 -->
+    <delete id="deletePetStatus">
+        DELETE FROM pet_status
+        WHERE pet_no = #{petNo}
+    </delete>
+
+</mapper>

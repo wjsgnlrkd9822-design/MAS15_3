@@ -48,7 +48,7 @@ public class MainController {
     private final NoticeService noticeService;
 
     /**
-     * 메인 페이지
+     * ⭐ 메인 페이지 (CCTV 활성 예약 체크 추가)
      */
     @GetMapping("/")
     public String index(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -64,7 +64,64 @@ public class MainController {
             model.addAttribute("noticeList", List.of()); // 빈 리스트
         }
         
+        // ⭐ 활성 예약 여부 체크 (CCTV 버튼 표시용)
+        boolean hasActiveReservation = false;
+        if (isLogin && userDetails instanceof CustomUser) {
+            try {
+                CustomUser customUser = (CustomUser) userDetails;
+                Long userNo = customUser.getNo();
+                LocalDate today = LocalDate.now();
+                
+                ReservationDto activeReservation = reservationService.getActiveReservation(userNo, today);
+                hasActiveReservation = (activeReservation != null);
+                
+            } catch (Exception e) {
+                log.error("활성 예약 조회 실패", e);
+            }
+        }
+        model.addAttribute("hasActiveReservation", hasActiveReservation);
+        
         return "index";
+    }
+
+    /**
+     * ⭐ 활성화된 예약 조회 API (CCTV 기능용)
+     */
+    @GetMapping("/api/reservation/active")
+    @ResponseBody
+    public Map<String, Object> getActiveReservation(@AuthenticationPrincipal CustomUser customUser) {
+        Map<String, Object> result = new HashMap<>();
+        
+        try {
+            if (customUser == null) {
+                result.put("success", false);
+                result.put("message", "로그인이 필요합니다.");
+                return result;
+            }
+            
+            Long userNo = customUser.getNo();
+            LocalDate today = LocalDate.now();
+            
+            // 활성화된 예약 조회
+            ReservationDto activeReservation = reservationService.getActiveReservation(userNo, today);
+            
+            if (activeReservation != null) {
+                result.put("success", true);
+                result.put("reservation", activeReservation);
+                result.put("message", "활성 예약이 있습니다.");
+            } else {
+                result.put("success", false);
+                result.put("reservation", null);
+                result.put("message", "현재 진행 중인 예약이 없습니다.");
+            }
+            
+        } catch (Exception e) {
+            log.error("활성 예약 조회 실패", e);
+            result.put("success", false);
+            result.put("message", "조회 실패: " + e.getMessage());
+        }
+        
+        return result;
     }
 
     @GetMapping("/pet/introduce")
@@ -395,51 +452,51 @@ public class MainController {
      * 예약 수정 (AJAX)
      */
     @PostMapping("/api/reservation/update/{resNo}")
-@ResponseBody
-public Map<String, Object> updateReservation(
-        @PathVariable("resNo") Long resNo,
-        @RequestParam("checkin") String checkin,
-        @RequestParam("checkout") String checkout,
-        @RequestParam("total") int total,
-        @RequestParam("totalPrice") int totalPrice,
-        @RequestParam(value="serviceIds", required=false) List<Long> serviceIds,
-        @RequestParam("roomNo") Long roomNo   // ⭐ 방 번호 필요 (겹침 체크용)
-) {
-    Map<String, Object> result = new HashMap<>();
+    @ResponseBody
+    public Map<String, Object> updateReservation(
+            @PathVariable("resNo") Long resNo,
+            @RequestParam("checkin") String checkin,
+            @RequestParam("checkout") String checkout,
+            @RequestParam("total") int total,
+            @RequestParam("totalPrice") int totalPrice,
+            @RequestParam(value="serviceIds", required=false) List<Long> serviceIds,
+            @RequestParam("roomNo") Long roomNo   // ⭐ 방 번호 필요 (겹침 체크용)
+    ) {
+        Map<String, Object> result = new HashMap<>();
 
-    try {
-        LocalDate checkinDate = LocalDate.parse(checkin);
-        LocalDate checkoutDate = LocalDate.parse(checkout);
+        try {
+            LocalDate checkinDate = LocalDate.parse(checkin);
+            LocalDate checkoutDate = LocalDate.parse(checkout);
 
-        // ⭐ DTO로 묶어서 전달
-        ReservationDto dto = new ReservationDto();
-        dto.setResNo(resNo);
-        dto.setRoomNo(roomNo);
-        dto.setCheckin(checkinDate);
-        dto.setCheckout(checkoutDate);
-        dto.setTotal(total);
-        dto.setTotalPrice(totalPrice);
-        dto.setServiceIds(serviceIds);
+            // ⭐ DTO로 묶어서 전달
+            ReservationDto dto = new ReservationDto();
+            dto.setResNo(resNo);
+            dto.setRoomNo(roomNo);
+            dto.setCheckin(checkinDate);
+            dto.setCheckout(checkoutDate);
+            dto.setTotal(total);
+            dto.setTotalPrice(totalPrice);
+            dto.setServiceIds(serviceIds);
 
-        // ⭐ 겹침 체크 포함 수정 호출
-        boolean success = reservationService.updateReservation(dto);
+            // ⭐ 겹침 체크 포함 수정 호출
+            boolean success = reservationService.updateReservation(dto);
 
-        if (!success) {
+            if (!success) {
+                result.put("success", false);
+                result.put("message", "해당 날짜에 이미 예약된 객실입니다.");
+                return result;
+            }
+
+            result.put("success", true);
+            result.put("message", "예약이 수정되었습니다.");
+
+        } catch (Exception e) {
             result.put("success", false);
-            result.put("message", "해당 날짜에 이미 예약된 객실입니다.");
-            return result;
+            result.put("message", "수정 실패: " + e.getMessage());
         }
 
-        result.put("success", true);
-        result.put("message", "예약이 수정되었습니다.");
-
-    } catch (Exception e) {
-        result.put("success", false);
-        result.put("message", "수정 실패: " + e.getMessage());
+        return result;
     }
-
-    return result;
-}
 
     /**
      * 예약 취소
@@ -582,4 +639,6 @@ public Map<String, Object> updateReservation(
         }
         return result;
     }
+
+    
 }

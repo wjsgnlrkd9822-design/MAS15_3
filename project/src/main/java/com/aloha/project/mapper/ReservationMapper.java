@@ -101,5 +101,13 @@ public interface ReservationMapper {
     
     int checkRoomAvailabilityForUpdate(Map<String, Object> params);
 
-    
+    /**
+     * ⭐ 활성화된 예약 조회 (CCTV용)
+     * - 현재 날짜가 체크인~체크아웃 사이에 있는 예약
+     * - 상태가 '예약중'인 것만
+     * @param userNo 사용자 번호
+     * @param today 오늘 날짜
+     * @return 활성 예약 정보 (없으면 null)
+     */
+    ReservationDto selectActiveReservation(@Param("userNo") Long userNo, @Param("today") LocalDate today);
 }

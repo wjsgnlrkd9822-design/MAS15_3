@@ -1,4 +1,4 @@
--- Active: 1767840807398@@127.0.0.1@3306@aloha
+-- Active: 1767920835424@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 drop TABLE IF EXISTS `users`;
@@ -98,7 +98,11 @@ VALUES
 ('Small Dog Deluxe', 70000, '소형견실(넓은공간)', '예약가능', 'room_305.jpg');
 
 
-SELECT * FROM reservations
+-- add_cctv_column.sql 실행
+ALTER TABLE `hotelrooms`
+ADD COLUMN `cctv_url` VARCHAR(500) DEFAULT NULL;
+UPDATE hotelrooms SET cctv_url = '실제_유튜브_라이브_URL' WHERE room_no = 1;
+SELECT * FROM pets
 
  drop TABLE IF EXISTS `reservations`;
 
@@ -131,7 +135,7 @@ SELECT * FROM reservations
 );
 
 
- SELECT * FROM reservations;
+ SELECT * FROM hotelservices;
 
 
        
@@ -195,3 +199,73 @@ CREATE Table `trainers`(
 
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+DROP TABLE IF EXISTS `hotelrooms`;
+
+-- ⭐ hotelrooms 테이블에 cctv_url 컬럼 추가
+ALTER TABLE `hotelrooms`
+ADD COLUMN `cctv_url` VARCHAR(500) DEFAULT NULL COMMENT '유튜브 라이브 CCTV URL';
+
+-- ⭐ 샘플 CCTV URL 데이터 (실제 유튜브 라이브 URL로 교체 필요)
+-- 예시: https://www.youtube.com/watch?v=VIDEO_ID 또는 https://www.youtube.com/live/VIDEO_ID
+
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=8dYNg7bmS5c' WHERE room_no = 1;  -- 대형견실 101
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 2;  -- 대형견실 102
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 3;  -- 대형견실 103
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 4;  -- 대형견실 디럭스 104
+
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 5;  -- 중형견실 201
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 6;  -- 중형견실 202
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 7;  -- 중형견실 203
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 8;  -- 중형견실 디럭스 204
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 9;  -- 중형견실 디럭스 205
+
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 10; -- 소형견실 301
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 11; -- 소형견실 302
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 12; -- 소형견실 303
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 13; -- 소형견실 디럭스 304
+UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 14; -- 소형견실 디럭스 305
+
+-- ⭐ 확인 쿼리
+SELECT room_no, room_type, img, cctv_url FROM hotelrooms;
+
+
+CREATE TABLE pet_status (
+    pet_no INT PRIMARY KEY,
+    status VARCHAR(30),        -- RESTING, PLAYING, EATING, WALKING
+    next_schedule VARCHAR(50),-- 예: "16:00 산책"
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO pet_status (pet_no, status, next_schedule)
+VALUES
+(5, 'RESTING', '16:00 산책')
+
+
+-- 1. 현재 예약 중인 데이터 확인
+SELECT 
+    r.res_no,
+    r.res_date,
+    r.checkout_date,
+    r.status,
+    p.no AS pet_no,
+    p.name AS pet_name,
+    ps.status AS pet_status
+FROM reservations r
+JOIN pets p ON r.pet_no = p.no
+LEFT JOIN pet_status ps ON p.no = ps.pet_no
+WHERE r.status = '예약중';
+
+-- 2. 날짜 조건 확인
+SELECT 
+    CURDATE() as today,
+    r.res_no,
+    r.res_date,
+    r.checkout_date,
+    CASE 
+        WHEN CURDATE() BETWEEN r.res_date AND r.checkout_date THEN 'YES'
+        ELSE 'NO'
+    END as is_active
+FROM reservations r
+WHERE r.status = '예약중';
