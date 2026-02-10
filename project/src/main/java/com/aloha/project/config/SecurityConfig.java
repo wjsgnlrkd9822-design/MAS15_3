@@ -47,11 +47,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.info("스프링 시큐리티 설정 (form + 카카오 OAuth 통합)");
 
-        // 인가 설정
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/**").permitAll()
-        );
+    // 인가 설정
+    http.authorizeHttpRequests(auth -> auth
+                              .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")  
+                              // .requestMatchers("/pet/reservation/**").authenticated() // 한줄 추가했어요
+                              .requestMatchers("/**").permitAll()   // 전체 허용  
+                              );
+    // 폼 로그인 설정
+    http.formLogin(login -> login
+      .loginPage("/login")                    // 커스텀 로그인 페이지 경로
+      .loginProcessingUrl("/login")  // 로그인 요청 경로
+      .successHandler(loginSuccessHandler)         // 로그인 성공 핸들러 설정
+      .failureHandler(loginFailureHandler)         // 로그인 실패 핸들러 설정
+    );
 
         // form 로그인 설정 (일반 로그인)
         http.formLogin(login -> login

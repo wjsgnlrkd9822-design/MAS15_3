@@ -35,6 +35,7 @@ header img {
     height: 32px;         
     transform: scale(1.5);
     transform-origin: left center;
+    vertical-align: middle;
 }
 
 /* 메뉴 전체 간격 */
