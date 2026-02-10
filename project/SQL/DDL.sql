@@ -1,4 +1,4 @@
--- Active: 1767920835424@@127.0.0.1@3306@aloha
+-- Active: 1767840807398@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 drop TABLE IF EXISTS `users`;
@@ -18,7 +18,7 @@ CREATE TABLE `users`(
     `enabled` INT DEFAULT 1 COMMENT '활성화여부'
 );
 
-CREATE TABLE users_social (
+CREATE TABLE `users_social` (
     `no` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '소셜 PK',
     `user_no` BIGINT NOT NULL COMMENT '회원번호(FK)',
     `username` VARCHAR(100) NOT NULL COMMENT '유저 아이디',
@@ -80,7 +80,7 @@ CREATE Table `hotelrooms`(
 
 );
 
-INSERT INTO hotelrooms (room_type, room_price, etc, active, img)
+INSERT INTO `hotelrooms` (room_type, room_price, etc, active, img)
 VALUES
 ('Large Dog', 110000, '대형견실', '예약가능', 'room_101.jpg'),
 ('Large Dog', 110000, '대형견실', '예약가능', 'room_102.jpg'),
@@ -133,9 +133,6 @@ SELECT * FROM pets
     INDEX idx_check_dates (res_date, checkout_date),    /* 예약 추가 */
     INDEX idx_room_status (room_no, status)             /* 예약 추가 */
 );
-
-
- SELECT * FROM hotelservices;
 
 
        
@@ -192,8 +189,13 @@ CREATE Table `trainers`(
 SET FOREIGN_KEY_CHECKS = 1;
 
 
-DROP TABLE IF EXISTS `hotelrooms`;
+INSERT INTO `hotelrooms` (cctv_url)
+VALUES
+('https://www.youtube.com/watch?v=8dYNg7bmS5c');
 
+UPDATE hotelrooms
+SET cctv_url = 'https://www.youtube.com/watch?v=8dYNg7bmS5c'
+WHERE room_no = 1;
 -- ⭐ hotelrooms 테이블에 cctv_url 컬럼 추가
 ALTER TABLE `hotelrooms`
 ADD COLUMN `cctv_url` VARCHAR(500) DEFAULT NULL COMMENT '유튜브 라이브 CCTV URL';
@@ -201,7 +203,7 @@ ADD COLUMN `cctv_url` VARCHAR(500) DEFAULT NULL COMMENT '유튜브 라이브 CCT
 -- ⭐ 샘플 CCTV URL 데이터 (실제 유튜브 라이브 URL로 교체 필요)
 -- 예시: https://www.youtube.com/watch?v=VIDEO_ID 또는 https://www.youtube.com/live/VIDEO_ID
 
-UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=8dYNg7bmS5c' WHERE room_no = 1;  -- 대형견실 101
+INSERT INTO hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=8dYNg7bmS5c' WHERE room_no = 1;  -- 대형견실 101
 UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 2;  -- 대형견실 102
 UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 3;  -- 대형견실 103
 UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 4;  -- 대형견실 디럭스 104
