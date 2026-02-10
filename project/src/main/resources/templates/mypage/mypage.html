@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>마이페이지</title>
   <!-- 공통 CSS -->
-  <th:block th:replace="~{fragments/link::mypage-link}"></th:block>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <th:block th:replace="~{fragments/link::link}"></th:block>
+  <th:block th:replace="~{fragments/link::mypage-link}"></th:block>
 
   <!-- Font Awesome 아이콘 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -16,21 +17,20 @@
 
   <meta name="_csrf" th:content="${_csrf.token}">
   <meta name="_csrf_header" th:content="${_csrf.headerName}">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <body>
 
   <!-- 헤더 -->
   <th:block th:replace="~{fragments/header::header}"></th:block>
 
-  <!-- daum지도api -->
+  <!-- daum주소api -->
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
   <!-- 마이 페이지 헤더 -->
   <section class="mypage-header">
     <div class="mypage-header-inner">
-      <br>
       <h2>마이 페이지</h2>
       <p>나의 예약 내역과 정보를 확인하고 관리하세요</p>
     </div>
@@ -102,17 +102,15 @@
     </div>
   </div>
 
-
   <!-- =============================================================================================================== -->
 
-<!-- 펫 정보 추가 -->
+  <!-- 펫 정보 추가 -->
   <section class="mypage-pets">
     <div class="mypage-pets-inner">
       <h3>나의 반려견</h3>
 
       <!-- 반려견 카드가 동적으로 로드될 컨테이너 -->
       <div id="petCardsContainer" class="pet-cards-wrapper">
-        <!-- JavaScript에서 동적으로 카드가 추가됩니다 -->
       </div>
 
       <!-- 반려견 추가 버튼 -->
@@ -132,15 +130,31 @@
             <form id="addPetForm">
               <!-- 모달 내용 -->
               <div class="modal-body">
-                <div class="mb-3">
-                  <label for="petName" class="form-label">이름</label>
-                  <input type="text" class="form-control" id="addPetName" name="name" required>
-                </div>
-                <div class="mb-3">
-                  <label for="petSpecies" class="form-label">종</label>
-                  <input type="text" class="form-control" id="addPetSpecies" name="species" required>
-                </div>
+                <div class="row">
 
+                  <div class="col md-8 mb-3">
+                    <div class="mb-3">
+                      <label for="petName" class="form-label">이름</label>
+                      <input type="text" class="form-control" id="addPetName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="petSpecies" class="form-label">종</label>
+                      <input type="text" class="form-control" id="addPetSpecies" name="species" required>
+                    </div>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <div class="image-upload-wrapper" id="addUploadWrapper">
+                      <div class="upload-box" id="addUploadBox"
+                        onclick="document.getElementById('addPetProfile').click()">
+                        <span>클릭하여<br>이미지 선택</span>
+                      </div>
+                      <input type="file" id="addPetProfile" name="profileImg" accept="image/*" style="display:none;">
+                      <img id="addProfilePreview" src="" alt="프로필 미리보기"
+                        onclick="document.getElementById('addPetProfile').click()">
+                    </div>
+                    <label class="form-label" style="color: #6b7280;">프로필 이미지</label>
+                  </div>
+                </div>
                 <div class="row">
                   <div class="col-md-4 mb-3">
                     <label for="petAge" class="form-label">나이</label>
@@ -155,18 +169,18 @@
                     </select>
                   </div>
                   <div class="col-md-4 mb-3">
-                    <label for="petWeight" class="form-label">몸무게</label>
+                    <label for="petWeight" class="form-label">몸무게(kg)</label>
                     <input type="number" class="form-control" id="addPetWeight" name="weight" step="0.1" required>
                   </div>
                 </div>
 
                 <div class="row">
                   <div class="col-md-4 mb-3">
-                      <label for="petGender" class="form-label">성별</label>
-                      <select class="form-select" id="addPetGender" name="gender" required>
-                        <option value="수컷">수컷</option>
-                        <option value="암컷">암컷</option>
-                      </select>
+                    <label for="petGender" class="form-label">성별</label>
+                    <select class="form-select" id="addPetGender" name="gender" required>
+                      <option value="수컷">수컷</option>
+                      <option value="암컷">암컷</option>
+                    </select>
                   </div>
                   <div class="col-md-4 mb-3">
                     <label for="petNeutered" class="form-label">중성화 여부</label>
@@ -182,12 +196,6 @@
                       <option value="아니오">아니오</option>
                     </select>
                   </div>
-                </div>
-
-                <div class="mb-3">
-                  <label for="petProfile" class="form-label">프로필 이미지</label>
-                  <input type="file" class="form-control" id="addPetProfile" name="profileImg">
-                  <img id="addProfilePreview" class="img-thumbnail mt-2" style="max-width:150px; display:none;"  onclick="openImagePreview(this.src)">
                 </div>
                 <div class="mb-3">
                   <label for="petCertificate" class="form-label">건강 증명서</label>
@@ -209,134 +217,158 @@
       </div>
     </div>
 
-    <!-- 이미지 확대 모달 -->
-<div class="modal fade" id="imagePreviewModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content bg-transparent border-0">
-      <div class="modal-body text-center">
-        <img id="imagePreviewModalImg"
-             class="img-fluid rounded"
-             style="max-height: 80vh;">
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
     <!-- 반려견 수정하기 모달 -->
     <div class="modal fade" id="editPetModal" tabindex="-1" aria-labelledby="editPetModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="editPetModalLabel">반려견 정보 수정</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="editPetForm">
-              <!-- 모달 내용 -->
-              <div class="modal-body">
-                <input type="hidden" id="petNo" name="petNo">
-
-                <div class="mb-3">
-                  <label for="petName" class="form-label">이름</label>
-                  <input type="text" class="form-control" id="petName" name="name" required>
-                </div>
-                <div class="mb-3">
-                  <label for="petSpecies" class="form-label">종</label>
-                  <input type="text" class="form-control" id="petSpecies" name="species" required>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 mb-3">
-                    <label for="petAge" class="form-label">나이</label>
-                    <input type="number" class="form-control" id="petAge" name="age" required>
-                  </div>
-                  <div class="col-md-4 mb-3">
-                    <label for="petSize" class="form-label">크기</label>
-                    <select class="form-select" id="petSize" name="size" required>
-                      <option value="소형">소형</option>
-                      <option value="중형">중형</option>
-                      <option value="대형">대형</option>
-                    </select>
-                  </div>
-                  <div class="col-md-4 mb-3">
-                    <label for="petWeight" class="form-label">몸무게</label>
-                    <input type="number" class="form-control" id="petWeight" name="weight" step="0.1" required>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 mb-3">
-                    <label for="petGender" class="form-label">성별</label>
-                    <select class="form-select" id="petGender" name="gender" required>
-                      <option value="수컷">수컷</option>
-                      <option value="암컷">암컷</option>
-                    </select>
-                  </div>
-                  <div class="col-md-4 mb-3">
-                    <label for="petNeutered" class="form-label">중성화 여부</label>
-                    <select class="form-select" id="petNeutered" name="neutered" required>
-                      <option value="예">예</option>
-                      <option value="아니오">아니오</option>
-                    </select>
-                  </div>
-                  <div class="col-md-4 mb-3">
-                    <label for="petVaccination" class="form-label">예방접종 여부</label>
-                    <select class="form-select" id="petVaccination" name="vaccination" required>
-                      <option value="예">예</option>
-                      <option value="아니오">아니오</option>
-                    </select>
-                  </div>
-                </div>
-                  
-                <div class="mb-3">
-                  <label for="petProfile" class="form-label">프로필 이미지</label>
-                  <input type="file" class="form-control" id="petProfile" name="profileImg">
-                  <img id="profilePreview" class="img-thumbnail mt-2" style="max-width:150px; display:none;"  onclick="openImagePreview(this.src)">
-                </div>
-                <div class="mb-3">
-                  <label for="petCertificate" class="form-label">건강 증명서</label>
-                  <input type="file" class="form-control" id="petCertificate" name="certificateFile">
-                </div>
-                <div class="mb-3">
-                  <label for="petEtc" class="form-label">기타 사항</label>
-                  <textarea class="form-control" id="petEtc" name="etc" rows="2"></textarea>
-                </div>
-              </div>
-              <!-- 모달 푸터 -->
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="submit" class="btn btn-primary">수정</button>
-                <button type="button" class="btn btn-danger" onclick="deletePetUI()">삭제</button>
-              </div>
-            </form>
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editPetModalLabel">반려견 정보 수정</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+          <form id="editPetForm">
+            <!-- 모달 내용 -->
+            <div class="modal-body">
+              <input type="hidden" id="petNo" name="petNo">
+
+              <div class="row">
+                <div class="col-md-8 mb-3">
+                  <div class="mb-3">
+                    <label for="petName" class="form-label">이름</label>
+                    <input type="text" class="form-control" id="petName" name="name" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="petSpecies" class="form-label">종</label>
+                    <input type="text" class="form-control" id="petSpecies" name="species" required>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="image-upload-wrapper" id="editUploadWrapper">
+                    <div class="upload-box" id="editUploadBox"
+                      onclick="document.getElementById('editPetProfile').click()">
+                      <span>클릭하여<br>이미지 선택</span>
+                    </div>
+                    <input type="file" id="editPetProfile" name="profileImg" accept="image/*" style="display:none;">
+                    <img id="editProfilePreview" src="" alt="프로필 미리보기"
+                      onclick="document.getElementById('editPetProfile').click()">
+                  </div>
+                  <label class="form-label" style="color: #6b7280;">프로필 이미지</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="petAge" class="form-label">나이</label>
+                  <input type="number" class="form-control" id="petAge" name="age" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="petSize" class="form-label">크기</label>
+                  <select class="form-select" id="petSize" name="size" required>
+                    <option value="소형">소형</option>
+                    <option value="중형">중형</option>
+                    <option value="대형">대형</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="petWeight" class="form-label">몸무게(kg)</label>
+                  <input type="number" class="form-control" id="petWeight" name="weight" step="0.1" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="petGender" class="form-label">성별</label>
+                  <select class="form-select" id="petGender" name="gender" required>
+                    <option value="수컷">수컷</option>
+                    <option value="암컷">암컷</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="petNeutered" class="form-label">중성화 여부</label>
+                  <select class="form-select" id="petNeutered" name="neutered" required>
+                    <option value="예">예</option>
+                    <option value="아니오">아니오</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="petVaccination" class="form-label">예방접종 여부</label>
+                  <select class="form-select" id="petVaccination" name="vaccination" required>
+                    <option value="예">예</option>
+                    <option value="아니오">아니오</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="petCertificate" class="form-label">건강 증명서</label>
+                <input type="file" class="form-control" id="petCertificate" name="certificateFile">
+              </div>
+              <div class="mb-3">
+                <label for="petEtc" class="form-label">기타 사항</label>
+                <textarea class="form-control" id="petEtc" name="etc" rows="2"></textarea>
+              </div>
+            </div>
+            <!-- 모달 푸터 -->
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" onclick="deletePetUI()">삭제</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+              <button type="submit" class="btn btn-primary">수정</button>
+            </div>
+          </form>
         </div>
       </div>
+    </div>
   </section>
 
-   <!-- ========================================================================================================================= -->
+  <!-- ========================================================================================================================= -->
 
-<!--     <section class="mypage-reservations">
+  <!-- 호텔 예약 내역 -->
+  <section class="mypage-reservations">
     <div class="mypage-reservations-inner">
       <h3>호텔 예약 내역</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>예약 번호</th>
+            <th>반려견 이름</th>
+            <th>체크인</th>
+            <th>체크아웃</th>
+            <th>상태</th>
+            <th>총금액</th>
+            <th>관리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="res : ${reservations}">
+            <td><span th:text="${res.resNo}"></span></td>
+            <td th:text="${res.petName}">반려견 이름</td>
+            <td th:text="${res.checkin}">2024-07-01</td>
+            <td th:text="${res.checkout}">2024-07-05</td>
+            <td>예약 완료</td>
+            <td th:text="${#numbers.formatInteger(res.totalPrice, 3, 'COMMA')} + '원'">총금액</td>
+            <td>
+              <!-- 안전하게 모달 열기 -->
+              <button class="btn btn-outline-secondary" type="button"
+                th:onclick="'openEditModal(' + ${res.resNo} + ')'">
+                수정
+              </button>
+            </td>
 
-      <div id="reservationCardsContainer" class="reservation-card-list"></div>
-
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </section> -->
+  </section>
 
+  <!-- 예약 수정 모달 -->
+  <div class="modal fade" id="editReservationModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
 
+        <div class="modal-header">
+          <h5 class="modal-title">예약 수정</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
 
-
-
-
-
-
-
-
-
-  <!-- ============================================================================================================================ -->
-
-
+        <div class="modal-body">
+          <input type="hidden" id="editResNo">
+          <input type="hidden" id="editRoomNo">
 
   <!-- 호텔 예약 내역 -->
   <section class="mypage-reservations">
@@ -376,79 +408,64 @@
         </div>
     </section>
 
-    <!-- ✅ 예약 수정 모달 -->
-    <div class="modal fade" id="editReservationModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-          <div class="modal-header">
-            <h5 class="modal-title">예약 수정</h5>
-            <button class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-
-          <div class="modal-body">
-            <input type="hidden" id="editResNo">
-            <input type="hidden" id="editRoomNo"> <!-- 한줄 추가 -->
-            
-
-            <div class="mb-3">
-              <label>객실 정보</label>
-              <input id="editRoomType" class="form-control mb-2" readonly>
-              <img id="editRoomImg" class="img-fluid rounded" 
+          <div class="mb-3">
+            <label>객실 정보</label>
+            <input id="editRoomType" class="form-control mb-2" readonly>
+            <img id="editRoomImg" class="img-fluid rounded"
               style="width:100%; height:260px; object-fit:cover; border-radius:0; display:none;">
-            </div>
-
-            <div class="mb-3">
-              <label>반려견 이름</label>
-              <input id="editPetName" class="form-control" readonly>
-            </div>
-            
-            <div class="row">
-
-              <div class="col-md-4 mb-3">
-                <label>체크인 날짜</label>
-                <input type="text" id="editCheckin" class="form-control">
-              </div>
-              
-              <div class="col-md-4 mb-3">
-                <label>체크아웃 날짜</label>
-                <input type="text" id="editCheckout" class="form-control">
-              </div>
-              
-              <div class="col-md-4 mb-3">
-                <label>박 수</label>
-                <input id="editNights" class="form-control" readonly>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label>1박 가격</label>
-              <input id="editRoomPrice" class="form-control" readonly>
-            </div>
-
-            <div class="mb-3">
-              <label>선택 서비스</label>
-              <div id="editServiceList">
-                <!-- 서비스 체크박스가 JS로 동적으로 생성됨 -->
-              </div>
-            </div>
-            
-            <div class="mb-3">
-              <label>총 금액</label>
-              <input type="number" id="editTotalPrice" class="form-control" value="100000">
-            </div>
-            
           </div>
 
-          <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-            <button class="btn btn-primary" onclick="updateReservation()">수정 완료</button>
-            <button class="btn btn-danger" onclick="deleteReservation()">삭제</button>
+          <div class="mb-3">
+            <label>반려견 이름</label>
+            <input id="editPetName" class="form-control" readonly>
+          </div>
+
+          <div class="row">
+
+            <div class="col-md-4 mb-3">
+              <label>체크인 날짜</label>
+              <input type="text" id="editCheckin" class="form-control">
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label>체크아웃 날짜</label>
+              <input type="text" id="editCheckout" class="form-control">
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label>박 수</label>
+              <input id="editNights" class="form-control" readonly>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label>1박 가격</label>
+            <input id="editRoomPrice" class="form-control" readonly>
+          </div>
+
+          <div class="mb-3">
+            <label>선택 서비스</label>
+            <div id="editServiceList">
+              <!-- 서비스 체크박스가 JS로 동적으로 생성됨 -->
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label>총 금액</label>
+            <input type="text" id="editTotalPrice" class="form-control" value="100000" readonly>
           </div>
 
         </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-danger" onclick="deleteReservation()">삭제</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+          <button class="btn btn-primary" onclick="updateReservation()">수정 완료</button>
+        </div>
+
       </div>
     </div>
+  </div>
 
   <!-- 푸터 -->
   <th:block th:replace="~{fragments/footer::footer}"></th:block>
@@ -458,82 +475,81 @@
   <!-- 마이페이지 JS -->
   <script src="/js/mypage.js"></script>
   <!-- 마이페이지 반려견 JS -->
-  <!-- <script src="/js/mypagePet.js"></script> -->
   <script src="/js/mypagePetApi.js"></script>
   <script src="/js/mypagePetUi.js"></script>
   <!-- <script src="/js/mypageReservation.js"></script> -->
   <!-- ✅ 예약 수정 JavaScript -->
-<script>
-let checkinPicker, checkoutPicker;
-let roomPrice = 0;
+  <script>
+    let checkinPicker, checkoutPicker;
+    let roomPrice = 0;
 
-// ============================
-// 모달 열기
-// ============================
-function openEditModal(resNo) {
-    fetch(`/api/reservation/${resNo}`)
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById('editResNo').value = data.resNo;
-        document.getElementById('editPetName').value = data.petName;
-        document.getElementById('editRoomNo').value = data.roomNo; /* 한줄 추가 */
-
-        // 방 정보 가져오기
-        fetch(`/api/room/${data.roomNo}`)
+    // ============================
+    // 모달 열기
+    // ============================
+    function openEditModal(resNo) {
+      fetch(`/api/reservation/${resNo}`)
         .then(res => res.json())
-        .then(room => {
-            roomPrice = room.roomPrice;
-            document.getElementById("editRoomPrice").value = roomPrice.toLocaleString() + "원";
-            document.getElementById("editRoomType").value = room.roomType;
+        .then(data => {
+          document.getElementById('editResNo').value = data.resNo;
+          document.getElementById('editPetName').value = data.petName;
+          document.getElementById('editRoomNo').value = data.roomNo; /* 한줄 추가 */
 
-            const img = document.getElementById("editRoomImg");
-            img.src = "/uploads/" + room.img;
-            img.style.display = "block";
+          // 방 정보 가져오기
+          fetch(`/api/room/${data.roomNo}`)
+            .then(res => res.json())
+            .then(room => {
+              roomPrice = room.roomPrice;
+              document.getElementById("editRoomPrice").value = roomPrice.toLocaleString() + "원";
+              document.getElementById("editRoomType").value = room.roomType;
 
-            // Flatpickr 초기화
-            if (checkinPicker) checkinPicker.destroy();
-            if (checkoutPicker) checkoutPicker.destroy();
+              const img = document.getElementById("editRoomImg");
+              img.src = "/uploads/" + room.img;
+              img.style.display = "block";
 
-            const today = new Date();
-            today.setHours(0,0,0,0);
+              // Flatpickr 초기화
+              if (checkinPicker) checkinPicker.destroy();
+              if (checkoutPicker) checkoutPicker.destroy();
 
-            checkinPicker = flatpickr("#editCheckin", {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              checkinPicker = flatpickr("#editCheckin", {
                 dateFormat: "Y-m-d",
                 defaultDate: data.checkin,
                 minDate: today,
-                onChange: function(selectedDates) {
-                    if(selectedDates.length > 0){
-                        const minCheckout = new Date(selectedDates[0].getTime());
-                        minCheckout.setDate(minCheckout.getDate() + 1);
-                        checkoutPicker.set('minDate', minCheckout);
-                    }
-                    calculateNights();
+                onChange: function (selectedDates) {
+                  if (selectedDates.length > 0) {
+                    const minCheckout = new Date(selectedDates[0].getTime());
+                    minCheckout.setDate(minCheckout.getDate() + 1);
+                    checkoutPicker.set('minDate', minCheckout);
+                  }
+                  calculateNights();
                 }
-            });
+              });
 
-            checkoutPicker = flatpickr("#editCheckout", {
+              checkoutPicker = flatpickr("#editCheckout", {
                 dateFormat: "Y-m-d",
                 defaultDate: data.checkout,
                 minDate: new Date(data.checkin),
                 onChange: calculateNights
-            });
+              });
 
-            // 서비스 체크박스 가져오기
-            fetch('/api/room/services')
-.then(res => res.json())
-.then(services => {
-    const serviceContainer = document.getElementById('editServiceList');
-    serviceContainer.innerHTML = '';
+              // 서비스 체크박스 가져오기
+              fetch('/api/room/services')
+                .then(res => res.json())
+                .then(services => {
+                  const serviceContainer = document.getElementById('editServiceList');
+                  serviceContainer.innerHTML = '';
 
-    services.forEach(service => {
-        // ✅ 타입을 문자열로 통일해서 비교
-        const checked = data.serviceIds && data.serviceIds.some(id => String(id) === String(service.serviceNo));
+                  services.forEach(service => {
+                    // 타입을 문자열로 통일해서 비교
+                    const checked = data.serviceIds && data.serviceIds.some(id => String(id) === String(service.serviceNo));
 
-        const div = document.createElement('div');
-        div.classList.add('form-check');
-        if (checked) div.classList.add('selected'); // 체크된 카드 스타일 적용
+                    const div = document.createElement('div');
+                    div.classList.add('form-check');
+                    if (checked) div.classList.add('selected');
 
-        div.innerHTML = `
+                    div.innerHTML = `
             <input class="form-check-input" type="checkbox" 
                    value="${service.serviceNo}" 
                    id="service${service.serviceNo}" 
@@ -544,41 +560,46 @@ function openEditModal(resNo) {
             </label>
         `;
 
-        serviceContainer.appendChild(div);
-    });
+                    serviceContainer.appendChild(div);
+                  });
 
-    // 체크박스 변경 시 총액 재계산
-    serviceContainer.addEventListener('change', function(e){
-        if(e.target && e.target.classList.contains('form-check-input')){
-            const card = e.target.closest('.form-check');
-            card.classList.toggle('selected', e.target.checked);
-            calculateNights();
-        }
-    });
+                  // 체크박스 변경 시 총액 재계산
+                  serviceContainer.addEventListener('change', function (e) {
+                    if (e.target && e.target.classList.contains('form-check-input')) {
+                      const card = e.target.closest('.form-check');
+                      card.classList.toggle('selected', e.target.checked);
+                      calculateNights();
+                    }
+                  });
 
-    // 모달 열기 전에 계산 (체크된 서비스 포함)
-    calculateNights();
-});
+                  // 모달 열기 전에 계산 (체크된 서비스 포함)
+                  calculateNights();
+                });
 
-            // 모달 열기
-            new bootstrap.Modal(document.getElementById('editReservationModal')).show();
+              // 모달 열기
+              const editResModalEl = document.getElementById('editReservationModal');
+              const editResModal = bootstrap.Modal.getOrCreateInstance(editResModalEl);
+              editResModal.show();
+            });
+        })
+        .catch(err => {
+          console.error(err);
+          alert('예약 정보를 불러오는 중 오류가 발생했습니다.');
         });
-    })
-    .catch(err => {
-        console.error(err);
-        alert('예약 정보를 불러오는 중 오류가 발생했습니다.');
-    });
-}
+    }
 
-// ============================
-// 박 수 및 총액 계산
-// ============================
-function calculateNights() {
-    let checkin = checkinPicker?.selectedDates[0] ?? (document.getElementById('editCheckin').value ? new Date(document.getElementById('editCheckin').value) : null);
-    let checkout = checkoutPicker?.selectedDates[0] ?? (document.getElementById('editCheckout').value ? new Date(document.getElementById('editCheckout').value) : null);
+    // ============================
+    // 박 수 및 총액 계산
+    // ============================
+    function calculateNights() {
+      let checkin = checkinPicker?.selectedDates[0] ?? (document.getElementById('editCheckin').value ? new Date(document.getElementById('editCheckin').value) : null);
+      let checkout = checkoutPicker?.selectedDates[0] ?? (document.getElementById('editCheckout').value ? new Date(document.getElementById('editCheckout').value) : null);
 
-    if(checkin && checkout && checkout > checkin){
-        const nights = Math.ceil((checkout - checkin)/(1000*60*60*24));
+      const roomPriceInput = document.getElementById("editRoomPrice");
+      roomPriceInput.value = roomPrice.toLocaleString() + "원"; 
+
+      if (checkin && checkout && checkout > checkin) {
+        const nights = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
         document.getElementById('editNights').value = nights + '박';
 
         // 체크된 서비스 가격 합산
@@ -586,18 +607,18 @@ function calculateNights() {
         let selectedServices = [];
 
         document.querySelectorAll('#editServiceList input[type="checkbox"]').forEach(cb => {
-            const price = parseInt(cb.dataset.price) || 0;
-            if(cb.checked){
-                serviceTotal += price;
-                selectedServices.push({
-                    name: cb.nextElementSibling.innerText,
-                    price: price
-                });
-            }
+          const price = parseInt(cb.dataset.price) || 0;
+          if (cb.checked) {
+            serviceTotal += price;
+            selectedServices.push({
+              name: cb.nextElementSibling.innerText,
+              price: price
+            });
+          }
         });
 
         const totalPrice = nights * roomPrice + serviceTotal;
-        document.getElementById('editTotalPrice').value = totalPrice;
+        document.getElementById('editTotalPrice').value = totalPrice.toLocaleString() + "원";
 
         // 콘솔 출력
         console.clear();
@@ -607,87 +628,86 @@ function calculateNights() {
         console.log("총합:", totalPrice, "원");
         console.log("=======================");
 
-    } else {
+      } else {
         document.getElementById('editNights').value = '0박';
         document.getElementById('editTotalPrice').value = 0;
+      }
     }
-}
 
-// ============================
-// 예약 수정
-// ============================
-function updateReservation() {
-    const resNo = document.getElementById('editResNo').value;
-    const checkin = document.getElementById('editCheckin').value;
-    const checkout = document.getElementById('editCheckout').value;
-    const totalPrice = document.getElementById('editTotalPrice').value.replace(/,/g,'');
-    const nights = parseInt(document.getElementById('editNights').value.replace('박','')) || 0;
+    // ============================
+    // 예약 수정
+    // ============================
+    function updateReservation() {
+      const resNo = document.getElementById('editResNo').value;
+      const checkin = document.getElementById('editCheckin').value;
+      const checkout = document.getElementById('editCheckout').value;
+      const totalPrice = document.getElementById('editTotalPrice').value.replace(/,/g, '').replace('원', '');
+      const nights = parseInt(document.getElementById('editNights').value.replace('박', '')) || 0;
 
-    const selectedServices = [];
-    document.querySelectorAll('#editServiceList input[type="checkbox"]:checked').forEach(cb => {
+      const selectedServices = [];
+      document.querySelectorAll('#editServiceList input[type="checkbox"]:checked').forEach(cb => {
         selectedServices.push(cb.value);
-    });
+      });
 
-    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    const roomNo = document.getElementById('editRoomNo').value; /* 한줄 추가 */
+      const roomNo = document.getElementById('editRoomNo').value;
 
-    const formData = new FormData();
-    formData.append('checkin', checkin);
-    formData.append('checkout', checkout);
-    formData.append('total', nights);
-    formData.append('totalPrice', totalPrice);
-    formData.append('roomNo', roomNo);  /* 한줄 추가 */
-    selectedServices.forEach(id => formData.append('serviceIds', id));
+      const formData = new FormData();
+      formData.append('checkin', checkin);
+      formData.append('checkout', checkout);
+      formData.append('total', nights);
+      formData.append('totalPrice', totalPrice);
+      formData.append('roomNo', roomNo);
+      selectedServices.forEach(id => formData.append('serviceIds', id));
 
-    fetch(`/api/reservation/update/${resNo}`, {
+      fetch(`/api/reservation/update/${resNo}`, {
         method: 'POST',
         body: formData,
         headers: { [csrfHeader]: csrfToken }
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-        if(data.success) location.reload();
-    })
-    .catch(err => {
-        console.error(err);
-        alert('예약 수정 중 오류가 발생했습니다.');
-    });
-}
+      })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message);
+          if (data.success) location.reload();
+        })
+        .catch(err => {
+          console.error(err);
+          alert('예약 수정 중 오류가 발생했습니다.');
+        });
+    }
 
-// ============================
-// 체크박스 변경 이벤트
-// ============================
-document.getElementById('editServiceList').addEventListener('change', calculateNights);
+    // ============================
+    // 예약 삭제
+    // ============================
+    function deleteReservation() {
+      const resNo = document.getElementById('editResNo').value;
+      if (!confirm("정말 이 예약을 삭제하시겠습니까?")) return;
 
-// ============================
-// 예약 삭제
-// ============================
-function deleteReservation() {
-    const resNo = document.getElementById('editResNo').value;
-    if(!confirm("정말 이 예약을 삭제하시겠습니까?")) return;
+      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-    fetch(`/api/reservation/delete/${resNo}`, {
+      fetch(`/api/reservation/delete/${resNo}`, {
         method: 'DELETE',
         headers: { [csrfHeader]: csrfToken }
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-        if(data.success) location.reload();
-    })
-    .catch(err => {
-        console.error(err);
-        alert('삭제 중 오류가 발생했습니다.');
-    });
-}
-</script>
+      })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message);
+          if (data.success) location.reload();
+        })
+        .catch(err => {
+          console.error(err);
+          alert('삭제 중 오류가 발생했습니다.');
+        });
+    }
 
+    document.getElementById('editReservationModal')
+      .addEventListener('hide.bs.modal', function () {
+        this.blur();
+      });
+  </script>
 </body>
 
 </html>

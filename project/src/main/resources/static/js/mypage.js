@@ -48,6 +48,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error('=== 사용자 정보 로드 실패 ===:', error);
         alert('정보를 불러오는 중 오류 발생. 로그인 상태를 확인하세요.');
     }
+
+    document.getElementById('editModal')
+        .addEventListener('hide.bs.modal', function () {
+            this.blur();
+        });
 });
 
 /* 모달 열릴 때 input 자동 세팅 */
@@ -110,15 +115,20 @@ async function updateMyInfo() {
         document.getElementById('birth').textContent = body.birth;
         document.getElementById('address').textContent = body.address;
         document.getElementById('detailAddress').textContent = body.detailAddress;
-        
+
 
         // 모달 닫기
-        const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+        const editModalEl = document.getElementById('editModal');
+        editModalEl.blur();
+        const modal = bootstrap.Modal.getInstance(editModalEl);
         if (modal) {
+            editModalEl.addEventListener('hidden.bs.modal', () => {
+                alert('정보가 수정되었습니다.');
+            }, { once: true });
             modal.hide();
+        } else {
+            alert('정보가 수정 되었습니다.');
         }
-
-        alert('정보가 수정되었습니다.');
     } catch (error) {
         console.error('수정 중 오류 발생:', error);
         alert('수정 중 오류가 발생했습니다.');
@@ -160,11 +170,11 @@ async function deleteMyAccount() {
 /* 전화번호 자동 하이푼 */
 const phoneInput = document.getElementById('editPhone');
 
-phoneInput.addEventListener('input', function(e) {
+phoneInput.addEventListener('input', function (e) {
     let number = e.target.value.replace(/\D/g, ''); // 숫자만 추출
-    if(number.length > 3 && number.length <= 7){
+    if (number.length > 3 && number.length <= 7) {
         number = number.replace(/(\d{3})(\d+)/, '$1-$2');
-    } else if(number.length > 7){
+    } else if (number.length > 7) {
         number = number.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3');
     }
     e.target.value = number;
@@ -174,7 +184,7 @@ phoneInput.addEventListener('input', function(e) {
 
 function searchAddress() {
     new daum.Postcode({
-        oncomplete: function(data) {
+        oncomplete: function (data) {
             // 도로명 주소를 input에 넣음
             document.getElementById('editAddress').value = data.roadAddress;
         }
