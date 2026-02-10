@@ -38,7 +38,7 @@ async function loadPetCards() {
                     <span class="pet-size">${pet.species} ${pet.size}견 ${genderIcon}</span>
                     <span class="pet-age">${pet.age}살  ${pet.weight}kg<span>
                 </div>
-                <button class="btn btn-primary"
+                <button class="btn btn-outline-secondary"
                     onclick="openEditPetModal(${pet.no})">
                     수정하기
                 </button>
@@ -56,7 +56,7 @@ async function loadPetCards() {
    추가 모달 열기
 ========================= */
 async function openAddPetModal() {
-    const modal = new bootstrap.Modal(
+    const modal = bootstrap.Modal.getOrCreateInstance(
         document.getElementById('addPetModal')
     );
 
@@ -94,17 +94,18 @@ async function openEditPetModal(petNo) {
         document.getElementById('petEtc').value = pet.etc || '';
 
         // 이미지 미리보기
-        const preview = document.getElementById('profilePreview');
-        if (pet.profileImgBase64) {
-            preview.src = pet.profileImgBase64;
-            preview.style.display = 'block';
-        } else {
-            preview.style.display = 'none';
-        }
+        const preview = document.getElementById('editProfilePreview');
+        const boxEdit = document.getElementById('editUploadBox');
 
-        new bootstrap.Modal(
-            document.getElementById('editPetModal')
-        ).show();
+        preview.src = `/api/pets/image/${petNo}`;
+        preview.style.display = 'block';
+        preview.style.opacity = '1';
+
+        boxEdit.style.display = 'none';
+
+        const editModalEl = document.getElementById('editPetModal');
+        const editModal = bootstrap.Modal.getOrCreateInstance(editModalEl);
+        editModal.show();
 
     } catch (err) {
         console.error(err);
@@ -179,11 +180,28 @@ async function deletePetUI() {
    모달 닫기 + 초기화
 ========================= */
 function closePetModal() {
+    document.activeElement.blur();
     const addModalEl = document.getElementById('addPetModal');
     const addModal = bootstrap.Modal.getInstance(addModalEl);
 
     const editModalEl = document.getElementById('editPetModal');
     const editModal = bootstrap.Modal.getInstance(editModalEl);
+
+    const editBox = document.getElementById('editUploadBox');
+    if (editBox) {
+        editBox.style.display = 'flex';
+        editBox.style.opacity = '1';
+        editBox.style.transform = 'scale(1)';
+        editBox.style.pointerEvents = 'auto';
+    }
+
+    const addBox = document.getElementById('addUploadBox');
+    if (addBox) {
+        addBox.style.display = 'flex';
+        addBox.style.opacity = '1';
+        addBox.style.transform = 'scale(1)';
+        addBox.style.pointerEvents = 'auto';
+    }
 
     if (addModal) addModal.hide();
     if (editModal) editModal.hide();
@@ -200,7 +218,7 @@ function closePetModal() {
         addPreview.style.display = 'none';
     }
 
-    const editPreview = document.getElementById('profilePreview');
+    const editPreview = document.getElementById('editProfilePreview');
     if (editPreview) {
         editPreview.src = '';
         editPreview.style.display = 'none';
@@ -208,44 +226,42 @@ function closePetModal() {
 
     document.getElementById('petNo').value = '';
     document.getElementById('addPetProfile').value = '';
-    document.getElementById('petProfile').value = '';
+    document.getElementById('editPetProfile').value = '';
 }
 
 document.getElementById('addPetModal')
-  .addEventListener('hidden.bs.modal', () => {
-    const form = document.getElementById('addPetForm');
-    form.reset();
+    .addEventListener('hide.bs.modal', () => {
+        document.activeElement.blur();
 
-    const img = document.getElementById('addProfilePreview');
-    img.src = '';
-    img.style.display = 'none';
+        const form = document.getElementById('addPetForm');
+        form.reset();
 
-    document.getElementById('addPetProfile').value = '';
-});
+        const img = document.getElementById('addProfilePreview');
+        img.src = '';
+        img.style.display = 'none';
+
+        document.getElementById('addPetProfile').value = '';
+
+        const box = document.getElementById('addUploadBox');
+        if (box) {
+            box.style.display = 'flex';
+            box.style.opacity = '1';
+            box.style.transform = 'scale(1)';
+            box.style.pointerEvents = 'auto';
+        }
+    });
 
 /* =========================
    이미지 미리보기
 ========================= */
 async function setupImagePreview() {
-    const inputEdit = document.getElementById('petProfile');
-    const previewEdit = document.getElementById('profilePreview');
-
     const inputAdd = document.getElementById('addPetProfile');
     const previewAdd = document.getElementById('addProfilePreview');
+    const boxAdd = document.getElementById('addUploadBox');
 
-    if (inputEdit && previewEdit) {
-        inputEdit.addEventListener('change', e => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = ev => {
-                previewEdit.src = ev.target.result;
-                previewEdit.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        });
-    }
+    const inputEdit = document.getElementById('editPetProfile');
+    const previewEdit = document.getElementById('editProfilePreview');
+    const boxEdit = document.getElementById('editUploadBox');
 
     if (inputAdd && previewAdd) {
         inputAdd.addEventListener('change', e => {
@@ -254,14 +270,48 @@ async function setupImagePreview() {
 
             const reader = new FileReader();
             reader.onload = ev => {
-                previewAdd.src = ev.target.result;
-                previewAdd.style.display = 'block';
+                boxAdd.style.opacity = '0';
+                boxAdd.style.transform = 'scale(0.92)';
+                boxAdd.style.pointerEvents = 'none';
+
+                setTimeout(() => {
+                    boxAdd.style.display = 'none';
+                    previewAdd.src = ev.target.result;
+                    previewAdd.style.display = 'block';
+
+                    requestAnimationFrame(() => requestAnimationFrame(() => {
+                        previewAdd.style.opacity = '1';
+                    }));
+                }, 250);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    if (inputEdit && previewEdit) {
+        inputEdit.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = ev => {
+                boxEdit.style.opacity = '0';
+                boxEdit.style.transform = 'scale(0.92)';
+                boxEdit.style.pointerEvents = 'none';
+
+                setTimeout(() => {
+                    boxEdit.style.display = 'none';
+                    previewEdit.src = ev.target.result;
+                    previewEdit.style.display = 'block';
+
+                    requestAnimationFrame(() => requestAnimationFrame(() => {
+                        previewEdit.style.opacity = '1';
+                    }));
+                }, 250);
             };
             reader.readAsDataURL(file);
         });
     }
 }
-
 
 /* =========================
    초기화
@@ -274,4 +324,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('addPetForm').addEventListener('submit', handlePetFormSubmit);
     document.getElementById('editPetForm').addEventListener('submit', handlePetEditSubmit);
+    document.getElementById('editPetModal')
+        .addEventListener('hide.bs.modal', function () {
+            this.blur();
+        });
 });
+
