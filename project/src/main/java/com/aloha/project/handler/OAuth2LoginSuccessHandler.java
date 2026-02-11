@@ -23,34 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    /* @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, 
-                                       HttpServletResponse response,
-                                       Authentication authentication) throws IOException, ServletException {
-        
-        log.info("========== OAuth2 로그인 성공 ==========");
-        
-        // OAuth2User에서 정보 가져오기
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        
-        String socialId = oAuth2User.getAttribute("id").toString();
-        String email = oAuth2User.getAttribute("email");
-        
-        log.info("소셜 ID: {}", socialId);
-        log.info("이메일: {}", email);
-        log.info("권한: {}", authentication.getAuthorities());
-        
-        // 세션에 사용자 정보 저장 (필요시)
-        HttpSession session = request.getSession();
-        session.setAttribute("socialId", socialId);
-        session.setAttribute("email", email);
-        session.setAttribute("loginType", "oauth2");
-        
-        // 메인 페이지로 리다이렉트
-        setDefaultTargetUrl("/");
-        super.onAuthenticationSuccess(request, response, authentication);
-    } */
-
     private final UserSocialService userSocialService;
 
     // 생성자 주입
@@ -93,7 +65,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
-        // 세션에도 User 저장 (선택)
+        // 세션에도 User 저장
         request.getSession().setAttribute("user", user);
 
         // 리다이렉트 설정

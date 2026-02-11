@@ -29,8 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@RestController  // JSON 반환용
-@RequestMapping("/api/users")  // API 경로
+@RestController
+@RequestMapping("/api/users") 
 @RequiredArgsConstructor
 public class UserApiController {
 

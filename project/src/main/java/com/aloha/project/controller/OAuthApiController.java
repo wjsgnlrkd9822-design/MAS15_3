@@ -1,6 +1,5 @@
 package com.aloha.project.controller;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -133,9 +132,6 @@ public class OAuthApiController {
             searchParam.setSocialId(socialId);
             
             UserSocial userSocial = userSocialService.selectSocial(searchParam);
-            
-            // 여기서 실제 연동 해제 로직 구현
-            // 예: userSocialService.delete(userSocial.getNo());
             
             response.put("success", true);
             response.put("message", "카카오 계정 연동 해제 완료");
