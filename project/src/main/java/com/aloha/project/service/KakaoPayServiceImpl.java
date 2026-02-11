@@ -17,6 +17,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class KakaoPayServiceImpl implements KakaoPayService {
 
+    private final ReservationService reservationService;
+
     @Value("${kakaopay.secret-key}")
     private String secretKey;
 
@@ -93,6 +95,8 @@ public class KakaoPayServiceImpl implements KakaoPayService {
                 .block();
 
         log.info("카카오페이 결제 승인 완료 - aid: {}", response.getAid());
+
+        reservationService.updateReservationStatus(resNo, "결제완료");
 
         // 세션 정리
         session.removeAttribute("tid");

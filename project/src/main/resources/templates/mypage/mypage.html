@@ -329,8 +329,8 @@
             <th>반려견 이름</th>
             <th>체크인</th>
             <th>체크아웃</th>
-            <th>상태</th>
             <th>총금액</th>
+            <th>상태</th>
             <th>관리</th>
             <th>결제</th>
           </tr>
@@ -341,18 +341,20 @@
             <td th:text="${res.petName}">반려견 이름</td>
             <td th:text="${res.checkin}">2024-07-01</td>
             <td th:text="${res.checkout}">2024-07-05</td>
-            <td th:text="${res.status}"></td>
             <td th:text="${#numbers.formatInteger(res.totalPrice, 3, 'COMMA')} + '원'">총금액</td>
+            <td th:text="${res.status}"></td>
             <td>
               <!-- 안전하게 모달 열기 -->
               <button class="btn btn-outline-secondary" type="button"
-                th:onclick="'openEditModal(' + ${res.resNo} + ')'">
+                th:onclick="'openEditModal(' + ${res.resNo} + ')'"
+                th:disabled="${res.status == '결제완료'}">
                 수정
               </button>
             </td>
             <td>
               <button class="btn btn-warning" type="button"
-                      th:onclick="'payReservation(' + ${res.resNo} + ',' + ${res.totalPrice} + ')'">
+                      th:onclick="'payReservation(' + ${res.resNo} + ',' + ${res.totalPrice} + ')'"
+                      th:disabled="${res.status == '결제완료'}">
                 결제
               </button>
             </td>
