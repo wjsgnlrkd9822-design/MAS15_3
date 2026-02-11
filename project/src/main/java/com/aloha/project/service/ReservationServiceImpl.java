@@ -332,4 +332,20 @@ public class ReservationServiceImpl implements ReservationService {
     public List<MonthlySalesDto> getMonthlySales() {
        return reservationMapper.getMonthlySales();
     }
+
+    /** tid 저장 (결제 완료 시) */
+    @Override
+    @Transactional
+    public void updateTid(Long resNo, String tid) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("resNo", resNo);
+        params.put("tid", tid);
+        reservationMapper.updateTid(params);
+    }
+
+    /** tid 조회 (환불 시) */
+    @Override
+    public String getTidByResNo(Long resNo) {
+        return reservationMapper.getTidByResNo(resNo);
+    }
 }

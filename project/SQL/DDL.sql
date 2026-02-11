@@ -1,4 +1,4 @@
--- Active: 1767840691076@@127.0.0.1@3306 @aloha
+-- Active: 1767840807398@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 drop TABLE IF EXISTS `users`;
@@ -117,6 +117,7 @@ SELECT * FROM pets
     `res_time` TIME NOT NULL COMMENT '예약 시간',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
     `status` VARCHAR(20) NOT NULL DEFAULT '예약중' COMMENT '예약상태 (예약중/결제완료)',  /* 예약 추가 */
+    `tid` VARCHAR(100) COMMENT '카카오페이 거래 ID',
 
     FOREIGN KEY (user_no) REFERENCES users(no)
     on update CASCADE
@@ -185,10 +186,6 @@ CREATE Table `trainers`(
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-
-INSERT INTO `hotelrooms` (cctv_url)
-VALUES
-('https://www.youtube.com/watch?v=8dYNg7bmS5c');
 
 UPDATE hotelrooms
 SET cctv_url = 'https://www.youtube.com/watch?v=8dYNg7bmS5c'

@@ -114,4 +114,10 @@ public interface ReservationMapper {
      * @return 활성 예약 정보 (없으면 null)
      */
     ReservationDto selectActiveReservation(@Param("userNo") Long userNo, @Param("today") LocalDate today);
+
+    /** ✅ tid 저장 (결제 완료 시) */
+    int updateTid(Map<String, Object> params);
+
+    /** ✅ tid 조회 (환불 시) */
+    String getTidByResNo(@Param("resNo") Long resNo);
 }

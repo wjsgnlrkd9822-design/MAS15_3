@@ -327,4 +327,18 @@
         WHERE rs.res_no = #{resNo}
     </select>
 
+    <!-- ✅ tid 저장 (결제 완료 시) -->
+<update id="updateTid" parameterType="map">
+    UPDATE reservations
+    SET tid = #{tid}
+    WHERE res_no = #{resNo}
+</update>
+
+<!-- ✅ tid 조회 (환불 시) -->
+<select id="getTidByResNo" resultType="String" parameterType="long">
+    SELECT tid
+    FROM reservations
+    WHERE res_no = #{resNo}
+</select>
+
 </mapper>
