@@ -19,7 +19,7 @@ async function loadPetCards() {
 
         if (!data.success || !data.pets || data.pets.length === 0) {
             container.innerHTML =
-                '<p class="text-center text-muted">등록된 반려견이 없습니다.</p>';
+                '<h5 class="text-center  text-muted">등록된 반려견이 없습니다.</h5>';
             return;
         }
 

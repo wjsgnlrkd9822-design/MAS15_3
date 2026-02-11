@@ -14,7 +14,7 @@
     justify-content: center;
     margin: 40px 0;
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
     padding: 32px 40px;
     background-color: #ffffff;
     border-radius: 16px;
@@ -440,7 +440,7 @@ body {
 
 .mypage-header-inner {
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
     padding: 32px 40px;
     background: #fff;
     border: 1px solid #d1d5db;
@@ -469,7 +469,7 @@ body {
 
 .mypage-info-inner {
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
     padding: 32px 40px;
     background: #fff;
     border: 1px solid #d1d5db;
@@ -493,7 +493,7 @@ body {
 
 .mypage-pets-inner {
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
     padding: 32px 40px;
     background: #ffffff;
     border: 1px solid #d1d5db;
@@ -535,7 +535,7 @@ body {
 }
 
 .mypage-reservations-inner {
-    max-width: 900px;
+    max-width: 1000px;
     margin: auto;
     padding: 24px;
     background: #fff;

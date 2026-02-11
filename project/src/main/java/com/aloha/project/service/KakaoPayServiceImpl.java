@@ -1,6 +1,7 @@
 package com.aloha.project.service;
 
 import com.aloha.project.dto.KakaoPayApproveResponse;
+import com.aloha.project.dto.KakaoPayCancelResponse;
 import com.aloha.project.dto.KakaoPayReadyRequest;
 import com.aloha.project.dto.KakaoPayReadyResponse;
 import jakarta.servlet.http.HttpSession;
@@ -30,6 +31,9 @@ public class KakaoPayServiceImpl implements KakaoPayService {
 
     @Value("${kakaopay.approve-url}")
     private String approveUrl;
+
+    @Value("${kakaopay.cancel-url}")
+    private String cancelUrl;
 
     // 결제 성공/실패/취소 URL
     private static final String APPROVAL_URL = "http://localhost:8080/kakaopay/success";
@@ -98,11 +102,43 @@ public class KakaoPayServiceImpl implements KakaoPayService {
 
         reservationService.updateReservationStatus(resNo, "결제완료");
 
+        reservationService.updateTid(resNo, tid);
+
         // 세션 정리
         session.removeAttribute("tid");
         session.removeAttribute("resNo");
 
         return response;
     }
+
+    // 결제 취소 (Cancel)
+@Override
+public KakaoPayCancelResponse cancel(Long resNo, int cancelAmount) {
+
+    // DB에서 tid 조회
+    String tid = reservationService.getTidByResNo(resNo);
+
+    KakaoPayCancelResponse response = WebClient.create()
+            .post()
+            .uri(cancelUrl)
+            .header(HttpHeaders.AUTHORIZATION, "SECRET_KEY " + secretKey)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(java.util.Map.of(
+                    "cid",            cid,
+                    "tid",            tid,
+                    "cancel_amount",  cancelAmount,
+                    "cancel_tax_free_amount", 0
+            ))
+            .retrieve()
+            .bodyToMono(KakaoPayCancelResponse.class)
+            .block();
+
+    log.info("카카오페이 환불 완료 - tid: {}", tid);
+
+    // status 환불로 변경
+    reservationService.updateReservationStatus(resNo, "환불");
+
+    return response;
+}
 
 }

@@ -1,6 +1,7 @@
 package com.aloha.project.controller;
 
 import com.aloha.project.dto.KakaoPayApproveResponse;
+import com.aloha.project.dto.KakaoPayCancelResponse;
 import com.aloha.project.dto.KakaoPayReadyResponse;
 import com.aloha.project.service.KakaoPayService;
 import jakarta.servlet.http.HttpSession;
@@ -18,7 +19,7 @@ public class KakaoPayController {
 
     private final KakaoPayService kakaoPayService;
 
-    // ✅ 결제 준비 (마이페이지 결제 버튼 클릭 시)
+    // 결제 준비 (마이페이지 결제 버튼 클릭 시)
     @PostMapping("/ready")
 public String ready(@RequestParam("resNo") Long resNo,
                     @RequestParam("totalPrice") int totalPrice,
@@ -28,7 +29,7 @@ public String ready(@RequestParam("resNo") Long resNo,
     return "redirect:" + response.getNext_redirect_pc_url();
 }
 
-    // ✅ 결제 성공
+    // 결제 성공
     @GetMapping("/success")
     public String success(@RequestParam("pg_token") String pgToken,
                           HttpSession session,
@@ -39,21 +40,35 @@ public String ready(@RequestParam("resNo") Long resNo,
 
         log.info("결제 완료 - 상품명: {}, 금액: {}", response.getItem_name(), response.getAmount().getTotal());
 
-        return "kakaopay/success";  // 결제 완료 페이지
+        return "kakaopay/success";
     }
 
-    // ✅ 결제 실패
+    // 결제 실패
     @GetMapping("/fail")
     public String fail() {
         log.warn("결제 실패");
-        return "kakaopay/fail";  // 결제 실패 페이지
+        return "kakaopay/fail";
     }
 
-    // ✅ 결제 취소
+    // 결제 취소
     @GetMapping("/cancel")
     public String cancel() {
         log.warn("결제 취소");
-        return "kakaopay/cancel";  // 결제 취소 페이지
+        return "kakaopay/cancel";
+    }
+
+    // 환불
+    @PostMapping("/refund")
+    public String refund(@RequestParam("resNo") Long resNo,
+                        @RequestParam("cancelAmount") int cancelAmount,
+                        Model model) {
+
+        KakaoPayCancelResponse response = kakaoPayService.cancel(resNo, cancelAmount);
+        model.addAttribute("cancel", response);
+
+        log.info("환불 완료 - resNo: {}, 금액: {}", resNo, cancelAmount);
+
+        return "kakaopay/refund";
     }
 
 }
