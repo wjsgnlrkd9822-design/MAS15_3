@@ -21,10 +21,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.HotelService;
+import com.aloha.project.dto.MonthlySalesDto;
 import com.aloha.project.dto.Notice;
 import com.aloha.project.dto.PetStatus;
 import com.aloha.project.dto.Trainer;
 import com.aloha.project.dto.User;
+import com.aloha.project.dto.userTotalSales;
 import com.aloha.project.service.AddtionalService;
 import com.aloha.project.service.FileService;
 import com.aloha.project.service.NoticeService;
@@ -51,10 +53,18 @@ public class AdminController {
     
     @GetMapping("")
     public String admin(Model model) {
+
         Long totalSales = reservationService.getTotalSales();
+        List<userTotalSales> memberSales = reservationService.getMemberTotalSales();
+        List<MonthlySalesDto> monthlySales = reservationService.getMonthlySales();
+
         model.addAttribute("totalSales", totalSales);
+        model.addAttribute("memberSales", memberSales);
+        model.addAttribute("monthlySales", monthlySales);
+
         return "admin/ad_main";
     }
+
 
     @GetMapping("/service")
     public String service(Model model) {

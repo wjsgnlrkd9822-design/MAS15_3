@@ -9,7 +9,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.HotelService;
+import com.aloha.project.dto.MonthlySalesDto;
 import com.aloha.project.dto.ReservationDto;
+import com.aloha.project.dto.userTotalSales;
 
 @Mapper
 public interface ReservationMapper {
@@ -101,6 +103,8 @@ public interface ReservationMapper {
     
     int checkRoomAvailabilityForUpdate(Map<String, Object> params);
 
+    List<userTotalSales> getMemberTotalSales();
+    List<MonthlySalesDto> getMonthlySales();
     /**
      * ⭐ 활성화된 예약 조회 (CCTV용)
      * - 현재 날짜가 체크인~체크아웃 사이에 있는 예약

@@ -111,6 +111,36 @@
 
     </select>
 
+<select id="getMemberTotalSales"
+        resultType="com.aloha.project.dto.userTotalSales">
+
+    SELECT 
+        r.user_no AS userNo,
+        u.name AS name,
+        SUM(r.total_price) AS totalSales
+    FROM reservations r
+    JOIN users u ON r.user_no = u.no
+
+    GROUP BY r.user_no
+    ORDER BY totalSales DESC
+
+</select>
+
+
+<select id="getMonthlySales"
+        resultType="com.aloha.project.dto.MonthlySalesDto">
+
+    SELECT 
+        YEAR(res_date) AS year,
+        MONTH(res_date) AS month,
+        SUM(total_price) AS totalSales
+    FROM reservations
+
+    GROUP BY YEAR(res_date), MONTH(res_date)
+    ORDER BY year DESC, month DESC
+
+</select>
+
     <!-- ✅ 회원별 예약 조회 (status 추가) + cctvUrl 추가 -->
     <select id="findByUserNo" resultType="com.aloha.project.dto.ReservationDto">
         SELECT 

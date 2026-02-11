@@ -1,4 +1,8 @@
--- Active: 1767920835424@@127.0.0.1@3306@aloha
+<<<<<<< HEAD
+-- Active: 1767840691076@@127.0.0.1@3306 @aloha
+=======
+-- Active: 1767840691076@@127.0.0.1@3306@aloha
+>>>>>>> main
 SET FOREIGN_KEY_CHECKS = 0;
 
 drop TABLE IF EXISTS `users`;
@@ -135,8 +139,6 @@ SELECT * FROM pets
 );
 
 
- SELECT * FROM hotelservices;
-
 
        
 
@@ -191,8 +193,8 @@ CREATE Table `trainers`(
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-SELECT * FROM hotelrooms
 
+DROP TABLE IF EXISTS `hotelrooms`;
 
 -- ⭐ hotelrooms 테이블에 cctv_url 컬럼 추가
 ALTER TABLE `hotelrooms`
@@ -229,3 +231,31 @@ CREATE TABLE pet_status (
 INSERT INTO pet_status (pet_no, status, next_schedule)
 VALUES
 (5, 'RESTING', '16:00 산책')
+
+
+-- 1. 현재 예약 중인 데이터 확인
+SELECT 
+    r.res_no,
+    r.res_date,
+    r.checkout_date,
+    r.status,
+    p.no AS pet_no,
+    p.name AS pet_name,
+    ps.status AS pet_status
+FROM reservations r
+JOIN pets p ON r.pet_no = p.no
+LEFT JOIN pet_status ps ON p.no = ps.pet_no
+WHERE r.status = '예약중';
+
+-- 2. 날짜 조건 확인
+SELECT 
+    CURDATE() as today,
+    r.res_no,
+    r.res_date,
+    r.checkout_date,
+    CASE 
+        WHEN CURDATE() BETWEEN r.res_date AND r.checkout_date THEN 'YES'
+        ELSE 'NO'
+    END as is_active
+FROM reservations r
+WHERE r.status = '예약중';
