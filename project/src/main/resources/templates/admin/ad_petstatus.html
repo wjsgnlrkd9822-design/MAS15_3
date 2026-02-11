@@ -66,6 +66,10 @@
             background: #e8f5e9;
             color: #388e3c;
         }
+        .status-brain {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
         .status-none {
             background: #f5f5f5;
             color: #757575;
@@ -164,62 +168,62 @@
                                 <th:block th:if="${petList != null and !petList.isEmpty()}">
                                     <tr th:each="pet : ${petList}">
                                         <td>
-                                            <strong th:text="${pet.petName}">멍멍이</strong>
+                                            <strong th:text="${pet['petName']}">멍멍이</strong>
                                         </td>
                                         <td>
-                                            <span th:text="${pet.petSpecies}">포메라니안</span>
+                                            <span th:text="${pet['petSpecies']}">포메라니안</span>
                                             <br>
-                                            <small class="text-muted" th:text="${pet.petSize}">소형</small>
+                                            <small class="text-muted" th:text="${pet['petSize']}">소형</small>
                                         </td>
                                         <td>
-                                            <span th:text="${pet.ownerName}">홍길동</span>
+                                            <span th:text="${pet['ownerName']}">홍길동</span>
                                             <br>
-                                            <small class="text-muted" th:text="${pet.ownerPhone}">010-1234-5678</small>
+                                            <small class="text-muted" th:text="${pet['ownerPhone']}">010-1234-5678</small>
                                         </td>
                                         <td>
-                                            <span th:text="${pet.roomType}">Small Dog</span>
+                                            <span th:text="${pet['roomType']}">Small Dog</span>
                                             <br>
-                                            <small class="text-muted" th:text="${pet.roomImg}">room_301.jpg</small>
+                                            <small class="text-muted" th:text="${pet['roomImg']}">room_301.jpg</small>
                                         </td>
                                         <td>
                                             <small>
                                                 <i class="fa-solid fa-calendar-check text-success"></i>
-                                                <span th:text="${pet.checkin}">2025-02-10</span>
+                                                <span th:text="${pet['checkin']}">2025-02-10</span>
                                                 <br>
                                                 <i class="fa-solid fa-calendar-xmark text-danger"></i>
-                                                <span th:text="${pet.checkout}">2025-02-12</span>
+                                                <span th:text="${pet['checkout']}">2025-02-12</span>
                                             </small>
                                         </td>
                                         <td>
-                                            <span th:if="${pet.petStatus == null}" class="status-badge status-none">
+                                            <span th:if="${pet['petStatus'] == null}" class="status-badge status-none">
                                                 미설정
                                             </span>
-                                            <span th:if="${pet.petStatus == 'RESTING'}" class="status-badge status-resting">
+                                            <span th:if="${pet['petStatus'] == 'RESTING'}" class="status-badge status-resting">
                                                 <i class="fa-solid fa-bed"></i> 휴식중
                                             </span>
-                                            <span th:if="${pet.petStatus == 'PLAYING'}" class="status-badge status-playing">
+                                            <span th:if="${pet['petStatus'] == 'PLAYING'}" class="status-badge status-playing">
                                                 <i class="fa-solid fa-futbol"></i> 놀이중
                                             </span>
-                                            <span th:if="${pet.petStatus == 'EATING'}" class="status-badge status-eating">
+                                            <span th:if="${pet['petStatus'] == 'EATING'}" class="status-badge status-eating">
                                                 <i class="fa-solid fa-utensils"></i> 식사중
                                             </span>
-                                            <span th:if="${pet.petStatus == 'WALKING'}" class="status-badge status-walking">
+                                            <span th:if="${pet['petStatus'] == 'WALKING'}" class="status-badge status-walking">
                                                 <i class="fa-solid fa-person-walking"></i> 산책중
                                             </span>
-                                            <span th:if="${pet.petStatus == 'BRAIN'}" class="status-badge status-brain">
+                                            <span th:if="${pet['petStatus'] == 'BRAIN'}" class="status-badge status-brain">
                                                 <i class="fa-solid fa-graduation-cap"></i> 교육 프로그램 진행중
                                             </span>
                                         </td>
                                         <td>
-                                            <span th:text="${pet.nextSchedule != null ? pet.nextSchedule : '-'}">16:00 산책</span>
+                                            <span th:text="${pet['nextSchedule'] != null ? pet['nextSchedule'] : '-'}">16:00 산책</span>
                                         </td>
                                         <td>
-                                            <!-- ⭐ 수정: pet.petNo 사용 (반려견 번호) -->
+                                            <!-- ⭐ 수정: pet['petNo'] 사용 (반려견 번호) -->
                                             <button class="btn btn-sm btn-primary edit-pet-btn" 
-                                                    th:attr="data-pet-no=${pet.petNo}, 
-                                                             data-pet-name=${pet.petName}, 
-                                                             data-pet-status=${pet.petStatus}, 
-                                                             data-next-schedule=${pet.nextSchedule}">
+                                                    th:attr="data-pet-no=${pet['petNo']}, 
+                                                             data-pet-name=${pet['petName']}, 
+                                                             data-pet-status=${pet['petStatus']}, 
+                                                             data-next-schedule=${pet['nextSchedule']}">
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
                                         </td>

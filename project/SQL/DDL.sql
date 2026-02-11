@@ -187,6 +187,14 @@ CREATE Table `trainers`(
 );
 
 
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+DROP TABLE IF EXISTS `hotelrooms`;
+
+-- ⭐ hotelrooms 테이블에 cctv_url 컬럼 추가
+ALTER TABLE `hotelrooms`
+ADD COLUMN `cctv_url` VARCHAR(500) DEFAULT NULL COMMENT '유튜브 라이브 CCTV URL';
 
 -- ⭐ 샘플 CCTV URL 데이터 (실제 유튜브 라이브 URL로 교체 필요)
 -- 예시: https://www.youtube.com/watch?v=VIDEO_ID 또는 https://www.youtube.com/live/VIDEO_ID
@@ -207,9 +215,6 @@ UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' W
 UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 12; -- 소형견실 303
 UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 13; -- 소형견실 디럭스 304
 UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 14; -- 소형견실 디럭스 305
-
--- ⭐ 확인 쿼리
-SELECT room_no, room_type, img, cctv_url FROM hotelrooms;
 
 
 CREATE TABLE pet_status (
@@ -250,4 +255,3 @@ SELECT
     END as is_active
 FROM reservations r
 WHERE r.status = '예약중';
-SET FOREIGN_KEY_CHECKS = 1;
