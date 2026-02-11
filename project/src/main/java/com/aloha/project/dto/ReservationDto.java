@@ -19,7 +19,10 @@ public class ReservationDto {
     private Long roomNo;
     private Long userNo;
     private String resTime;
-    private String status;          /* 예약 상태 추가 */
+    private String status;          /* 예약 상태 */
+    private String cctvUrl;         // ⭐ CCTV URL 추가
+    private String roomImg;         // ⭐ 객실 이미지 추가
+    private PetStatus petStatus;    // ⭐ 반려견 상태 정보 추가
 
     private List<Long> serviceIds;
     private List<HotelService> services;

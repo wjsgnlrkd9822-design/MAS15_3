@@ -12,11 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.HotelService;
+import com.aloha.project.dto.MonthlySalesDto;
 import com.aloha.project.dto.ReservationDto;
+import com.aloha.project.dto.userTotalSales;
 import com.aloha.project.mapper.ReservationMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
@@ -298,5 +302,34 @@ public class ReservationServiceImpl implements ReservationService {
         return true;
     }
 
-    
+    /**
+     * ⭐ 활성화된 예약 조회 (CCTV용)
+     */
+    @Override
+    public ReservationDto getActiveReservation(Long userNo, LocalDate today) {
+        try {
+            ReservationDto reservation = reservationMapper.selectActiveReservation(userNo, today);
+            
+            // nights 계산
+            if (reservation != null && reservation.getCheckin() != null && reservation.getCheckout() != null) {
+                long days = ChronoUnit.DAYS.between(reservation.getCheckin(), reservation.getCheckout());
+                reservation.setNights((int) days);
+            }
+            
+            return reservation;
+        } catch (Exception e) {
+            log.error("활성 예약 조회 중 오류 발생", e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<userTotalSales> getMemberTotalSales() {
+        return reservationMapper.getMemberTotalSales();
+    }
+
+    @Override
+    public List<MonthlySalesDto> getMonthlySales() {
+       return reservationMapper.getMonthlySales();
+    }
 }

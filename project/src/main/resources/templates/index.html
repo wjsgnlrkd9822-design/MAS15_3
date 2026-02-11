@@ -64,6 +64,280 @@
             }
         }
         
+        /* ⭐ CCTV 플로팅 버튼 스타일 */
+        .cctv-floating-btn {
+            position: fixed;
+            bottom: 110px; /* 공지사항 버튼 위에 배치 */
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: all 0.3s ease;
+            animation: cctv-pulse 2s infinite;
+        }
+        
+        .cctv-floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6);
+        }
+        
+        .cctv-floating-btn i {
+            color: white;
+            font-size: 26px;
+        }
+        
+        .cctv-live-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #27ae60;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes cctv-pulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 25px rgba(231, 76, 60, 0.7);
+            }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* ⭐ CCTV 모달 스타일 */
+.cctv-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 2000;
+    animation: fadeIn 0.3s;
+}
+
+.cctv-modal-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ⭐ 모달 크기 최적화 */
+.cctv-modal {
+    background: #1a1a1a;
+    border-radius: 16px;
+    width: 92%;
+    max-width: 1100px;
+    max-height: 82vh;
+    overflow: hidden;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+    animation: slideUp 0.4s;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ⭐ 헤더 */
+.cctv-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    border-bottom: 2px solid #c0392b;
+    flex-shrink: 0;
+}
+
+.cctv-modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cctv-modal-header .live-indicator {
+    background: #27ae60;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: blink 1.5s infinite;
+}
+
+.cctv-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.cctv-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ⭐ 바디 */
+.cctv-modal-body {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ⭐ 영상 영역 제한 */
+.cctv-video-container {
+    position: relative;
+    width: 100%;
+    max-height: 46vh;
+    background: #000;
+}
+
+.cctv-video-container::before {
+    content: "";
+    display: block;
+    padding-top: 56.25%; /* 16:9 */
+}
+
+.cctv-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* ⭐ 정보 영역 스크롤 */
+.cctv-info {
+    padding: 16px 20px;
+    background: #2c2c2c;
+    color: #fff;
+    overflow-y: auto;
+    max-height: 34vh;
+}
+
+/* --- 정보 UI --- */
+.cctv-room-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.cctv-room-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.cctv-reservation-info {
+    display: flex;
+    gap: 16px;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.cctv-reservation-info span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ⭐ 반려견 상태 */
+.pet-status-container {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 12px;
+    border: 2px solid #333;
+}
+
+.pet-status-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.pet-status-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #fff;
+}
+
+.pet-status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.pet-status-item {
+    background: #ffffff;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border-left: 3px solid #c0392b;
+}
+
+.pet-status-label {
+    font-size: 0.8rem;
+    color: #000;
+    margin-bottom: 4px;
+}
+
+.pet-status-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000;
+}
+
+/* ⭐ 예약 없음 */
+.cctv-no-reservation {
+    padding: 40px 20px;
+    text-align: center;
+    color: #999;
+}
+
+.cctv-no-reservation h4 {
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+        
         /* 모달 오버레이 */
         .notice-modal-overlay {
             display: none;
@@ -401,6 +675,78 @@
         </div>
     </section>
 
+    <!-- ⭐ CCTV 플로팅 버튼 (예약자 전용) -->
+    <div class="cctv-floating-btn" id="cctvFloatingBtn" 
+         th:if="${isLogin and hasActiveReservation}"
+         style="display: none;">
+        <i class="fa-solid fa-video"></i>
+        <span class="cctv-live-badge">LIVE</span>
+    </div>
+
+    <!-- ⭐ CCTV 모달 -->
+    <div class="cctv-modal-overlay" id="cctvModal">
+        <div class="cctv-modal">
+            <div class="cctv-modal-header">
+                <h3>
+                    <i class="fa-solid fa-video"></i>
+                    실시간 CCTV
+                    <span class="live-indicator">● LIVE</span>
+                </h3>
+                <button class="cctv-close-btn" id="cctvCloseBtn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="cctv-modal-body" id="cctvModalBody">
+                <!-- 예약 정보가 있을 때 -->
+                <div class="cctv-content" style="display: none;" id="cctvContent">
+                    <div class="cctv-video-container">
+                        <iframe id="cctvIframe" 
+                                src="" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="cctv-info">
+                        <div class="cctv-room-info">
+                            <div class="cctv-room-name" id="cctvRoomName">
+                                <!-- 객실명 -->
+                            </div>
+                            <div class="cctv-reservation-info">
+                                <span>
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <span id="cctvCheckin"></span>
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-calendar-xmark"></i>
+                                    <span id="cctvCheckout"></span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- ⭐ 반려견 상태 정보 -->
+                        <div class="pet-status-container" id="petStatusContainer">
+                            <div class="pet-status-header">
+                                <i class="fa-solid fa-paw"></i>
+                                <h4 id="petStatusName"><!-- 반려견 이름 --></h4>
+                            </div>
+                            <div class="pet-status-grid" id="petStatusGrid">
+                                <!-- JavaScript로 동적 생성 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 예약 정보가 없을 때 -->
+                <div class="cctv-no-reservation" id="cctvNoReservation">
+                    <i class="fa-solid fa-video-slash"></i>
+                    <h4>예약 내역이 없습니다</h4>
+                    <p>현재 진행 중인 예약이 없어 CCTV를 확인할 수 없습니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 공지사항 팝업 트리거 버튼 -->
     <div class="notice-popup-trigger" id="noticePopupBtn" th:if="${noticeList != null and !noticeList.isEmpty()}">
         <i class="fa-solid fa-bullhorn"></i>
@@ -611,6 +957,195 @@
                 startAutoSlide();
             });
         });
+
+        // ⭐⭐⭐ 4️⃣ CCTV 기능
+        const cctvFloatingBtn = document.getElementById('cctvFloatingBtn');
+        const cctvModal = document.getElementById('cctvModal');
+        const cctvCloseBtn = document.getElementById('cctvCloseBtn');
+        const cctvContent = document.getElementById('cctvContent');
+        const cctvNoReservation = document.getElementById('cctvNoReservation');
+        const cctvIframe = document.getElementById('cctvIframe');
+        const cctvRoomName = document.getElementById('cctvRoomName');
+        const cctvCheckin = document.getElementById('cctvCheckin');
+        const cctvCheckout = document.getElementById('cctvCheckout');
+
+        // 활성화된 예약 정보 가져오기
+        async function loadActiveReservation() {
+            try {
+                const response = await fetch('/api/reservation/active');
+                const data = await response.json();
+
+                if (data.success && data.reservation) {
+                    // CCTV 플로팅 버튼 표시
+                    if (cctvFloatingBtn) {
+                        cctvFloatingBtn.style.display = 'flex';
+                    }
+
+                    // 예약 정보 저장
+                    window.activeReservation = data.reservation;
+                    return true;
+                } else {
+                    // 예약 없음 - 버튼 숨김
+                    if (cctvFloatingBtn) {
+                        cctvFloatingBtn.style.display = 'none';
+                    }
+                    return false;
+                }
+            } catch (error) {
+                console.error('예약 정보 조회 실패:', error);
+                return false;
+            }
+        }
+
+        // CCTV 모달 열기
+        function openCctvModal() {
+            if (window.activeReservation) {
+                const reservation = window.activeReservation;
+                
+                // CCTV URL이 있으면 표시
+                if (reservation.cctvUrl) {
+                    cctvContent.style.display = 'block';
+                    cctvNoReservation.style.display = 'none';
+                    
+                    // 유튜브 embed URL로 변환
+                    const embedUrl = convertToEmbedUrl(reservation.cctvUrl);
+                    cctvIframe.src = embedUrl;
+                    
+                    // 객실 정보 표시
+                    cctvRoomName.textContent = reservation.roomType + ' - ' + reservation.roomImg.replace('.jpg', '').replace('room_', 'Room ');
+                    cctvCheckin.textContent = reservation.checkin;
+                    cctvCheckout.textContent = reservation.checkout;
+                    
+                    // ⭐ 반려견 상태 정보 표시
+                    displayPetStatus(reservation);
+                } else {
+                    cctvContent.style.display = 'none';
+                    cctvNoReservation.style.display = 'block';
+                    cctvNoReservation.innerHTML = `
+                        <i class="fa-solid fa-video-slash"></i>
+                        <h4>CCTV 준비 중</h4>
+                        <p>현재 객실의 CCTV가 설정되지 않았습니다.<br>곧 서비스를 제공할 예정입니다.</p>
+                    `;
+                }
+            } else {
+                cctvContent.style.display = 'none';
+                cctvNoReservation.style.display = 'block';
+            }
+
+            cctvModal.classList.add('active');
+        }
+
+        // ⭐ 반려견 상태 정보 표시 함수
+        function displayPetStatus(reservation) {
+            const petStatusName = document.getElementById('petStatusName');
+            const petStatusGrid = document.getElementById('petStatusGrid');
+            const petStatusContainer = document.getElementById('petStatusContainer');
+            
+            // 반려견 이름 표시
+            petStatusName.textContent = reservation.petName + '의 현재 상태';
+            
+            if (reservation.petStatus && reservation.petStatus.status) {
+                const status = reservation.petStatus;
+                
+                // 상태를 한글로 변환
+                const statusMap = {
+                    'RESTING': { text: '휴식중', icon: 'fa-bed', class: 'status-resting' },
+                    'PLAYING': { text: '놀이중', icon: 'fa-futbol', class: 'status-playing' },
+                    'EATING': { text: '식사중', icon: 'fa-utensils', class: 'status-eating' },
+                    'WALKING': { text: '산책중', icon: 'fa-person-walking', class: 'status-walking' },
+                    'BRAIN': { text: '교육 프로그램 진행중', icon: 'fa-graduation-cap', class: 'status-brain' }
+                };
+                
+                const statusInfo = statusMap[status.status] || { text: status.status, icon: 'fa-circle-question', class: '' };
+                
+                // HTML 생성
+                petStatusGrid.innerHTML = `
+                    <div class="pet-status-item">
+                        <div class="pet-status-label">
+                            <i class="fa-solid ${statusInfo.icon}"></i>
+                            <span>현재 상태</span>
+                        </div>
+                        <div class="pet-status-value ${statusInfo.class}">${statusInfo.text}</div>
+                    </div>
+                    <div class="pet-status-item">
+                        <div class="pet-status-label">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>다음 일정</span>
+                        </div>
+                        <div class="pet-status-value">${status.nextSchedule || '없음'}</div>
+                    </div>
+                `;
+                
+                petStatusContainer.style.display = 'block';
+            } else {
+                // 상태 정보가 없을 때
+                petStatusGrid.innerHTML = `
+                    <div class="pet-status-no-data">
+                        현재 상태 정보가 업데이트되지 않았습니다.
+                    </div>
+                `;
+                petStatusContainer.style.display = 'block';
+            }
+        }
+
+        // 유튜브 URL을 embed URL로 변환
+        function convertToEmbedUrl(url) {
+            // 이미 embed URL인 경우
+            if (url.includes('embed')) {
+                return url;
+            }
+            
+            // 일반 유튜브 URL을 embed로 변환
+            // https://www.youtube.com/watch?v=VIDEO_ID -> https://www.youtube.com/embed/VIDEO_ID
+            const videoIdMatch = url.match(/[?&]v=([^&]+)/);
+            if (videoIdMatch) {
+                return `https://www.youtube.com/embed/${videoIdMatch[1]}?autoplay=1&mute=1`;
+            }
+            
+            // 라이브 스트리밍 URL
+            // https://www.youtube.com/live/VIDEO_ID -> https://www.youtube.com/embed/VIDEO_ID
+            const liveIdMatch = url.match(/\/live\/([^?]+)/);
+            if (liveIdMatch) {
+                return `https://www.youtube.com/embed/${liveIdMatch[1]}?autoplay=1&mute=1`;
+            }
+            
+            return url;
+        }
+
+        // CCTV 모달 닫기
+        function closeCctvModal() {
+            cctvModal.classList.remove('active');
+            // iframe 정지 (src 초기화)
+            cctvIframe.src = '';
+        }
+
+        // 이벤트 리스너
+        if (cctvFloatingBtn) {
+            cctvFloatingBtn.addEventListener('click', openCctvModal);
+        }
+
+        if (cctvCloseBtn) {
+            cctvCloseBtn.addEventListener('click', closeCctvModal);
+        }
+
+        // 오버레이 클릭 시 닫기
+        if (cctvModal) {
+            cctvModal.addEventListener('click', (e) => {
+                if (e.target === cctvModal) {
+                    closeCctvModal();
+                }
+            });
+        }
+
+        // ESC 키로 닫기
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && cctvModal.classList.contains('active')) {
+                closeCctvModal();
+            }
+        });
+
+        // 페이지 로드 시 활성 예약 확인
+        loadActiveReservation();
     });
     /*]]>*/
     </script>

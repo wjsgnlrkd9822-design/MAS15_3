@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.HotelService;
+import com.aloha.project.dto.MonthlySalesDto;
 import com.aloha.project.dto.ReservationDto;
+import com.aloha.project.dto.userTotalSales;
 
 public interface ReservationService {
 
@@ -97,12 +99,25 @@ public interface ReservationService {
      */
     List<ReservationDto> getRoomSchedule(Long roomNo);
 
-        /**
+    /**
      * 예약 수정 (날짜 겹침 체크 포함)
      * @param reservation 예약 정보
      * @return true: 수정 성공, false: 날짜 겹침
      */
     boolean updateReservation(ReservationDto reservation);
 
-    }
+    /**
+     * ⭐ 활성화된 예약 조회 (CCTV용)
+     * - 현재 날짜 기준으로 진행 중인 예약만 조회
+     * - 체크인 <= 오늘 <= 체크아웃
+     * - 상태가 '예약중'인 것만
+     * @param userNo 사용자 번호
+     * @param today 오늘 날짜
+     * @return 활성 예약 정보 (없으면 null)
+     */
+    ReservationDto getActiveReservation(Long userNo, LocalDate today);
 
+    
+    List<userTotalSales> getMemberTotalSales();
+    List<MonthlySalesDto> getMonthlySales();
+}

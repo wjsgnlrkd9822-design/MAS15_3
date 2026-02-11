@@ -15,6 +15,7 @@ public class HotelRoom {
     private String etc;         // 세부 사항
     private String active;      // 예약 여부
     private String img;         // 이미지 파일명
+    private String cctvUrl;     // ⭐ CCTV 유튜브 라이브 URL
 
     public HotelRoom() {}
 }

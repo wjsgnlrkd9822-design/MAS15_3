@@ -48,11 +48,12 @@
       <aside class="sidebar p-4 vh-100">
         <h5 class="mb-4">관리자 페이지</h5>
         <nav class="nav flex-column gap-1">
-            <a class="nav-link" th:href="@{/admin}">📊 매출 조회</a>
+            <a class="nav-link active" th:href="@{/admin}">📊 매출 조회</a>
             <a class="nav-link" th:href="@{/admin/usermanage}">👥 회원 관리</a>
             <a class="nav-link" th:href="@{/admin/service}">⚙️ 서비스 및 시설 관리</a>
             <a class="nav-link" th:href="@{/admin/trainer}">🏇 훈련사 관리</a>
             <a class="nav-link" th:href="@{/admin/notice}">📝 공지사항</a>
+            <a class="nav-link" th:href="@{/admin/petstatus}">🐾 반려견 상태 관리</a>   <!-- 모든 페이지에 추가 -->
         </nav>
     </aside>
 
@@ -81,13 +82,65 @@
                     <div class="fs-1 text-primary">$</div>
                 </div>
             </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
 
-            <!-- 추후 테이블 영역 (틀만) -->
-            <div class="card shadow-sm">
-                <div class="card-body text-muted text-center py-5">
-                    매출 상세 내역 테이블 영역
+                        <h6 class="mb-3 fw-semibold">회원별 총 매출</h6>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>회원번호</th>
+                                        <th>회원이름</th>
+                                        <th>총 매출</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="sale : ${memberSales}">
+                                        <td th:text="${sale.userNo}"></td>
+                                        <td th:text="${sale.name}"></td>
+                                        <td class="text-end fw-semibold"
+                                            th:text="${#numbers.formatInteger(sale.totalSales,0,'COMMA')} + '원'">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+
+                    </div>
+                    
                 </div>
-            </div>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+
+                        <h6 class="mb-3 fw-semibold">월별 총 매출</h6>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th>연도</th>
+                                        <th>월</th>
+                                        <th>총 매출</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="sale : ${monthlySales}">
+                                        <td th:text="${sale.year}"></td>
+                                        <td th:text="${sale.month}"></td>
+                                        <td class="text-end fw-semibold"
+                                            th:text="${#numbers.formatInteger(sale.totalSales,0,'COMMA')} + '원'">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
 
         </section>
 

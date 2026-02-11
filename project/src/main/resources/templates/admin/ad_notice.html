@@ -50,7 +50,8 @@
             <a class="nav-link" th:href="@{/admin/usermanage}">👥 회원 관리</a>
             <a class="nav-link" th:href="@{/admin/service}">⚙️ 서비스 및 시설 관리</a>
             <a class="nav-link" th:href="@{/admin/trainer}">🏇 훈련사 관리</a>
-            <a class="nav-link" th:href="@{/admin/notice}">📝 공지사항</a>
+            <a class="nav-link active" th:href="@{/admin/notice}">📝 공지사항</a>
+            <a class="nav-link" th:href="@{/admin/petstatus}">🐾 반려견 상태 관리</a>
         </nav>
     </aside>
 
@@ -91,12 +92,26 @@
 document.getElementById("noticeForm").addEventListener("submit", function (e) {
     e.preventDefault(); // ⭐ submit 기본 동작 막기
 
+    const title = document.getElementById("title").value.trim();
+    const content = document.getElementById("content").value.trim();
+
+    // ✅ 여기만 추가
+    if (title === "") {
+        alert("제목을 입력해주세요.");
+        return;
+    }
+
+    if (content === "") {
+        alert("내용을 입력해주세요.");
+        return;
+    }
+
     const csrfToken = document.querySelector('meta[name="_csrf"]').content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
     const data = {
-        title: document.getElementById("title").value,
-        content: document.getElementById("content").value
+        title: title,
+        content: content
     };
 
     fetch("/admin/noticeadd", {
@@ -108,7 +123,7 @@ document.getElementById("noticeForm").addEventListener("submit", function (e) {
         body: JSON.stringify(data)
     })
     .then(function (response) {
-        return response.text();   // 🔹 여기서 Promise 반환
+        return response.text();
     })
     .then(function (result) {
         if (result === "SUCCESS") {

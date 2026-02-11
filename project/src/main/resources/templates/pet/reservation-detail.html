@@ -16,16 +16,27 @@
     border: 3px solid #222;
 }
 
-/* ⭐ 예약 불가 날짜 스타일 */
+/* ⭐ 예약 불가 날짜 스타일 - 더 강력한 우선순위 */
 .flatpickr-day.unavailable {
     background-color: #ffcccc !important;
     color: #999 !important;
-    cursor: not-allowed !important;
-    text-decoration: line-through;
+    cursor: default !important;  /* ⭐ not-allowed 대신 default로 변경 */
+    text-decoration: line-through !important;
+    pointer-events: auto !important; /* 클릭 이벤트는 허용 (경고창 표시용) */
 }
 
 .flatpickr-day.unavailable:hover {
     background-color: #ffcccc !important;
+    border-color: #ffcccc !important;
+    cursor: default !important;  /* ⭐ 추가 */
+}
+
+/* flatpickr 기본 disabled 스타일 덮어쓰기 */
+.flatpickr-day.flatpickr-disabled.unavailable,
+.flatpickr-day.flatpickr-disabled.unavailable:hover {
+    background-color: #ffcccc !important;
+    color: #999 !important;
+    cursor: default !important;  /* ⭐ 추가 */
 }
 
 /* 범례 추가 */
@@ -249,32 +260,93 @@ if (errorMsg) {
 }
 
 // 객실 스케줄 가져오기
+console.log('=== 스케줄 조회 시작 ===');
+console.log('roomNo:', roomNo);
+
 fetch(`/api/room/${roomNo}/schedule`)
-    .then(response => response.json())
+    .then(response => {
+        console.log('응답 받음:', response);
+        console.log('응답 상태:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('파싱된 데이터:', data);
+        console.log('data.success:', data.success);
+        console.log('data.schedule:', data.schedule);
+        
         if (data.success && data.schedule) {
             reservations = data.schedule;
             
+            console.log('받아온 예약 데이터:', reservations);
+            console.log('예약 개수:', reservations.length);
+            
             // 예약된 날짜 범위를 배열로 변환
-            reservations.forEach(reservation => {
-                const start = new Date(reservation.checkin);
-                const end = new Date(reservation.checkout);
+            reservations.forEach((reservation, index) => {
+                console.log(`\n=== 예약 ${index + 1} 처리 ===`);
+                const checkinStr = reservation.checkin;
+                const checkoutStr = reservation.checkout;
                 
-                // 체크인 불가: 예약 시작일~종료일 전날까지
-                for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
-                    unavailableCheckinDates.push(new Date(d).toISOString().split('T')[0]);
+                console.log('원본 checkin:', checkinStr, typeof checkinStr);
+                console.log('원본 checkout:', checkoutStr, typeof checkoutStr);
+                
+                // ⭐ 배열 형태로 온 경우 처리 [2025, 2, 20]
+                let startDate, endDate;
+                
+                if (Array.isArray(checkinStr)) {
+                    // 배열: [year, month, day]
+                    startDate = `${checkinStr[0]}-${String(checkinStr[1]).padStart(2, '0')}-${String(checkinStr[2]).padStart(2, '0')}`;
+                } else {
+                    // 문자열: "2025-02-20"
+                    startDate = checkinStr;
                 }
                 
-                // 체크아웃 불가: 예약 시작일 다음날~종료일 전날까지
-                // (예약 시작일 = 이전 예약의 체크아웃 가능)
-                const dayAfterStart = new Date(start);
-                dayAfterStart.setDate(dayAfterStart.getDate() + 1);
+                if (Array.isArray(checkoutStr)) {
+                    endDate = `${checkoutStr[0]}-${String(checkoutStr[1]).padStart(2, '0')}-${String(checkoutStr[2]).padStart(2, '0')}`;
+                } else {
+                    endDate = checkoutStr;
+                }
                 
-                for (let d = new Date(dayAfterStart); d < end; d.setDate(d.getDate() + 1)) {
-                    unavailableCheckoutDates.push(new Date(d).toISOString().split('T')[0]);
+                console.log('변환된 startDate 문자열:', startDate);
+                console.log('변환된 endDate 문자열:', endDate);
+                
+                // ⭐ 체크인 불가: 예약 시작일 하루 전부터 종료일까지
+                const [startY, startM, startD] = startDate.split('-').map(Number);
+                const [endY, endM, endD] = endDate.split('-').map(Number);
+                
+                const start = new Date(startY, startM - 1, startD);
+                const end = new Date(endY, endM - 1, endD);
+                
+                const dayBefore = new Date(start);
+                dayBefore.setDate(dayBefore.getDate() - 1);
+                
+                console.log('체크인 불가 범위:', dayBefore, '~', end);
+                
+                // 체크인 불가: 하루 전부터 종료일까지
+                for (let d = new Date(dayBefore); d <= end; d.setDate(d.getDate() + 1)) {
+                    const dateStr = d.getFullYear() + '-' + 
+                                  String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+                                  String(d.getDate()).padStart(2, '0');
+                    console.log('체크인 불가 추가:', dateStr);
+                    unavailableCheckinDates.push(dateStr);
+                }
+                
+                // 체크아웃 불가: 시작일부터 종료일까지
+                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    const dateStr = d.getFullYear() + '-' + 
+                                  String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+                                  String(d.getDate()).padStart(2, '0');
+                    console.log('체크아웃 불가 추가:', dateStr);
+                    unavailableCheckoutDates.push(dateStr);
                 }
             });
             
+            console.log('\n=== 최종 결과 ===');
+            console.log('최종 체크인 불가 날짜들:', unavailableCheckinDates);
+            console.log('최종 체크아웃 불가 날짜들:', unavailableCheckoutDates);
+            
+            initCalendars();
+        } else {
+            console.log('데이터가 없거나 success가 false입니다');
             initCalendars();
         }
     })
@@ -306,7 +378,6 @@ function initCalendars() {
     const checkinInput = flatpickr("#checkin-date", { 
         inline: true, 
         minDate: "today",
-        disable: unavailableCheckinDates,
         onChange: function(selectedDates) {
             if (selectedDates.length > 0) {
                 const checkin = selectedDates[0];
@@ -335,9 +406,22 @@ function initCalendars() {
             updateSummary();
         },
         onDayCreate: function(dObj, dStr, fp, dayElem) {
-            const dateStr = dayElem.dateObj.toISOString().split('T')[0];
+            // ⭐ 로컬 시간대로 날짜 문자열 생성
+            const d = dayElem.dateObj;
+            const dateStr = d.getFullYear() + '-' + 
+                          String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(d.getDate()).padStart(2, '0');
+            
+            console.log('체크인 달력 날짜 체크:', dateStr, unavailableCheckinDates.includes(dateStr));
+            
             if (unavailableCheckinDates.includes(dateStr)) {
                 dayElem.classList.add('unavailable');
+                // 클릭 이벤트 차단
+                dayElem.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('이미 예약된 날짜입니다.');
+                }, true);
             }
         }
     });
@@ -345,13 +429,24 @@ function initCalendars() {
     const checkoutInput = flatpickr("#checkout-date", { 
         inline: true, 
         minDate: "today",
-        disable: unavailableCheckoutDates,
         onChange: updateSummary,
         onDayCreate: function(dObj, dStr, fp, dayElem) {
-            const dateStr = dayElem.dateObj.toISOString().split('T')[0];
-            // 체크아웃 불가 날짜 또는 체크인 불가 날짜(예약된 날짜) 모두 빨간색 표시
-            if (unavailableCheckoutDates.includes(dateStr) || unavailableCheckinDates.includes(dateStr)) {
+            // ⭐ 로컬 시간대로 날짜 문자열 생성
+            const d = dayElem.dateObj;
+            const dateStr = d.getFullYear() + '-' + 
+                          String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(d.getDate()).padStart(2, '0');
+            
+            console.log('체크아웃 달력 날짜 체크:', dateStr, unavailableCheckoutDates.includes(dateStr));
+            
+            if (unavailableCheckoutDates.includes(dateStr)) {
                 dayElem.classList.add('unavailable');
+                // 클릭 이벤트 차단
+                dayElem.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('이미 예약된 날짜입니다.');
+                }, true);
             }
         }
     });

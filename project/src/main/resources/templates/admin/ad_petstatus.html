@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 | 반려견 상태 관리</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- CSRF 토큰 -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f5f6f7;
+        }
+        .sidebar {
+            width: 240px;
+            background-color: #1f2933;
+            color: #fff;
+        }
+        .sidebar h5 {
+            font-weight: 600;
+        }
+        .sidebar .nav-link {
+            color: #cbd5e1;
+            padding: 10px 14px;
+            border-radius: 6px;
+        }
+        .sidebar .nav-link.active,
+        .sidebar .nav-link:hover {
+            background-color: #374151;
+            color: #fff;
+        }
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        /* 상태 뱃지 스타일 */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-resting {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .status-playing {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        .status-eating {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        .status-walking {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        .status-brain {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        .status-none {
+            background: #f5f5f5;
+            color: #757575;
+        }
+        
+        /* 모달 스타일 */
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        /* 테이블 호버 */
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+
+    <!-- 사이드바 -->
+    <aside class="sidebar p-4 vh-100">
+        <h5 class="mb-4">관리자 페이지</h5>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link" th:href="@{/admin}">📊 매출 조회</a>
+            <a class="nav-link" th:href="@{/admin/usermanage}">👥 회원 관리</a>
+            <a class="nav-link" th:href="@{/admin/service}">⚙️ 서비스 및 시설 관리</a>
+            <a class="nav-link" th:href="@{/admin/trainer}">🏇 훈련사 관리</a>
+            <a class="nav-link" th:href="@{/admin/notice}">📝 공지사항</a>
+            <a class="nav-link active" th:href="@{/admin/petstatus}">🐾 반려견 상태 관리</a>
+        </nav>
+    </aside>
+
+    <!-- 메인 영역 -->
+    <main class="flex-fill">
+
+        <!-- 헤더 -->
+        <header class="header px-4 py-3">
+            <h4 class="mb-0 fw-semibold">
+                <i class="fa-solid fa-paw text-primary"></i>
+                반려견 상태 관리
+            </h4>
+        </header>
+
+        <!-- 콘텐츠 -->
+        <section class="p-4">
+
+            <div class="mb-4">
+                <p class="text-muted mb-0">현재 체크인 중인 반려견의 상태를 관리하세요</p>
+            </div>
+
+            <!-- 통계 카드 -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted mb-1">총 체크인</p>
+                                    <h3 class="mb-0" id="totalCount">0</h3>
+                                </div>
+                                <i class="fa-solid fa-dog fs-1 text-primary opacity-25"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 반려견 목록 테이블 -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-list"></i>
+                        현재 체크인 중인 반려견
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>반려견명</th>
+                                    <th>견종/크기</th>
+                                    <th>보호자</th>
+                                    <th>객실</th>
+                                    <th>체크인 ~ 체크아웃</th>
+                                    <th>현재 상태</th>
+                                    <th>다음 일정</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 데이터가 있을 때 -->
+                                <th:block th:if="${petList != null and !petList.isEmpty()}">
+                                    <tr th:each="pet : ${petList}">
+                                        <td>
+                                            <strong th:text="${pet['petName']}">멍멍이</strong>
+                                        </td>
+                                        <td>
+                                            <span th:text="${pet['petSpecies']}">포메라니안</span>
+                                            <br>
+                                            <small class="text-muted" th:text="${pet['petSize']}">소형</small>
+                                        </td>
+                                        <td>
+                                            <span th:text="${pet['ownerName']}">홍길동</span>
+                                            <br>
+                                            <small class="text-muted" th:text="${pet['ownerPhone']}">010-1234-5678</small>
+                                        </td>
+                                        <td>
+                                            <span th:text="${pet['roomType']}">Small Dog</span>
+                                            <br>
+                                            <small class="text-muted" th:text="${pet['roomImg']}">room_301.jpg</small>
+                                        </td>
+                                        <td>
+                                            <small>
+                                                <i class="fa-solid fa-calendar-check text-success"></i>
+                                                <span th:text="${pet['checkin']}">2025-02-10</span>
+                                                <br>
+                                                <i class="fa-solid fa-calendar-xmark text-danger"></i>
+                                                <span th:text="${pet['checkout']}">2025-02-12</span>
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <span th:if="${pet['petStatus'] == null}" class="status-badge status-none">
+                                                미설정
+                                            </span>
+                                            <span th:if="${pet['petStatus'] == 'RESTING'}" class="status-badge status-resting">
+                                                <i class="fa-solid fa-bed"></i> 휴식중
+                                            </span>
+                                            <span th:if="${pet['petStatus'] == 'PLAYING'}" class="status-badge status-playing">
+                                                <i class="fa-solid fa-futbol"></i> 놀이중
+                                            </span>
+                                            <span th:if="${pet['petStatus'] == 'EATING'}" class="status-badge status-eating">
+                                                <i class="fa-solid fa-utensils"></i> 식사중
+                                            </span>
+                                            <span th:if="${pet['petStatus'] == 'WALKING'}" class="status-badge status-walking">
+                                                <i class="fa-solid fa-person-walking"></i> 산책중
+                                            </span>
+                                            <span th:if="${pet['petStatus'] == 'BRAIN'}" class="status-badge status-brain">
+                                                <i class="fa-solid fa-graduation-cap"></i> 교육 프로그램 진행중
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:text="${pet['nextSchedule'] != null ? pet['nextSchedule'] : '-'}">16:00 산책</span>
+                                        </td>
+                                        <td>
+                                            <!-- ⭐ 수정: pet['petNo'] 사용 (반려견 번호) -->
+                                            <button class="btn btn-sm btn-primary edit-pet-btn" 
+                                                    th:attr="data-pet-no=${pet['petNo']}, 
+                                                             data-pet-name=${pet['petName']}, 
+                                                             data-pet-status=${pet['petStatus']}, 
+                                                             data-next-schedule=${pet['nextSchedule']}">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                                
+                                <!-- 데이터가 없을 때 -->
+                                <th:block th:if="${petList == null or petList.isEmpty()}">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-5">
+                                            <i class="fa-solid fa-inbox fs-1 mb-3 d-block"></i>
+                                            현재 체크인 중인 반려견이 없습니다.
+                                        </td>
+                                    </tr>
+                                </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- 상태 수정 모달 -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    반려견 상태 수정
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editPetNo">
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">반려견 이름</label>
+                    <input type="text" class="form-control" id="editPetName" readonly>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-circle-dot"></i>
+                        현재 상태
+                    </label>
+                    <select class="form-select" id="editStatus">
+                        <option value="">선택하세요</option>
+                        <option value="RESTING">휴식중</option>
+                        <option value="PLAYING">놀이중</option>
+                        <option value="EATING">식사중</option>
+                        <option value="WALKING">산책중</option>
+                        <option value="BRAIN">교육 프로그램 진행중</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-clock"></i>
+                        다음 일정
+                    </label>
+                    <input type="text" class="form-control" id="editNextSchedule" 
+                           placeholder="예: 16:00 산책">
+                    <small class="text-muted">예시: 16:00 산책, 18:00 저녁식사 등</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="saveStatus()">
+                    <i class="fa-solid fa-save"></i>
+                    저장
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    
+    // CSRF 토큰
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    
+    // 총 체크인 수 표시
+    document.addEventListener('DOMContentLoaded', () => {
+        const petList = /*[[${petList}]]*/ [];
+        document.getElementById('totalCount').textContent = petList ? petList.length : 0;
+        
+        // 수정 버튼 클릭 이벤트
+        document.querySelectorAll('.edit-pet-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const petNo = this.getAttribute('data-pet-no');
+                const petName = this.getAttribute('data-pet-name');
+                const petStatus = this.getAttribute('data-pet-status');
+                const nextSchedule = this.getAttribute('data-next-schedule');
+                
+                openEditModal(petNo, petName, petStatus, nextSchedule);
+            });
+        });
+    });
+    
+    // 모달 열기
+    function openEditModal(petNo, petName, status, nextSchedule) {
+        console.log('Opening modal:', { petNo, petName, status, nextSchedule });
+        
+        document.getElementById('editPetNo').value = petNo || '';
+        document.getElementById('editPetName').value = petName || '';
+        document.getElementById('editStatus').value = (status && status !== 'null') ? status : '';
+        document.getElementById('editNextSchedule').value = (nextSchedule && nextSchedule !== 'null') ? nextSchedule : '';
+        
+        const modal = new bootstrap.Modal(document.getElementById('editModal'));
+        modal.show();
+    }
+    
+    // 상태 저장
+    async function saveStatus() {
+        const petNo = document.getElementById('editPetNo').value;
+        const status = document.getElementById('editStatus').value;
+        const nextSchedule = document.getElementById('editNextSchedule').value;
+        
+        if (!status) {
+            alert('현재 상태를 선택해주세요.');
+            return;
+        }
+        
+        console.log('Saving status:', { petNo, status, nextSchedule });
+        
+        try {
+            const response = await fetch(`/admin/petstatus/update/${petNo}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify({
+                    status: status,
+                    nextSchedule: nextSchedule || null
+                })
+            });
+            
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+            
+            const result = await response.text();
+            console.log('Response result:', result);
+            
+            if (result === 'SUCCESS') {
+                alert('상태가 저장되었습니다.');
+                location.reload();
+            } else {
+                alert('저장에 실패했습니다: ' + result);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('오류가 발생했습니다: ' + error.message);
+        }
+    }
+    
+    /*]]>*/
+</script>
+
+</body>
+</html>

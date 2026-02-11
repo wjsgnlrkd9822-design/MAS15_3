@@ -387,3 +387,75 @@
     font-size: 16px;
     color: #888;
 }
+
+/* CCTV 섹션 */
+.cctv-section {
+    background-color: #f6f7f8;
+    padding: 80px 0;
+}
+
+.cctv-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 60px;
+}
+
+.cctv-image {
+    flex: 0 0 45%;
+}
+
+.cctv-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.cctv-content {
+    flex: 1;
+    text-align: left;
+}
+
+.cctv-content h2 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 24px;
+    line-height: 1.3;
+}
+
+.cctv-desc {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.cctv-contact {
+    font-size: 14px;
+    color: #888;
+    margin-top: 20px;
+}
+
+/* CCTV 섹션 반응형 */
+@media (max-width: 768px) {
+    .cctv-inner {
+        flex-direction: column;
+        gap: 40px;
+    }
+    
+    .cctv-image {
+        flex: 0 0 100%;
+    }
+    
+    .cctv-content h2 {
+        font-size: 28px;
+    }
+    
+    .cctv-content {
+        text-align: center;
+    }
+}
