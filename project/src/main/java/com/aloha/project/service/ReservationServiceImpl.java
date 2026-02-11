@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.HotelService;
+import com.aloha.project.dto.MonthlySalesDto;
 import com.aloha.project.dto.ReservationDto;
+import com.aloha.project.dto.userTotalSales;
 import com.aloha.project.mapper.ReservationMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -319,5 +321,15 @@ public class ReservationServiceImpl implements ReservationService {
             log.error("활성 예약 조회 중 오류 발생", e);
             return null;
         }
+    }
+
+    @Override
+    public List<userTotalSales> getMemberTotalSales() {
+        return reservationMapper.getMemberTotalSales();
+    }
+
+    @Override
+    public List<MonthlySalesDto> getMonthlySales() {
+       return reservationMapper.getMonthlySales();
     }
 }

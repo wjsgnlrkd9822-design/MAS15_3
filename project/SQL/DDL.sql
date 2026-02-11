@@ -1,4 +1,4 @@
--- Active: 1767920835424@@127.0.0.1@3306@aloha
+-- Active: 1767840691076@@127.0.0.1@3306@aloha
 SET FOREIGN_KEY_CHECKS = 0;
 
 drop TABLE IF EXISTS `users`;
@@ -135,8 +135,6 @@ SELECT * FROM pets
 );
 
 
- SELECT * FROM hotelservices;
-
 
        
 
@@ -189,14 +187,6 @@ CREATE Table `trainers`(
 );
 
 
-SET FOREIGN_KEY_CHECKS = 1;
-
-
-DROP TABLE IF EXISTS `hotelrooms`;
-
--- ⭐ hotelrooms 테이블에 cctv_url 컬럼 추가
-ALTER TABLE `hotelrooms`
-ADD COLUMN `cctv_url` VARCHAR(500) DEFAULT NULL COMMENT '유튜브 라이브 CCTV URL';
 
 -- ⭐ 샘플 CCTV URL 데이터 (실제 유튜브 라이브 URL로 교체 필요)
 -- 예시: https://www.youtube.com/watch?v=VIDEO_ID 또는 https://www.youtube.com/live/VIDEO_ID
@@ -260,3 +250,4 @@ SELECT
     END as is_active
 FROM reservations r
 WHERE r.status = '예약중';
+SET FOREIGN_KEY_CHECKS = 1;

@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.aloha.project.dto.HotelRoom;
 import com.aloha.project.dto.HotelService;
+import com.aloha.project.dto.MonthlySalesDto;
 import com.aloha.project.dto.ReservationDto;
+import com.aloha.project.dto.userTotalSales;
 
 public interface ReservationService {
 
@@ -114,4 +116,8 @@ public interface ReservationService {
      * @return 활성 예약 정보 (없으면 null)
      */
     ReservationDto getActiveReservation(Long userNo, LocalDate today);
+
+    
+    List<userTotalSales> getMemberTotalSales();
+    List<MonthlySalesDto> getMonthlySales();
 }
