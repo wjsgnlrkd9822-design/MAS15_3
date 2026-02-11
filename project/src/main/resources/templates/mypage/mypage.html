@@ -341,7 +341,7 @@
             <td th:text="${res.petName}">반려견 이름</td>
             <td th:text="${res.checkin}">2024-07-01</td>
             <td th:text="${res.checkout}">2024-07-05</td>
-            <td th:text="${#numbers.formatInteger(res.totalPrice, 3, 'COMMA')} + '원'">총금액</td>
+            <td th:text="${#numbers.formatInteger(res.totalPrice, 1, 'COMMA')} + '원'">총금액</td>
             <td th:text="${res.status}"></td>
             <td>
               <!-- 안전하게 모달 열기 -->

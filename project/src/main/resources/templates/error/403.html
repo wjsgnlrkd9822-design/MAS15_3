@@ -4,10 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>403</title>
+    <th:block th:replace="~{fragments/link::no403-link}"></th:block>
 </head>
 <body>
-    <h1>403</h1>
-    <h3>접근 권한이 없습니다.</h3>
-    <a href="/">메인 페이지</a>
+    <div class="no403-header">
+        <div class="no403-header-inner">
+
+            <h1>403</h1>
+            <img src="/img/cancel.jpg" class="cancel-img">
+            <h3>접근 권한이 없습니다.</h3>
+            <a href="/" class="btn btn-outline-secondary">메인 페이지</a>
+        </div>
+    </div>
 </body>
 </html>
