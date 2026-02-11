@@ -1,35 +1,59 @@
 package com.aloha.project.controller;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.aloha.project.dto.KakaoPayApproveResponse;
+import com.aloha.project.dto.KakaoPayReadyResponse;
+import com.aloha.project.service.KakaoPayService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import com.aloha.project.dto.CustomUser;
-import com.aloha.project.dto.KakaoPay;
-
+@Slf4j
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/kakaopay")
 public class KakaoPayController {
 
-    @PostMapping("/{resNo}")
-public Map<String, Object> pay(@PathVariable Long resNo,
-                               @AuthenticationPrincipal CustomUser customUser) throws Exception {
+    private final KakaoPayService kakaoPayService;
 
-    // 로그인 사용자 UUID 가져오기
-    String partnerUserId = customUser.getUser().getId();
+    // ✅ 결제 준비 (마이페이지 결제 버튼 클릭 시)
+    @PostMapping("/ready")
+public String ready(@RequestParam("resNo") Long resNo,
+                    @RequestParam("totalPrice") int totalPrice,
+                    HttpSession session) {
 
-    // DB에서 totalPrice 가져오기
-    int totalPrice = reservationMapper.getTotalPrice(resNo);
-
-    // 카카오페이 결제 준비
-    KakaoPay kakaoPay = KakaoPayService.readyPay(resNo, totalPrice, partnerUserId);
-
-    Map<String, Object> result = new HashMap<>();
-    result.put("next_redirect_pc_url", kakaoPay.getNext_redirect_pc_url());
-    result.put("tid", kakaoPay.getTid());
-
-    return result;
+    KakaoPayReadyResponse response = kakaoPayService.ready(resNo, totalPrice, session);
+    return "redirect:" + response.getNext_redirect_pc_url();
 }
-    
+
+    // ✅ 결제 성공
+    @GetMapping("/success")
+    public String success(@RequestParam("pg_token") String pgToken,
+                          HttpSession session,
+                          Model model) {
+
+        KakaoPayApproveResponse response = kakaoPayService.approve(pgToken, session);
+        model.addAttribute("approve", response);
+
+        log.info("결제 완료 - 상품명: {}, 금액: {}", response.getItem_name(), response.getAmount().getTotal());
+
+        return "kakaopay/success";  // 결제 완료 페이지
+    }
+
+    // ✅ 결제 실패
+    @GetMapping("/fail")
+    public String fail() {
+        log.warn("결제 실패");
+        return "kakaopay/fail";  // 결제 실패 페이지
+    }
+
+    // ✅ 결제 취소
+    @GetMapping("/cancel")
+    public String cancel() {
+        log.warn("결제 취소");
+        return "kakaopay/cancel";  // 결제 취소 페이지
+    }
+
 }

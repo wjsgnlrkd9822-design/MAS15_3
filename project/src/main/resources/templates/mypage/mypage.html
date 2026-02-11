@@ -341,7 +341,7 @@
             <td th:text="${res.petName}">반려견 이름</td>
             <td th:text="${res.checkin}">2024-07-01</td>
             <td th:text="${res.checkout}">2024-07-05</td>
-            <td>예약 완료</td>
+            <td th:text="${res.status}"></td>
             <td th:text="${#numbers.formatInteger(res.totalPrice, 3, 'COMMA')} + '원'">총금액</td>
             <td>
               <!-- 안전하게 모달 열기 -->
@@ -351,12 +351,11 @@
               </button>
             </td>
             <td>
-  <button class="btn btn-success ms-1" type="button"
-          th:onclick="'payReservation(' + ${res.resNo} + ',' + ${res.totalPrice} + ')'">
-    결제하기
-  </button>
-</td>
-
+              <button class="btn btn-warning" type="button"
+                      th:onclick="'payReservation(' + ${res.resNo} + ',' + ${res.totalPrice} + ')'">
+                결제
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -376,44 +375,6 @@
         <div class="modal-body">
           <input type="hidden" id="editResNo">
           <input type="hidden" id="editRoomNo">
-
-  <!-- 호텔 예약 내역 -->
-  <section class="mypage-reservations">
-        <div class="mypage-reservations-inner">
-            <h3>호텔 예약 내역</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>예약 번호</th>
-                        <th>반려견 이름</th>
-                        <th>체크인</th>
-                        <th>체크아웃</th>
-                        <th>상태</th>
-                        <th>총금액</th>
-                        <th>관리</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <tr th:each="res : ${reservations}">
-                  <td><span th:text="${res.resNo}"></span></td>
-                  <td th:text="${res.petName}">반려견 이름</td>
-                  <td th:text="${res.checkin}">2024-07-01</td>
-                  <td th:text="${res.checkout}">2024-07-05</td>
-                  <td>예약 완료</td>
-                  <td th:text="${#numbers.formatInteger(res.totalPrice, 3, 'COMMA')} + '원'">총금액</td>  <!-- 천원 단위 컴마 추가 -->
-                  <td>
-  <!-- ✅ 안전하게 모달 열기 -->
-  <button class="btn-edit" type="button"
-          th:onclick="'openEditModal(' + ${res.resNo} + ')'">
-    수정
-  </button>
-</td>
-
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
 
           <div class="mb-3">
             <label>객실 정보</label>
@@ -715,34 +676,37 @@
         this.blur();
       });
 
-/* 결제 */
-      function payReservation(resNo, totalPrice) {
-  if (!confirm("이 예약을 간편결제로 결제하시겠습니까?")) return;
 
-  const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-  const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+      // ============================
+    // 카카오 간편 결제
+    // ============================
+function payReservation(resNo, totalPrice) {
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 
-  fetch(`/api/reservation/pay/${resNo}`, {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      [csrfHeader]: csrfToken
-    },
-    body: JSON.stringify({ totalPrice: totalPrice })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert('결제가 완료되었습니다.');
-      location.reload(); // 결제 후 화면 갱신
-    } else {
-      alert('결제에 실패했습니다: ' + data.message);
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert('결제 중 오류가 발생했습니다.');
-  });
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/kakaopay/ready';
+
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_csrf';
+    csrfInput.value = csrfToken;
+
+    const resNoInput = document.createElement('input');
+    resNoInput.type = 'hidden';
+    resNoInput.name = 'resNo';
+    resNoInput.value = resNo;
+
+    const totalPriceInput = document.createElement('input');
+    totalPriceInput.type = 'hidden';
+    totalPriceInput.name = 'totalPrice';
+    totalPriceInput.value = totalPrice;
+
+    form.appendChild(csrfInput);
+    form.appendChild(resNoInput);
+    form.appendChild(totalPriceInput);
+    document.body.appendChild(form);
+    form.submit();
 }
   </script>
 </body>

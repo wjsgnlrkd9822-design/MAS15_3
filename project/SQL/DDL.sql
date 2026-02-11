@@ -116,7 +116,7 @@ SELECT * FROM pets
     `total_price` int NOT NULL COMMENT '총 가격',
     `res_time` TIME NOT NULL COMMENT '예약 시간',
     `reg_date` TIMESTAMP DEFAULT NOW() COMMENT '예약일자',
-    `status` VARCHAR(20) NOT NULL DEFAULT '예약중' COMMENT '예약상태 (예약중/완료/취소)',  /* 예약 추가 */
+    `status` VARCHAR(20) NOT NULL DEFAULT '예약중' COMMENT '예약상태 (예약중/결제완료)',  /* 예약 추가 */
 
     FOREIGN KEY (user_no) REFERENCES users(no)
     on update CASCADE
