@@ -191,8 +191,8 @@ CREATE Table `trainers`(
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+SELECT * FROM hotelrooms
 
-DROP TABLE IF EXISTS `hotelrooms`;
 
 -- ⭐ hotelrooms 테이블에 cctv_url 컬럼 추가
 ALTER TABLE `hotelrooms`
@@ -218,9 +218,6 @@ UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' W
 UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 13; -- 소형견실 디럭스 304
 UPDATE hotelrooms SET cctv_url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' WHERE room_no = 14; -- 소형견실 디럭스 305
 
--- ⭐ 확인 쿼리
-SELECT room_no, room_type, img, cctv_url FROM hotelrooms;
-
 
 CREATE TABLE pet_status (
     pet_no INT PRIMARY KEY,
@@ -232,31 +229,3 @@ CREATE TABLE pet_status (
 INSERT INTO pet_status (pet_no, status, next_schedule)
 VALUES
 (5, 'RESTING', '16:00 산책')
-
-
--- 1. 현재 예약 중인 데이터 확인
-SELECT 
-    r.res_no,
-    r.res_date,
-    r.checkout_date,
-    r.status,
-    p.no AS pet_no,
-    p.name AS pet_name,
-    ps.status AS pet_status
-FROM reservations r
-JOIN pets p ON r.pet_no = p.no
-LEFT JOIN pet_status ps ON p.no = ps.pet_no
-WHERE r.status = '예약중';
-
--- 2. 날짜 조건 확인
-SELECT 
-    CURDATE() as today,
-    r.res_no,
-    r.res_date,
-    r.checkout_date,
-    CASE 
-        WHEN CURDATE() BETWEEN r.res_date AND r.checkout_date THEN 'YES'
-        ELSE 'NO'
-    END as is_active
-FROM reservations r
-WHERE r.status = '예약중';
