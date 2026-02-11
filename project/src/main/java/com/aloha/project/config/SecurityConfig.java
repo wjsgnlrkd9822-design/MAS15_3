@@ -51,7 +51,7 @@ public class SecurityConfig {
     http.authorizeHttpRequests(auth -> auth
                               .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")  
                               // .requestMatchers("/pet/reservation/**").authenticated() // 한줄 추가했어요
-                              .requestMatchers("/**").permitAll()   // 전체 허용  
+                              .requestMatchers("/**", "/kakaopay/**").permitAll()   // 전체 허용  
                               );
     // 폼 로그인 설정
     http.formLogin(login -> login

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>결제 완료</title>
+</head>
+<body>
+    <h2>✅ 결제가 완료되었습니다!</h2>
+    <p>상품명 : <span th:text="${approve.item_name}"></span></p>
+    <p>결제 금액 : <span th:text="${approve.amount.total}"></span> 원</p>
+    <p>결제 수단 : <span th:text="${approve.payment_method_type}"></span></p>
+    <p>결제 시각 : <span th:text="${approve.approved_at}"></span></p>
+    <a href="/mypage">마이페이지로 돌아가기</a>
+</body>
+</html>
