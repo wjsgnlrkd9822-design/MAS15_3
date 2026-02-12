@@ -290,7 +290,7 @@ public class AdminController {
 
     @PutMapping("/trainerupdate/{trainerNo}")
     public ResponseEntity<?> updateTrainer(
-            @PathVariable Long trainerNo,
+            @PathVariable("trainerNo") Long trainerNo,
             @RequestBody Trainer trainer) {
         try {
             trainer.setTrainerNo(trainerNo);

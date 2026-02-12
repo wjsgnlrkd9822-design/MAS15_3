@@ -36,7 +36,7 @@
         LEFT JOIN pet_status ps ON r.pet_no = ps.pet_no
         
         WHERE r.user_no = #{userNo}
-          AND r.status = '예약중'
+          AND r.status IN ('예약중', '결제완료')
           AND #{today} BETWEEN r.res_date AND r.checkout_date
           
         ORDER BY r.res_no DESC
@@ -265,7 +265,7 @@
         JOIN pets p ON r.pet_no = p.no
         JOIN hotelrooms h ON r.room_no = h.room_no
         WHERE r.room_no = #{roomNo}
-            AND r.status = '예약중'
+            AND r.status IN ('예약중', '결제완료')
             AND r.checkout_date &gt;= CURDATE()
         ORDER BY r.res_date
     </select>
