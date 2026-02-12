@@ -111,7 +111,7 @@ public class AdminController {
     @PostMapping("/update/{roomNo}")
     @ResponseBody
     public ResponseEntity<?> updateRoom(
-            @PathVariable Long roomNo,
+            @PathVariable("roomNo") Long roomNo,
             @RequestBody HotelRoom hotelRoom) {
         try {
             hotelRoom.setRoomNo(roomNo);
@@ -290,7 +290,7 @@ public class AdminController {
 
     @PutMapping("/trainerupdate/{trainerNo}")
     public ResponseEntity<?> updateTrainer(
-            @PathVariable Long trainerNo,
+            @PathVariable("trainerNo") Long trainerNo,
             @RequestBody Trainer trainer) {
         try {
             trainer.setTrainerNo(trainerNo);
