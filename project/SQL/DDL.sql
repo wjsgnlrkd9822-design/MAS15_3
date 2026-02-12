@@ -130,9 +130,8 @@ SELECT * FROM pets
     on update CASCADE
     on delete CASCADE,
     
-    FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no)
-    on update CASCADE
-    on delete CASCADE,
+    FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no),
+ 
 
     INDEX idx_check_dates (res_date, checkout_date),    /* 예약 추가 */
     INDEX idx_room_status (room_no, status)             /* 예약 추가 */
