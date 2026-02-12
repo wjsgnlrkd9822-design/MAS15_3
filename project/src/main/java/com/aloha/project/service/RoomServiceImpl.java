@@ -28,8 +28,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public boolean update(HotelRoom hotelRoom) throws Exception {
-        int result = roomMapper.update(hotelRoom);
-        return result > 0;
+      return roomMapper.update(hotelRoom) > 0;
     }
 
     @Override

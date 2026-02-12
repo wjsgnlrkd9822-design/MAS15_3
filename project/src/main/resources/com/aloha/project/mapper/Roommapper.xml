@@ -31,7 +31,11 @@
           <if test="active != null"> active = #{active}, </if>
           <if test="img != null"> img = #{img} </if>
         </set>
-        WHERE room_no = #{roomNo}
+          WHERE room_no = #{roomNo}
+      AND NOT EXISTS (
+      SELECT 1 FROM reservations r
+      WHERE r.room_no = hotelrooms.room_no
+  )
       </update>
 
 

@@ -111,7 +111,7 @@ public class AdminController {
     @PostMapping("/update/{roomNo}")
     @ResponseBody
     public ResponseEntity<?> updateRoom(
-            @PathVariable Long roomNo,
+            @PathVariable("roomNo") Long roomNo,
             @RequestBody HotelRoom hotelRoom) {
         try {
             hotelRoom.setRoomNo(roomNo);
@@ -290,7 +290,7 @@ public class AdminController {
 
     @PutMapping("/trainerupdate/{trainerNo}")
     public ResponseEntity<?> updateTrainer(
-            @PathVariable Long trainerNo,
+            @PathVariable("trainerNo") Long trainerNo,
             @RequestBody Trainer trainer) {
         try {
             trainer.setTrainerNo(trainerNo);
@@ -327,10 +327,10 @@ public class AdminController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")  
-    @DeleteMapping("/user/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") String id) {   
+    @DeleteMapping("/user/delete/{no}")
+    public ResponseEntity<?> deleteUser(@PathVariable("no") Long no) {   
         try {
-            int result = userService.delete(id);
+            int result = userService.deleteByNO(no);
             if (result == 0) {
                 return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
             }

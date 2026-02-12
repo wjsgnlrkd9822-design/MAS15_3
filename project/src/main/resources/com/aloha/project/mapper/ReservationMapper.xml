@@ -1,74 +1,90 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.aloha.project.mapper.ReservationMapper">
+    <mapper namespace="com.aloha.project.mapper.ReservationMapper">
 
-    <!-- ⭐ 활성화된 예약 조회 (CCTV용) + 반려견 상태 포함 -->
-    <select id="selectActiveReservation" resultType="com.aloha.project.dto.ReservationDto">
-        SELECT 
-            r.res_no AS resNo,
-            r.user_no AS userNo,
-            r.pet_no AS petNo,
-            r.room_no AS roomNo,
-            r.res_date AS checkin,
-            r.checkout_date AS checkout,
-            r.total_price AS totalPrice,
-            r.res_time AS resTime,
-            r.reg_date AS regDate,
-            r.status,
+        <!-- ⭐ 활성화된 예약 조회 (CCTV용) + 반려견 상태 포함 -->
+        <select id="selectActiveReservation" resultType="com.aloha.project.dto.ReservationDto">
+            SELECT 
+                r.res_no AS resNo,
+                r.user_no AS userNo,
+                r.pet_no AS petNo,
+                r.room_no AS roomNo,
+                r.res_date AS checkin,
+                r.checkout_date AS checkout,
+                r.total_price AS totalPrice,
+                r.res_time AS resTime,
+                r.reg_date AS regDate,
+                r.status,
+                
+                p.name AS petName,
+                
+                h.room_type AS roomType,
+                h.img AS roomImg,
+                h.cctv_url AS cctvUrl,
+                
+                ps.pet_no AS 'petStatus.petNo',
+                ps.status AS 'petStatus.status',
+                ps.next_schedule AS 'petStatus.nextSchedule',
+                ps.updated_at AS 'petStatus.updatedAt'
+                
+            FROM reservations r
+            JOIN pets p ON r.pet_no = p.no
+            JOIN hotelrooms h ON r.room_no = h.room_no
+            LEFT JOIN pet_status ps ON r.pet_no = ps.pet_no
             
-            p.name AS petName,
+            WHERE r.user_no = #{userNo}
+            AND r.status IN ('예약중', '결제완료')
+            AND #{today} BETWEEN r.res_date AND r.checkout_date
             
-            h.room_type AS roomType,
-            h.img AS roomImg,
-            h.cctv_url AS cctvUrl,
-            
-            ps.pet_no AS 'petStatus.petNo',
-            ps.status AS 'petStatus.status',
-            ps.next_schedule AS 'petStatus.nextSchedule',
-            ps.updated_at AS 'petStatus.updatedAt'
-            
-        FROM reservations r
-        JOIN pets p ON r.pet_no = p.no
-        JOIN hotelrooms h ON r.room_no = h.room_no
-        LEFT JOIN pet_status ps ON r.pet_no = ps.pet_no
-        
-        WHERE r.user_no = #{userNo}
-          AND r.status = '예약중'
-          AND #{today} BETWEEN r.res_date AND r.checkout_date
-          
-        ORDER BY r.res_no DESC
-        LIMIT 1
-    </select>
+            ORDER BY r.res_no DESC
+            LIMIT 1
+        </select>
 
-    <!-- ✅ 예약 추가 (status 필드 추가) -->
-    <insert id="insertReservation" parameterType="com.aloha.project.dto.ReservationDto" useGeneratedKeys="true" keyProperty="resNo">
-        INSERT INTO reservations
-        (user_no, pet_no, room_no, res_date, res_time, checkout_date, total_price, status)
-        VALUES
-        (#{userNo}, #{petNo}, #{roomNo}, #{checkin}, #{resTime}, #{checkout}, #{totalPrice}, COALESCE(#{status}, '예약중'))
-    </insert>
+        <!-- ✅ 예약 추가 (status 필드 추가) -->
+        <insert id="insertReservation" parameterType="com.aloha.project.dto.ReservationDto" useGeneratedKeys="true" keyProperty="resNo">
+            INSERT INTO reservations
+            (user_no, pet_no, room_no, res_date, res_time, checkout_date, total_price, status)
+            VALUES
+            (#{userNo}, #{petNo}, #{roomNo}, #{checkin}, #{resTime}, #{checkout}, #{totalPrice}, COALESCE(#{status}, '예약중'))
+        </insert>
 
-    <!-- ⭐ 수정: 예약 가능한 객실 조회 (날짜별 + roomType 필터) + cctvUrl 추가 -->
-    <select id="getAvailableRooms" parameterType="map" resultType="com.aloha.project.dto.HotelRoom">
-        SELECT 
-            h.room_no AS roomNo,
-            h.room_type AS roomType,
-            h.room_price AS roomPrice,
-            h.etc,
-            h.img,
-            h.cctv_url AS cctvUrl
-        FROM hotelrooms h
-        WHERE 1=1
-            <!-- roomType이 있으면 LIKE 검색 (예: "Small Dog", "Medium Dog", "Large Dog") -->
-            <if test="roomType != null and roomType != ''">
-                AND h.room_type LIKE CONCAT('%', #{roomType}, '%')
-            </if>
-            <!-- 예약 겹침 체크: 해당 기간에 예약이 없는 객실만 조회 -->
-            AND h.room_no NOT IN (
-            SELECT room_no
+        <!-- ⭐ 수정: 예약 가능한 객실 조회 (날짜별 + roomType 필터) + cctvUrl 추가 -->
+        <select id="getAvailableRooms" parameterType="map" resultType="com.aloha.project.dto.HotelRoom">
+            SELECT 
+                h.room_no AS roomNo,
+                h.room_type AS roomType,
+                h.room_price AS roomPrice,
+                h.etc,
+                h.img,
+                h.cctv_url AS cctvUrl
+            FROM hotelrooms h
+            WHERE 1=1
+                <!-- roomType이 있으면 LIKE 검색 (예: "Small Dog", "Medium Dog", "Large Dog") -->
+                <if test="roomType != null and roomType != ''">
+                    AND h.room_type LIKE CONCAT('%', #{roomType}, '%')
+                </if>
+                <!-- 예약 겹침 체크: 해당 기간에 예약이 없는 객실만 조회 -->
+                AND h.room_no NOT IN (
+                SELECT room_no
+                FROM reservations
+                WHERE status = '예약중'
+                AND (
+                        #{checkin} &lt; checkout_date
+                    AND #{checkout} &gt;= res_date
+                )
+            )
+            ORDER BY h.room_price
+        </select>
+
+        <!-- ⭐ 예약 가능 여부 확인 (날짜 겹침 체크) -->
+        <select id="checkRoomAvailability"
+                parameterType="map"
+                resultType="int">
+
+            SELECT COUNT(*)
             FROM reservations
             WHERE status IN ('예약중', '결제완료')
             AND (
@@ -95,250 +111,252 @@
 
     </select>
 
-    <select id="checkRoomAvailabilityForUpdate"
-            parameterType="map"
-            resultType="int">
+        </select>
 
-        SELECT COUNT(*)
+        <select id="checkRoomAvailabilityForUpdate"
+                parameterType="map"
+                resultType="int">
+
+            SELECT COUNT(*)
+            FROM reservations
+            WHERE room_no = #{roomNo}
+            AND status = '예약중'
+            AND res_no != #{resNo}
+            AND (
+                    #{checkin} &lt; checkout_date
+                AND #{checkout} &gt;= res_date
+            )
+
+        </select>
+
+    <select id="getMemberTotalSales"
+            resultType="com.aloha.project.dto.userTotalSales">
+
+        SELECT 
+            r.user_no AS userNo,
+            u.name AS name,
+            SUM(r.total_price) AS totalSales
+        FROM reservations r
+        JOIN users u ON r.user_no = u.no
+        WHERE status = "결제완료"
+        GROUP BY r.user_no
+        ORDER BY totalSales DESC
+
+    </select>
+
+
+    <select id="getMonthlySales"
+            resultType="com.aloha.project.dto.MonthlySalesDto">
+
+        SELECT 
+            YEAR(res_date) AS year,
+            MONTH(res_date) AS month,
+            SUM(total_price) AS totalSales
         FROM reservations
-        WHERE room_no = #{roomNo}
-        AND status In ('예약중', '결제완료')
-        AND res_no != #{resNo}
-        AND (
-                #{checkin} &lt; checkout_date
-            AND #{checkout} &gt;= res_date
-        )
+        WHERE status = "결제완료"
+        GROUP BY YEAR(res_date), MONTH(res_date)
+        ORDER BY year DESC, month DESC
 
     </select>
 
-<select id="getMemberTotalSales"
-        resultType="com.aloha.project.dto.userTotalSales">
+        <!-- ✅ 회원별 예약 조회 (status 추가) + cctvUrl 추가 -->
+        <select id="findByUserNo" resultType="com.aloha.project.dto.ReservationDto">
+            SELECT 
+                r.res_no AS resNo,
+                r.user_no AS userNo,
+                r.res_date AS checkin,
+                r.checkout_date AS checkout,
+                r.total_price AS totalPrice,
+                r.status,
+                r.reg_date AS regDate,
+                p.name AS petName,
+                h.room_type AS roomType,
+                h.room_no AS roomNo,
+                h.img AS roomImg,
+                h.cctv_url AS cctvUrl
+            FROM reservations r
+            JOIN pets p ON r.pet_no = p.no
+            JOIN hotelrooms h ON r.room_no = h.room_no
+            WHERE r.user_no = #{userNo}
+            ORDER BY r.res_date DESC
+        </select>
 
-    SELECT 
-        r.user_no AS userNo,
-        u.name AS name,
-        SUM(r.total_price) AS totalSales
-    FROM reservations r
-    JOIN users u ON r.user_no = u.no
+        <!-- ✅ 예약 1건 조회 (status 추가) + cctvUrl 추가 -->
+        <select id="findByResNo" resultType="com.aloha.project.dto.ReservationDto">
+            SELECT 
+                r.res_no AS resNo,
+                r.user_no AS userNo,
+                r.res_date AS checkin,
+                r.checkout_date AS checkout,
+                r.total_price AS totalPrice,
+                r.status,
+                r.res_time AS resTime,
+                p.name AS petName,
+                h.room_type AS roomType,
+                h.room_no AS roomNo,
+                h.img AS roomImg,
+                h.cctv_url AS cctvUrl
+            FROM reservations r
+            JOIN pets p ON r.pet_no = p.no
+            JOIN hotelrooms h ON r.room_no = h.room_no
+            WHERE r.res_no = #{resNo}
+        </select>
 
-    GROUP BY r.user_no
-    ORDER BY totalSales DESC
+        <!-- ⭐ 예약 취소 (status를 '취소'로 변경) -->
+        <update id="cancelReservation" parameterType="long">
+            UPDATE reservations 
+            SET status = '취소'
+            WHERE res_no = #{resNo}
+                AND status = '예약중'
+        </update>
 
-</select>
+        <!-- ⭐ 체크아웃 처리 (status를 '완료'로 변경) -->
+        <update id="completeReservation" parameterType="long">
+            UPDATE reservations 
+            SET status = '완료'
+            WHERE res_no = #{resNo}
+                AND status = '예약중'
+        </update>
 
+        <!-- ⭐ 예약 상태 업데이트 -->
+        <update id="updateReservationStatus" parameterType="map">
+            UPDATE reservations 
+            SET status = #{status}
+            WHERE res_no = #{resNo}
+        </update>
 
-<select id="getMonthlySales"
-        resultType="com.aloha.project.dto.MonthlySalesDto">
+        <!-- ⭐ 오늘 체크인 목록 + cctvUrl 추가 -->
+        <select id="getTodayCheckIns" resultType="com.aloha.project.dto.ReservationDto">
+            SELECT 
+                r.res_no AS resNo,
+                r.user_no AS userNo,
+                r.pet_no AS petNo,
+                r.room_no AS roomNo,
+                r.res_date AS checkin,
+                r.checkout_date AS checkout,
+                r.res_time AS resTime,
+                r.status,
+                p.name AS petName,
+                h.room_type AS roomType,
+                h.img AS roomImg,
+                h.cctv_url AS cctvUrl
+            FROM reservations r
+            JOIN pets p ON r.pet_no = p.no
+            JOIN hotelrooms h ON r.room_no = h.room_no
+            WHERE r.res_date = CURDATE()
+                AND r.status = '예약중'
+            ORDER BY r.res_time
+        </select>
 
-    SELECT 
-        YEAR(res_date) AS year,
-        MONTH(res_date) AS month,
-        SUM(total_price) AS totalSales
-    FROM reservations
+        <!-- ⭐ 오늘 체크아웃 목록 + cctvUrl 추가 -->
+        <select id="getTodayCheckOuts" resultType="com.aloha.project.dto.ReservationDto">
+            SELECT 
+                r.res_no AS resNo,
+                r.user_no AS userNo,
+                r.pet_no AS petNo,
+                r.room_no AS roomNo,
+                r.res_date AS checkin,
+                r.checkout_date AS checkout,
+                r.status,
+                p.name AS petName,
+                h.room_type AS roomType,
+                h.img AS roomImg,
+                h.cctv_url AS cctvUrl
+            FROM reservations r
+            JOIN pets p ON r.pet_no = p.no
+            JOIN hotelrooms h ON r.room_no = h.room_no
+            WHERE r.checkout_date = CURDATE()
+                AND r.status = '예약중'
+        </select>
 
-    GROUP BY YEAR(res_date), MONTH(res_date)
-    ORDER BY year DESC, month DESC
+        <!-- ⭐ 객실별 예약 스케줄 확인 + cctvUrl 추가 -->
+        <select id="getRoomSchedule" parameterType="long" resultType="com.aloha.project.dto.ReservationDto">
+            SELECT 
+                r.res_no AS resNo,
+                r.res_date AS checkin,
+                r.checkout_date AS checkout,
+                r.status,
+                p.name AS petName,
+                h.img AS roomImg,
+                h.cctv_url AS cctvUrl
+            FROM reservations r
+            JOIN pets p ON r.pet_no = p.no
+            JOIN hotelrooms h ON r.room_no = h.room_no
+            WHERE r.room_no = #{roomNo}
+                AND r.status IN ('예약중', '결제완료')
+                AND r.checkout_date &gt;= CURDATE()
+            ORDER BY r.res_date
+        </select>
 
-</select>
+        <!-- ✅ 예약의 선택된 서비스 번호 조회 -->
+        <select id="selectServiceIdsByReservation" resultType="long" parameterType="long">
+            SELECT service_no
+            FROM reservation_services
+            WHERE res_no = #{resNo}
+        </select>
 
-    <!-- ✅ 회원별 예약 조회 (status 추가) + cctvUrl 추가 -->
-    <select id="findByUserNo" resultType="com.aloha.project.dto.ReservationDto">
-        SELECT 
-              r.res_no AS resNo,
-              r.user_no AS userNo,
-              r.res_date AS checkin,
-              r.checkout_date AS checkout,
-              r.total_price AS totalPrice,
-              r.status,
-              r.reg_date AS regDate,
-              p.name AS petName,
-              h.room_type AS roomType,
-              h.room_no AS roomNo,
-              h.img AS roomImg,
-              h.cctv_url AS cctvUrl
-        FROM reservations r
-        JOIN pets p ON r.pet_no = p.no
-        JOIN hotelrooms h ON r.room_no = h.room_no
-        WHERE r.user_no = #{userNo}
-        ORDER BY r.res_date DESC
-    </select>
+        <!-- ✅ 예약 수정 -->
+        <update id="update">
+            UPDATE reservations
+            SET res_date = #{checkinDate},
+                checkout_date = #{checkoutDate},
+                total_price = #{totalPrice} 
+            WHERE res_no = #{resNo}
+        </update>
 
-    <!-- ✅ 예약 1건 조회 (status 추가) + cctvUrl 추가 -->
-    <select id="findByResNo" resultType="com.aloha.project.dto.ReservationDto">
-        SELECT 
-              r.res_no AS resNo,
-              r.user_no AS userNo,
-              r.res_date AS checkin,
-              r.checkout_date AS checkout,
-              r.total_price AS totalPrice,
-              r.status,
-              r.res_time AS resTime,
-              p.name AS petName,
-              h.room_type AS roomType,
-              h.room_no AS roomNo,
-              h.img AS roomImg,
-              h.cctv_url AS cctvUrl
-        FROM reservations r
-        JOIN pets p ON r.pet_no = p.no
-        JOIN hotelrooms h ON r.room_no = h.room_no
-        WHERE r.res_no = #{resNo}
-    </select>
+        <!-- ✅ 매출 총 합계 구하기 (완료된 예약만) -->
+        <select id="getTotalSales" resultType="long">
+            SELECT COALESCE(SUM(total_price), 0)
+            FROM reservations
+            WHERE status = "결제완료"
+        </select>
 
-    <!-- ⭐ 예약 취소 (status를 '취소'로 변경) -->
-    <update id="cancelReservation" parameterType="long">
-        UPDATE reservations 
-        SET status = '취소'
-        WHERE res_no = #{resNo}
-            AND status = '예약중'
-    </update>
+        <!-- ✅ 예약 삭제 -->
+        <delete id="deleteReservation">
+            DELETE FROM reservations WHERE res_no = #{resNo}
+        </delete>
 
-    <!-- ⭐ 체크아웃 처리 (status를 '완료'로 변경) -->
-    <update id="completeReservation" parameterType="long">
-        UPDATE reservations 
-        SET status = '완료'
-        WHERE res_no = #{resNo}
-            AND status = '예약중'
-    </update>
+        <!-- ✅ 예약 서비스 등록 -->
+        <insert id="insertReservationService">
+            INSERT INTO reservation_services (res_no, service_no)
+            VALUES (#{resNo}, #{serviceNo})
+        </insert>
 
-    <!-- ⭐ 예약 상태 업데이트 -->
-    <update id="updateReservationStatus" parameterType="map">
-        UPDATE reservations 
-        SET status = #{status}
-        WHERE res_no = #{resNo}
-    </update>
+        <!-- ✅ 예약 서비스 삭제 (예약 번호 기준) -->
+        <delete id="deleteReservationServices" parameterType="long">
+            DELETE FROM reservation_services WHERE res_no = #{resNo}
+        </delete>
 
-    <!-- ⭐ 오늘 체크인 목록 + cctvUrl 추가 -->
-    <select id="getTodayCheckIns" resultType="com.aloha.project.dto.ReservationDto">
-        SELECT 
-            r.res_no AS resNo,
-            r.user_no AS userNo,
-            r.pet_no AS petNo,
-            r.room_no AS roomNo,
-            r.res_date AS checkin,
-            r.checkout_date AS checkout,
-            r.res_time AS resTime,
-            r.status,
-            p.name AS petName,
-            h.room_type AS roomType,
-            h.img AS roomImg,
-            h.cctv_url AS cctvUrl
-        FROM reservations r
-        JOIN pets p ON r.pet_no = p.no
-        JOIN hotelrooms h ON r.room_no = h.room_no
-        WHERE r.res_date = CURDATE()
-            AND r.status IN ('예약중', '결제완료')
-        ORDER BY r.res_time
-    </select>
+        <!-- ✅ 서비스 가격 조회 -->
+        <select id="getServicePrice" resultType="int" parameterType="long">
+            SELECT service_price
+            FROM hotelservices
+            WHERE service_no = #{serviceNo}
+        </select>
 
-    <!-- ⭐ 오늘 체크아웃 목록 + cctvUrl 추가 -->
-    <select id="getTodayCheckOuts" resultType="com.aloha.project.dto.ReservationDto">
-        SELECT 
-            r.res_no AS resNo,
-            r.user_no AS userNo,
-            r.pet_no AS petNo,
-            r.room_no AS roomNo,
-            r.res_date AS checkin,
-            r.checkout_date AS checkout,
-            r.status,
-            p.name AS petName,
-            h.room_type AS roomType,
-            h.img AS roomImg,
-            h.cctv_url AS cctvUrl
-        FROM reservations r
-        JOIN pets p ON r.pet_no = p.no
-        JOIN hotelrooms h ON r.room_no = h.room_no
-        WHERE r.checkout_date = CURDATE()
-            AND r.status IN ('예약중', '결제완료')
-    </select>
+        <!-- ✅ 예약별 선택 서비스 조회 -->
+        <select id="selectServicesByReservation" resultType="com.aloha.project.dto.HotelService" parameterType="long">
+            SELECT s.service_no AS serviceNo,
+                s.service_name AS serviceName,
+                s.description,
+                s.service_price AS servicePrice
+            FROM reservation_services rs
+            JOIN hotelservices s ON rs.service_no = s.service_no
+            WHERE rs.res_no = #{resNo}
+        </select>
 
-    <!-- ⭐ 객실별 예약 스케줄 확인 + cctvUrl 추가 -->
-    <select id="getRoomSchedule" parameterType="long" resultType="com.aloha.project.dto.ReservationDto">
-        SELECT 
-            r.res_no AS resNo,
-            r.res_date AS checkin,
-            r.checkout_date AS checkout,
-            r.status,
-            p.name AS petName,
-            h.img AS roomImg,
-            h.cctv_url AS cctvUrl
-        FROM reservations r
-        JOIN pets p ON r.pet_no = p.no
-        JOIN hotelrooms h ON r.room_no = h.room_no
-        WHERE r.room_no = #{roomNo}
-            AND r.status In ('예약중', '결제완료')
-            AND r.checkout_date &gt;= CURDATE()
-        ORDER BY r.res_date
-    </select>
-
-    <!-- ✅ 예약의 선택된 서비스 번호 조회 -->
-    <select id="selectServiceIdsByReservation" resultType="long" parameterType="long">
-        SELECT service_no
-        FROM reservation_services
-        WHERE res_no = #{resNo}
-    </select>
-
-    <!-- ✅ 예약 수정 -->
-    <update id="update">
+        <!-- ✅ tid 저장 (결제 완료 시) -->
+    <update id="updateTid" parameterType="map">
         UPDATE reservations
-        SET res_date = #{checkinDate},
-            checkout_date = #{checkoutDate},
-            total_price = #{totalPrice} 
+        SET tid = #{tid}
         WHERE res_no = #{resNo}
     </update>
 
-    <!-- ✅ 매출 총 합계 구하기 (완료된 예약만) -->
-    <select id="getTotalSales" resultType="long">
-        SELECT COALESCE(SUM(total_price), 0)
+    <!-- ✅ tid 조회 (환불 시) -->
+    <select id="getTidByResNo" resultType="String" parameterType="long">
+        SELECT tid
         FROM reservations
-        <!-- WHERE status = '완료' -->
+        WHERE res_no = #{resNo}
     </select>
 
-    <!-- ✅ 예약 삭제 -->
-    <delete id="deleteReservation">
-        DELETE FROM reservations WHERE res_no = #{resNo}
-    </delete>
-
-    <!-- ✅ 예약 서비스 등록 -->
-    <insert id="insertReservationService">
-        INSERT INTO reservation_services (res_no, service_no)
-        VALUES (#{resNo}, #{serviceNo})
-    </insert>
-
-    <!-- ✅ 예약 서비스 삭제 (예약 번호 기준) -->
-    <delete id="deleteReservationServices" parameterType="long">
-        DELETE FROM reservation_services WHERE res_no = #{resNo}
-    </delete>
-
-    <!-- ✅ 서비스 가격 조회 -->
-    <select id="getServicePrice" resultType="int" parameterType="long">
-        SELECT service_price
-        FROM hotelservices
-        WHERE service_no = #{serviceNo}
-    </select>
-
-    <!-- ✅ 예약별 선택 서비스 조회 -->
-    <select id="selectServicesByReservation" resultType="com.aloha.project.dto.HotelService" parameterType="long">
-        SELECT s.service_no AS serviceNo,
-            s.service_name AS serviceName,
-            s.description,
-            s.service_price AS servicePrice
-        FROM reservation_services rs
-        JOIN hotelservices s ON rs.service_no = s.service_no
-        WHERE rs.res_no = #{resNo}
-    </select>
-
-    <!-- ✅ tid 저장 (결제 완료 시) -->
-<update id="updateTid" parameterType="map">
-    UPDATE reservations
-    SET tid = #{tid}
-    WHERE res_no = #{resNo}
-</update>
-
-<!-- ✅ tid 조회 (환불 시) -->
-<select id="getTidByResNo" resultType="String" parameterType="long">
-    SELECT tid
-    FROM reservations
-    WHERE res_no = #{resNo}
-</select>
-
-</mapper>
+    </mapper>
