@@ -11,12 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @ToString
 public class OAuthAttributes {
-    private Map<String, Object> attributes;      // OAuth 토큰 속성들
-    private String nameAttributeKey;             // 사용자 이름 속성 키
-    private String name;                         // 이름(닉네임)
-    private String email;                        // 이메일
-    private String socialId;                     // 소셜 ID (kakao의 경우 id)
-    private String provider;                     // 소셜 제공자 (kakao, naver 등)
+    private Map<String, Object> attributes;  
+    private String nameAttributeKey;  
+    private String name;       
+    private String email; 
+    private String socialId; 
+    private String provider;        
 
     @Builder
     public OAuthAttributes(Map<String, Object> attributes, String nameAttributeKey, 
@@ -56,25 +56,19 @@ public class OAuthAttributes {
                               .nameAttributeKey(userNameAttributeName)
                               .build();
     }
-    
-    /**
-     * OAuthAttributes를 UserSocial DTO로 변환
-     */
+
     public UserSocial toEntity(Long userNo, String username) {
         UserSocial userSocial = new UserSocial();
-        userSocial.setUserNo(userNo);           // 기존 사용자 번호
-        userSocial.setUsername(username);        // 사용자명
-        userSocial.setProvider(this.provider);   // kakao
-        userSocial.setSocialId(this.socialId);   // 카카오 ID
-        userSocial.setName(this.name);           // 닉네임
-        userSocial.setEmail(this.email);         // 이메일
+        userSocial.setUserNo(userNo); 
+        userSocial.setUsername(username); 
+        userSocial.setProvider(this.provider); 
+        userSocial.setSocialId(this.socialId);
+        userSocial.setName(this.name);      
+        userSocial.setEmail(this.email);     
         
         return userSocial;
     }
-    
-    /**
-     * 간단 버전 - userNo 없이 변환
-     */
+
     public UserSocial toEntity() {
         return toEntity(null, null);
     }

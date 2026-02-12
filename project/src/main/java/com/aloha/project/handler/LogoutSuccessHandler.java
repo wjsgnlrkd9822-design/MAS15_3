@@ -11,9 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * 로그아웃 성공 처리 이벤트 핸들러
- */
+
 @Slf4j
 @Component
 public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
@@ -26,7 +24,6 @@ public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
     
     log.info("로그아웃 성공...");
 
-    // 로그아웃 성공 후 리다이렉트할 경로 설정
     setDefaultTargetUrl("/");
     super.onLogoutSuccess(request, response, authentication);
   }

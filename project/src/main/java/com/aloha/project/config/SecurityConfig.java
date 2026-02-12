@@ -20,7 +20,7 @@ import com.aloha.project.handler.CustomAccessDeniedHandler;
 import com.aloha.project.handler.LoginFailureHandler;
 import com.aloha.project.handler.LoginSuccessHandler;
 import com.aloha.project.handler.LogoutSuccessHandler;
-import com.aloha.project.handler.OAuth2LoginSuccessHandler;  // ✅ 추가
+import com.aloha.project.handler.OAuth2LoginSuccessHandler;
 import com.aloha.project.service.CustomOAuth2UserService;
 import com.aloha.project.service.UserDetailServiceImpl;
 
@@ -37,8 +37,8 @@ public class SecurityConfig {
     private final DataSource dataSource;
     private final UserDetailServiceImpl userDetailServiceImpl;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final LoginSuccessHandler loginSuccessHandler;           // 일반 로그인용
-    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;  // ✅ OAuth2 로그인용
+    private final LoginSuccessHandler loginSuccessHandler;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
     private final LogoutSuccessHandler logoutSuccessHandler;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -55,17 +55,17 @@ public class SecurityConfig {
                               );
     // 폼 로그인 설정
     http.formLogin(login -> login
-      .loginPage("/login")                    // 커스텀 로그인 페이지 경로
-      .loginProcessingUrl("/login")  // 로그인 요청 경로
-      .successHandler(loginSuccessHandler)         // 로그인 성공 핸들러 설정
-      .failureHandler(loginFailureHandler)         // 로그인 실패 핸들러 설정
+      .loginPage("/login")    
+      .loginProcessingUrl("/login")
+      .successHandler(loginSuccessHandler)
+      .failureHandler(loginFailureHandler)
     );
 
         // form 로그인 설정 (일반 로그인)
         http.formLogin(login -> login
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .successHandler(loginSuccessHandler)      // 일반 로그인 핸들러
+                .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler)
         );
 
@@ -74,7 +74,7 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(customOAuth2UserService))
-                .successHandler(oAuth2LoginSuccessHandler)  // ✅ OAuth2 전용 핸들러
+                .successHandler(oAuth2LoginSuccessHandler) 
                 .failureUrl("/login?error=oauth2")
         );
 

@@ -322,6 +322,11 @@
   <section class="mypage-reservations">
     <div class="mypage-reservations-inner">
       <h3>호텔 예약 내역</h3>
+      <div th:if="${#lists.isEmpty(reservations)}" class="text-center py-5">
+  <h5>예약한 내역이 없습니다.</h5>
+</div>
+
+<div th:if="${!#lists.isEmpty(reservations)}">
       <table>
         <thead>
           <tr>
@@ -329,27 +334,38 @@
             <th>반려견 이름</th>
             <th>체크인</th>
             <th>체크아웃</th>
-            <th>상태</th>
             <th>총금액</th>
+            <th>상태</th>
             <th>관리</th>
+            <th>결제</th>
           </tr>
         </thead>
         <tbody>
-          <tr th:each="res : ${reservations}">
+          <tr th:each="res : ${reservations}"
+            th:onclick="'openViewModal(' + ${res.resNo} + ')'"
+            th:style="${res.status == '환불'} ? 'background-color: #f0f0f0; color: #999; cursor:pointer;' : 'cursor:pointer;'">
             <td><span th:text="${res.resNo}"></span></td>
             <td th:text="${res.petName}">반려견 이름</td>
             <td th:text="${res.checkin}">2024-07-01</td>
             <td th:text="${res.checkout}">2024-07-05</td>
-            <td>예약 완료</td>
-            <td th:text="${#numbers.formatInteger(res.totalPrice, 3, 'COMMA')} + '원'">총금액</td>
-            <td>
-              <!-- 안전하게 모달 열기 -->
+            <td th:text="${#numbers.formatInteger(res.totalPrice, 1, 'COMMA')} + '원'">총금액</td>
+            <td th:text="${res.status}"></td>
+            <td onclick="event.stopPropagation()">
               <button class="btn btn-outline-secondary" type="button"
-                th:onclick="'openEditModal(' + ${res.resNo} + ')'">
-                수정
+                th:if="${res.status == '예약중'}"
+                th:onclick="'openEditModal(' + ${res.resNo} + ')'">수정
               </button>
             </td>
-
+            <td onclick="event.stopPropagation()">
+                <button class="btn btn-warning" type="button"
+                        th:if="${res.status == '예약중'}"
+                        th:onclick="'payReservation(' + ${res.resNo} + ',' + ${res.totalPrice} + ')'">결제
+                </button>
+                <button class="btn btn-danger" type="button"
+                        th:if="${res.status == '결제완료'}"
+                        th:onclick="'refundReservation(' + ${res.resNo} + ',' + ${res.totalPrice} + ')'">환불
+                </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -369,44 +385,6 @@
         <div class="modal-body">
           <input type="hidden" id="editResNo">
           <input type="hidden" id="editRoomNo">
-
-  <!-- 호텔 예약 내역 -->
-  <section class="mypage-reservations">
-        <div class="mypage-reservations-inner">
-            <h3>호텔 예약 내역</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>예약 번호</th>
-                        <th>반려견 이름</th>
-                        <th>체크인</th>
-                        <th>체크아웃</th>
-                        <th>상태</th>
-                        <th>총금액</th>
-                        <th>관리</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <tr th:each="res : ${reservations}">
-                  <td><span th:text="${res.resNo}"></span></td>
-                  <td th:text="${res.petName}">반려견 이름</td>
-                  <td th:text="${res.checkin}">2024-07-01</td>
-                  <td th:text="${res.checkout}">2024-07-05</td>
-                  <td>예약 완료</td>
-                  <td th:text="${#numbers.formatInteger(res.totalPrice, 3, 'COMMA')} + '원'">총금액</td>  <!-- 천원 단위 컴마 추가 -->
-                  <td>
-  <!-- ✅ 안전하게 모달 열기 -->
-  <button class="btn-edit" type="button"
-          th:onclick="'openEditModal(' + ${res.resNo} + ')'">
-    수정
-  </button>
-</td>
-
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
 
           <div class="mb-3">
             <label>객실 정보</label>
@@ -466,6 +444,74 @@
       </div>
     </div>
   </div>
+
+
+  <!-- 예약 조회 모달(수정 불가) -->
+   <div class="modal fade" id="viewReservationModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">예약 상세 정보</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="viewResNo">
+
+        <div class="mb-3">
+          <label>객실 정보</label>
+          <input id="viewRoomType" class="form-control mb-2" readonly>
+          <img id="viewRoomImg" class="img-fluid rounded"
+            style="width:100%; height:260px; object-fit:cover; display:none;">
+        </div>
+
+        <div class="mb-3">
+          <label>반려견 이름</label>
+          <input id="viewPetName" class="form-control" readonly>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label>체크인</label>
+            <input type="text" id="viewCheckin" class="form-control" readonly>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label>체크아웃</label>
+            <input type="text" id="viewCheckout" class="form-control" readonly>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label>박 수</label>
+            <input id="viewNights" class="form-control" readonly>
+          </div>
+        </div>
+
+        
+        <div class="mb-3">
+          <label>선택 서비스</label>
+          <ul id="viewServiceList" class="list-group"></ul>
+        </div>
+        
+        <div class="mb-3">
+          <label>총 금액</label>
+          <input type="text" id="viewTotalPrice" class="form-control" readonly>
+        </div>
+        
+        <div class="mb-3">
+          <label>상태</label>
+          <input type="text" id="viewStatus" class="form-control" readonly>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+
+    </div>
+  </div>
+</div>
 
   <!-- 푸터 -->
   <th:block th:replace="~{fragments/footer::footer}"></th:block>
@@ -707,6 +753,156 @@
       .addEventListener('hide.bs.modal', function () {
         this.blur();
       });
+
+
+
+/* 정보 조회용 */
+      function calcNights(checkin, checkout) {
+  const inDate = new Date(checkin);
+  const outDate = new Date(checkout);
+
+  if (!checkin || !checkout) return 0;
+  if (outDate <= inDate) return 0;
+
+  return Math.ceil((outDate - inDate) / (1000 * 60 * 60 * 24));
+}
+
+function openViewModal(resNo) {
+  fetch(`/api/reservation/${resNo}`)
+    .then(res => res.json())
+    .then(data => {
+
+      document.getElementById("viewResNo").value = data.resNo;
+      document.getElementById("viewPetName").value = data.petName;
+      document.getElementById("viewCheckin").value = data.checkin;
+      document.getElementById("viewCheckout").value = data.checkout;
+      document.getElementById("viewStatus").value = data.status;
+
+      // 박 수 계산 (checkin, checkout 기반)
+      const nights = calcNights(data.checkin, data.checkout);
+      document.getElementById("viewNights").value = nights + "박";
+
+      // 서비스 가격 합산
+      let serviceTotal = 0;
+
+      // 방 정보 가져오기
+      fetch(`/api/room/${data.roomNo}`)
+        .then(res => res.json())
+        .then(room => {
+
+          document.getElementById("viewRoomType").value = room.roomType;
+
+          const img = document.getElementById("viewRoomImg");
+          img.src = "/uploads/" + room.img;
+          img.style.display = "block";
+
+          // 서비스 목록 가져오기
+          fetch('/api/room/services')
+            .then(res => res.json())
+            .then(services => {
+
+              const list = document.getElementById("viewServiceList");
+              list.innerHTML = "";
+
+              if (!data.serviceIds || data.serviceIds.length === 0) {
+                list.innerHTML = `<li class="list-group-item">선택한 서비스 없음</li>`;
+              } else {
+                services.forEach(service => {
+                  if (data.serviceIds.some(id => String(id) === String(service.serviceNo))) {
+                    serviceTotal += service.price;
+
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+                    li.innerText = `${service.serviceName} (${service.price.toLocaleString()}원)`;
+                    list.appendChild(li);
+                  }
+                });
+              }
+
+              // 총 가격 계산 (방 가격 * 박수 + 서비스 가격)
+              const totalPrice = (nights * room.roomPrice) + serviceTotal;
+
+              document.getElementById("viewTotalPrice").value =
+                totalPrice.toLocaleString() + "원";
+            });
+        });
+
+      // 모달 열기
+      const modalEl = document.getElementById("viewReservationModal");
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.show();
+    })
+    .catch(err => {
+      console.error(err);
+      alert("예약 정보를 불러오는 중 오류가 발생했습니다.");
+    });
+}
+
+
+
+      // ============================
+    // 카카오 간편 결제
+    // ============================
+function payReservation(resNo, totalPrice) {
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/kakaopay/ready';
+
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_csrf';
+    csrfInput.value = csrfToken;
+
+    const resNoInput = document.createElement('input');
+    resNoInput.type = 'hidden';
+    resNoInput.name = 'resNo';
+    resNoInput.value = resNo;
+
+    const totalPriceInput = document.createElement('input');
+    totalPriceInput.type = 'hidden';
+    totalPriceInput.name = 'totalPrice';
+    totalPriceInput.value = totalPrice;
+
+    form.appendChild(csrfInput);
+    form.appendChild(resNoInput);
+    form.appendChild(totalPriceInput);
+    document.body.appendChild(form);
+    form.submit();
+}
+
+
+function refundReservation(resNo, cancelAmount) {
+    if (!confirm("정말 환불하시겠습니까?")) return;
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/kakaopay/refund';
+
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_csrf';
+    csrfInput.value = csrfToken;
+
+    const resNoInput = document.createElement('input');
+    resNoInput.type = 'hidden';
+    resNoInput.name = 'resNo';
+    resNoInput.value = resNo;
+
+    const cancelAmountInput = document.createElement('input');
+    cancelAmountInput.type = 'hidden';
+    cancelAmountInput.name = 'cancelAmount';
+    cancelAmountInput.value = cancelAmount;
+
+    form.appendChild(csrfInput);
+    form.appendChild(resNoInput);
+    form.appendChild(cancelAmountInput);
+    document.body.appendChild(form);
+    form.submit();
+}
   </script>
 </body>
 

@@ -120,4 +120,10 @@ public interface ReservationService {
     
     List<userTotalSales> getMemberTotalSales();
     List<MonthlySalesDto> getMonthlySales();
+
+    /** ✅ tid 저장 (결제 완료 시) */
+    void updateTid(Long resNo, String tid);
+
+    /** ✅ tid 조회 (환불 시) */
+    String getTidByResNo(Long resNo);
 }
