@@ -128,6 +128,12 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectByNo(no);
     }
 
+    @Override
+    public int deleteByNO(Long no) throws Exception {
+      int result = userMapper.deleteByNo(no);
+        return result;
+    }
+
     
 
 }

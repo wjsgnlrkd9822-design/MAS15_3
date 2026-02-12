@@ -84,6 +84,11 @@
       WHERE id = #{id}
     </delete>
 
+    <delete id="deleteByNo">
+      DELETE FROM users
+      WHERE no = #{no}
+    </delete>
+
     <select id="list" resultMap="UserMap">
         SELECT *
         FROM users

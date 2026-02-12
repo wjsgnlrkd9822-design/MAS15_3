@@ -327,10 +327,10 @@ public class AdminController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")  
-    @DeleteMapping("/user/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") String id) {   
+    @DeleteMapping("/user/delete/{no}")
+    public ResponseEntity<?> deleteUser(@PathVariable("no") Long no) {   
         try {
-            int result = userService.delete(id);
+            int result = userService.deleteByNO(no);
             if (result == 0) {
                 return new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
             }
