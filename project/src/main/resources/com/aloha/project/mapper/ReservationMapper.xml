@@ -86,12 +86,30 @@
 
             SELECT COUNT(*)
             FROM reservations
-            WHERE room_no = #{roomNo}
-            AND status = '예약중'
+            WHERE status IN ('예약중', '결제완료')
             AND (
                     #{checkin} &lt; checkout_date
                 AND #{checkout} &gt;= res_date
             )
+        )
+        ORDER BY h.room_price
+    </select>
+
+    <!-- ⭐ 예약 가능 여부 확인 (날짜 겹침 체크) -->
+    <select id="checkRoomAvailability"
+            parameterType="map"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM reservations
+        WHERE room_no = #{roomNo}
+        AND status In ('예약중', '결제완료')
+        AND (
+                #{checkin} &lt; checkout_date
+            AND #{checkout} &gt;= res_date
+        )
+
+    </select>
 
         </select>
 

@@ -417,6 +417,8 @@ public class MainController {
         redirectAttributes.addFlashAttribute("nights", nights);
         redirectAttributes.addFlashAttribute("total", totalPrice);
 
+        redirectAttributes.addFlashAttribute("successMsg", "예약이 완료되었습니다!");
+        redirectAttributes.addFlashAttribute("paymentMsg", "결제를 진행해주세요.");
         return "redirect:/mypage";
     }
 
