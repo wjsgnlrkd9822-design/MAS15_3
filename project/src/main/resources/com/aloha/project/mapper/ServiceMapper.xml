@@ -22,15 +22,20 @@
         VALUES (#{serviceName}, #{servicePrice}, #{description})      
     </insert>
 
-    <update id="update">
-      UPDATE hotelservices
-      <set>
-        <if test="serviceName != null"> service_name = #{serviceName}, </if>
-        <if test="servicePrice != null"> service_price = #{servicePrice}, </if>
-        <if test="description != null"> description = #{description} </if>
-      </set>
-      WHERE service_no = #{serviceNo}  
-    </update>
+ <update id="update">
+  UPDATE hotelservices
+  <set>
+    <if test="serviceName != null"> service_name = #{serviceName}, </if>
+    <if test="servicePrice != null"> service_price = #{servicePrice}, </if>
+    <if test="description != null"> description = #{description} </if>
+  </set>
+  WHERE service_no = #{serviceNo}
+  AND NOT EXISTS (
+      SELECT 1
+      FROM reservation_services rs
+      WHERE rs.service_no = #{serviceNo}
+  )
+</update>
 
     <delete id="delete">
       DELETE FROM hotelservices

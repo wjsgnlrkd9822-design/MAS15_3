@@ -120,17 +120,15 @@ SELECT * FROM pets
     `status` VARCHAR(20) NOT NULL DEFAULT '예약중' COMMENT '예약상태 (예약중/결제완료)',  /* 예약 추가 */
     `tid` VARCHAR(100) COMMENT '카카오페이 거래 ID',
 
-    FOREIGN KEY (user_no) REFERENCES users(no)
-    on update CASCADE
-    on delete CASCADE,
+    FOREIGN KEY (user_no) REFERENCES users(no),
+ 
 
     FOREIGN KEY (pet_no) REFERENCES pets(no)
     on update CASCADE
     on delete CASCADE,
     
-    FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no)
-    on update CASCADE
-    on delete CASCADE,
+    FOREIGN KEY (room_no) REFERENCES hotelrooms(room_no),
+ 
 
     INDEX idx_check_dates (res_date, checkout_date),    /* 예약 추가 */
     INDEX idx_room_status (room_no, status)             /* 예약 추가 */

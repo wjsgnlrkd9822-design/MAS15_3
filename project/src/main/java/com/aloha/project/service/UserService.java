@@ -26,6 +26,8 @@ public interface UserService {
 
     // 회원 삭제
     public int delete(String id) throws Exception;
+
+    public int deleteByNO(Long no) throws Exception;
     
     List<User> list() throws Exception;
 
