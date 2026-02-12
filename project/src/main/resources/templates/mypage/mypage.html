@@ -22,6 +22,19 @@
 
 <body>
 
+  <script th:inline="javascript">
+  /*<![CDATA[*/
+  window.onload = function() {
+      const successMsg = /*[[${successMsg}]]*/ null;
+      const paymentMsg = /*[[${paymentMsg}]]*/ null;
+      
+      if (successMsg) {
+          alert(successMsg + '\n' + (paymentMsg || ''));
+      }
+  }
+  /*]]>*/
+</script>
+
   <!-- 헤더 -->
   <th:block th:replace="~{fragments/header::header}"></th:block>
 
@@ -843,34 +856,39 @@ function openViewModal(resNo) {
       // ============================
     // 카카오 간편 결제
     // ============================
-function payReservation(resNo, totalPrice) {
+  function payReservation(resNo, totalPrice) {
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 
+    // 팝업창 열기
+    const width = 500;
+    const height = 650;
+    const left = (screen.width - width) / 2;
+    const top = (screen.height - height) / 2;
+
+    window.open(
+        '',
+        'kakaopayPopup',
+        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`
+    );
+
+    // form 생성
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/kakaopay/ready';
+    form.target = 'kakaopayPopup';
 
-    const csrfInput = document.createElement('input');
-    csrfInput.type = 'hidden';
-    csrfInput.name = '_csrf';
-    csrfInput.value = csrfToken;
+    form.innerHTML = `
+        <input type="hidden" name="_csrf" value="${csrfToken}">
+        <input type="hidden" name="resNo" value="${resNo}">
+        <input type="hidden" name="totalPrice" value="${totalPrice}">
+    `;
 
-    const resNoInput = document.createElement('input');
-    resNoInput.type = 'hidden';
-    resNoInput.name = 'resNo';
-    resNoInput.value = resNo;
-
-    const totalPriceInput = document.createElement('input');
-    totalPriceInput.type = 'hidden';
-    totalPriceInput.name = 'totalPrice';
-    totalPriceInput.value = totalPrice;
-
-    form.appendChild(csrfInput);
-    form.appendChild(resNoInput);
-    form.appendChild(totalPriceInput);
     document.body.appendChild(form);
     form.submit();
+    document.body.removeChild(form);
+
 }
+
 
 
 function refundReservation(resNo, cancelAmount) {
@@ -904,6 +922,7 @@ function refundReservation(resNo, cancelAmount) {
     form.submit();
 }
   </script>
+
 </body>
 
 </html>

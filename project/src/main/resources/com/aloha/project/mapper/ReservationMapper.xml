@@ -70,7 +70,7 @@
             AND h.room_no NOT IN (
             SELECT room_no
             FROM reservations
-            WHERE status = '예약중'
+            WHERE status IN ('예약중', '결제완료')
             AND (
                     #{checkin} &lt; checkout_date
                 AND #{checkout} &gt;= res_date
@@ -87,7 +87,7 @@
         SELECT COUNT(*)
         FROM reservations
         WHERE room_no = #{roomNo}
-        AND status = '예약중'
+        AND status In ('예약중', '결제완료')
         AND (
                 #{checkin} &lt; checkout_date
             AND #{checkout} &gt;= res_date
@@ -102,7 +102,7 @@
         SELECT COUNT(*)
         FROM reservations
         WHERE room_no = #{roomNo}
-        AND status = '예약중'
+        AND status In ('예약중', '결제완료')
         AND res_no != #{resNo}
         AND (
                 #{checkin} &lt; checkout_date
@@ -226,7 +226,7 @@
         JOIN pets p ON r.pet_no = p.no
         JOIN hotelrooms h ON r.room_no = h.room_no
         WHERE r.res_date = CURDATE()
-            AND r.status = '예약중'
+            AND r.status IN ('예약중', '결제완료')
         ORDER BY r.res_time
     </select>
 
@@ -248,7 +248,7 @@
         JOIN pets p ON r.pet_no = p.no
         JOIN hotelrooms h ON r.room_no = h.room_no
         WHERE r.checkout_date = CURDATE()
-            AND r.status = '예약중'
+            AND r.status IN ('예약중', '결제완료')
     </select>
 
     <!-- ⭐ 객실별 예약 스케줄 확인 + cctvUrl 추가 -->
@@ -265,7 +265,7 @@
         JOIN pets p ON r.pet_no = p.no
         JOIN hotelrooms h ON r.room_no = h.room_no
         WHERE r.room_no = #{roomNo}
-            AND r.status = '예약중'
+            AND r.status In ('예약중', '결제완료')
             AND r.checkout_date &gt;= CURDATE()
         ORDER BY r.res_date
     </select>
